@@ -1,0 +1,376 @@
+2026-05-04 15:19:38,676 [utils.db] ERROR: Query failed: (pymysql.err.OperationalError) (1054, "Unknown column 'pcat.product_category_name_english' in 'field list'")
+[SQL: WITH cat_stats AS (
+    SELECT 
+        pcat.product_category_name_english,
+        AVG(r.review_score) AS avg_score,
+        COUNT(DISTINCT r.review_id) AS total_reviews,
+        SUM(CASE WHEN r.review_score <= 2 THEN 1 ELSE 0 END) AS bad_reviews,
+        COUNT(DISTINCT o.order_id) AS total_orders
+    FROM order_reviews r
+    JOIN orders o ON r.order_id = o.order_id
+    JOIN order_items oi ON o.order_id = oi.order_id
+    JOIN products p ON oi.product_id = p.product_id
+    LEFT JOIN product_category_name_translation pcat ON p.product_category_name = pcat.product_category_name
+    GROUP BY pcat.product_category_name_english
+    ORDER BY avg_score ASC
+    LIMIT 10
+),
+low_review_example AS (
+    SELECT 
+        pcat.product_category_name_english,
+        r.review_comment_message AS example_bad_comment
+    FROM (
+        SELECT 
+            pcat2.product_category_name_english,
+            r2.review_comment_message,
+            ROW_NUMBER() OVER (PARTITION BY pcat2.product_category_name_english ORDER BY r2.review_score ASC, r2.review_answer_timestamp DESC) AS rn
+        FROM order_reviews r2
+        JOIN orders o2 ON r2.order_id = o2.order_id
+        JOIN order_items oi2 ON o2.order_id = oi2.order_id
+        JOIN products p2 ON oi2.product_id = p2.product_id
+        LEFT JOIN product_category_name_translation pcat2 ON p2.product_category_name = pcat2.product_category_name
+        WHERE r2.review_score <= 2
+    ) t
+    WHERE t.rn = 1
+)
+SELECT 
+    cs.product_category_name_english,
+    ROUND(cs.avg_score, 2) AS avg_review_score,
+    cs.total_reviews,
+    cs.bad_reviews,
+    ROUND(cs.bad_reviews / cs.total_reviews * 100, 1) AS bad_review_pct,
+    COALESCE(lre.example_bad_comment, 'N/A') AS example_bad_comment
+FROM cat_stats cs
+LEFT JOIN low_review_example lre ON cs.product_category_name_english = lre.product_category_name_english
+ORDER BY cs.avg_score ASC]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+Traceback (most recent call last):
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.OperationalError: (1054, "Unknown column 'pcat.product_category_name_english' in 'field list'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\utils\db.py", line 43, in execute_query
+    result = conn.execute(text(sql), params)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\sql\elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (1054, "Unknown column 'pcat.product_category_name_english' in 'field list'")
+[SQL: WITH cat_stats AS (
+    SELECT 
+        pcat.product_category_name_english,
+        AVG(r.review_score) AS avg_score,
+        COUNT(DISTINCT r.review_id) AS total_reviews,
+        SUM(CASE WHEN r.review_score <= 2 THEN 1 ELSE 0 END) AS bad_reviews,
+        COUNT(DISTINCT o.order_id) AS total_orders
+    FROM order_reviews r
+    JOIN orders o ON r.order_id = o.order_id
+    JOIN order_items oi ON o.order_id = oi.order_id
+    JOIN products p ON oi.product_id = p.product_id
+    LEFT JOIN product_category_name_translation pcat ON p.product_category_name = pcat.product_category_name
+    GROUP BY pcat.product_category_name_english
+    ORDER BY avg_score ASC
+    LIMIT 10
+),
+low_review_example AS (
+    SELECT 
+        pcat.product_category_name_english,
+        r.review_comment_message AS example_bad_comment
+    FROM (
+        SELECT 
+            pcat2.product_category_name_english,
+            r2.review_comment_message,
+            ROW_NUMBER() OVER (PARTITION BY pcat2.product_category_name_english ORDER BY r2.review_score ASC, r2.review_answer_timestamp DESC) AS rn
+        FROM order_reviews r2
+        JOIN orders o2 ON r2.order_id = o2.order_id
+        JOIN order_items oi2 ON o2.order_id = oi2.order_id
+        JOIN products p2 ON oi2.product_id = p2.product_id
+        LEFT JOIN product_category_name_translation pcat2 ON p2.product_category_name = pcat2.product_category_name
+        WHERE r2.review_score <= 2
+    ) t
+    WHERE t.rn = 1
+)
+SELECT 
+    cs.product_category_name_english,
+    ROUND(cs.avg_score, 2) AS avg_review_score,
+    cs.total_reviews,
+    cs.bad_reviews,
+    ROUND(cs.bad_reviews / cs.total_reviews * 100, 1) AS bad_review_pct,
+    COALESCE(lre.example_bad_comment, 'N/A') AS example_bad_comment
+FROM cat_stats cs
+LEFT JOIN low_review_example lre ON cs.product_category_name_english = lre.product_category_name_english
+ORDER BY cs.avg_score ASC]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-05-04 15:19:38,702 [agents.data_analyst] ERROR: Agent execution error: (pymysql.err.OperationalError) (1054, "Unknown column 'pcat.product_category_name_english' in 'field list'")
+[SQL: WITH cat_stats AS (
+    SELECT 
+        pcat.product_category_name_english,
+        AVG(r.review_score) AS avg_score,
+        COUNT(DISTINCT r.review_id) AS total_reviews,
+        SUM(CASE WHEN r.review_score <= 2 THEN 1 ELSE 0 END) AS bad_reviews,
+        COUNT(DISTINCT o.order_id) AS total_orders
+    FROM order_reviews r
+    JOIN orders o ON r.order_id = o.order_id
+    JOIN order_items oi ON o.order_id = oi.order_id
+    JOIN products p ON oi.product_id = p.product_id
+    LEFT JOIN product_category_name_translation pcat ON p.product_category_name = pcat.product_category_name
+    GROUP BY pcat.product_category_name_english
+    ORDER BY avg_score ASC
+    LIMIT 10
+),
+low_review_example AS (
+    SELECT 
+        pcat.product_category_name_english,
+        r.review_comment_message AS example_bad_comment
+    FROM (
+        SELECT 
+            pcat2.product_category_name_english,
+            r2.review_comment_message,
+            ROW_NUMBER() OVER (PARTITION BY pcat2.product_category_name_english ORDER BY r2.review_score ASC, r2.review_answer_timestamp DESC) AS rn
+        FROM order_reviews r2
+        JOIN orders o2 ON r2.order_id = o2.order_id
+        JOIN order_items oi2 ON o2.order_id = oi2.order_id
+        JOIN products p2 ON oi2.product_id = p2.product_id
+        LEFT JOIN product_category_name_translation pcat2 ON p2.product_category_name = pcat2.product_category_name
+        WHERE r2.review_score <= 2
+    ) t
+    WHERE t.rn = 1
+)
+SELECT 
+    cs.product_category_name_english,
+    ROUND(cs.avg_score, 2) AS avg_review_score,
+    cs.total_reviews,
+    cs.bad_reviews,
+    ROUND(cs.bad_reviews / cs.total_reviews * 100, 1) AS bad_review_pct,
+    COALESCE(lre.example_bad_comment, 'N/A') AS example_bad_comment
+FROM cat_stats cs
+LEFT JOIN low_review_example lre ON cs.product_category_name_english = lre.product_category_name_english
+ORDER BY cs.avg_score ASC]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+Traceback (most recent call last):
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.OperationalError: (1054, "Unknown column 'pcat.product_category_name_english' in 'field list'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\agents\data_analyst.py", line 123, in analyze
+    rows = execute_query(executed_sql)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Business_Intelligence_Analysis\FinalProject\utils\db.py", line 43, in execute_query
+    result = conn.execute(text(sql), params)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\sql\elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (1054, "Unknown column 'pcat.product_category_name_english' in 'field list'")
+[SQL: WITH cat_stats AS (
+    SELECT 
+        pcat.product_category_name_english,
+        AVG(r.review_score) AS avg_score,
+        COUNT(DISTINCT r.review_id) AS total_reviews,
+        SUM(CASE WHEN r.review_score <= 2 THEN 1 ELSE 0 END) AS bad_reviews,
+        COUNT(DISTINCT o.order_id) AS total_orders
+    FROM order_reviews r
+    JOIN orders o ON r.order_id = o.order_id
+    JOIN order_items oi ON o.order_id = oi.order_id
+    JOIN products p ON oi.product_id = p.product_id
+    LEFT JOIN product_category_name_translation pcat ON p.product_category_name = pcat.product_category_name
+    GROUP BY pcat.product_category_name_english
+    ORDER BY avg_score ASC
+    LIMIT 10
+),
+low_review_example AS (
+    SELECT 
+        pcat.product_category_name_english,
+        r.review_comment_message AS example_bad_comment
+    FROM (
+        SELECT 
+            pcat2.product_category_name_english,
+            r2.review_comment_message,
+            ROW_NUMBER() OVER (PARTITION BY pcat2.product_category_name_english ORDER BY r2.review_score ASC, r2.review_answer_timestamp DESC) AS rn
+        FROM order_reviews r2
+        JOIN orders o2 ON r2.order_id = o2.order_id
+        JOIN order_items oi2 ON o2.order_id = oi2.order_id
+        JOIN products p2 ON oi2.product_id = p2.product_id
+        LEFT JOIN product_category_name_translation pcat2 ON p2.product_category_name = pcat2.product_category_name
+        WHERE r2.review_score <= 2
+    ) t
+    WHERE t.rn = 1
+)
+SELECT 
+    cs.product_category_name_english,
+    ROUND(cs.avg_score, 2) AS avg_review_score,
+    cs.total_reviews,
+    cs.bad_reviews,
+    ROUND(cs.bad_reviews / cs.total_reviews * 100, 1) AS bad_review_pct,
+    COALESCE(lre.example_bad_comment, 'N/A') AS example_bad_comment
+FROM cat_stats cs
+LEFT JOIN low_review_example lre ON cs.product_category_name_english = lre.product_category_name_english
+ORDER BY cs.avg_score ASC]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-05-04 15:19:38,703 [agents.graph] ERROR: Data analyst error: (pymysql.err.OperationalError) (1054, "Unknown column 'pcat.product_category_name_english' in 'field list'")
+[SQL: WITH cat_stats AS (
+    SELECT 
+        pcat.product_category_name_english,
+        AVG(r.review_score) AS avg_score,
+        COUNT(DISTINCT r.review_id) AS total_reviews,
+        SUM(CASE WHEN r.review_score <= 2 THEN 1 ELSE 0 END) AS bad_reviews,
+        COUNT(DISTINCT o.order_id) AS total_orders
+    FROM order_reviews r
+    JOIN orders o ON r.order_id = o.order_id
+    JOIN order_items oi ON o.order_id = oi.order_id
+    JOIN products p ON oi.product_id = p.product_id
+    LEFT JOIN product_category_name_translation pcat ON p.product_category_name = pcat.product_category_name
+    GROUP BY pcat.product_category_name_english
+    ORDER BY avg_score ASC
+    LIMIT 10
+),
+low_review_example AS (
+    SELECT 
+        pcat.product_category_name_english,
+        r.review_comment_message AS example_bad_comment
+    FROM (
+        SELECT 
+            pcat2.product_category_name_english,
+            r2.review_comment_message,
+            ROW_NUMBER() OVER (PARTITION BY pcat2.product_category_name_english ORDER BY r2.review_score ASC, r2.review_answer_timestamp DESC) AS rn
+        FROM order_reviews r2
+        JOIN orders o2 ON r2.order_id = o2.order_id
+        JOIN order_items oi2 ON o2.order_id = oi2.order_id
+        JOIN products p2 ON oi2.product_id = p2.product_id
+        LEFT JOIN product_category_name_translation pcat2 ON p2.product_category_name = pcat2.product_category_name
+        WHERE r2.review_score <= 2
+    ) t
+    WHERE t.rn = 1
+)
+SELECT 
+    cs.product_category_name_english,
+    ROUND(cs.avg_score, 2) AS avg_review_score,
+    cs.total_reviews,
+    cs.bad_reviews,
+    ROUND(cs.bad_reviews / cs.total_reviews * 100, 1) AS bad_review_pct,
+    COALESCE(lre.example_bad_comment, 'N/A') AS example_bad_comment
+FROM cat_stats cs
+LEFT JOIN low_review_example lre ON cs.product_category_name_english = lre.product_category_name_english
+ORDER BY cs.avg_score ASC]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-05-04 15:24:18,306 [prophet] INFO: n_changepoints greater than number of observations. Using 16.

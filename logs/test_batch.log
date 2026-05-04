@@ -1,0 +1,641 @@
+2026-05-04 11:14:51,427 [utils.db] ERROR: Query failed: (pymysql.err.ProgrammingError) (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'SELECT ym, customer_state, total_gmv FROM mv_state_sales WHERE ym LIKE '2017%' O' at line 2")
+[SQL: SELECT SUM(total_gmv) AS total_gmv_2017 FROM mv_state_sales WHERE ym LIKE '2017%%';
+SELECT ym, customer_state, total_gmv FROM mv_state_sales WHERE ym LIKE '2017%%' ORDER BY ym, total_gmv DESC;]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+Traceback (most recent call last):
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.ProgrammingError: (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'SELECT ym, customer_state, total_gmv FROM mv_state_sales WHERE ym LIKE '2017%' O' at line 2")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\utils\db.py", line 43, in execute_query
+    result = conn.execute(text(sql), params)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\sql\elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.ProgrammingError: (pymysql.err.ProgrammingError) (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'SELECT ym, customer_state, total_gmv FROM mv_state_sales WHERE ym LIKE '2017%' O' at line 2")
+[SQL: SELECT SUM(total_gmv) AS total_gmv_2017 FROM mv_state_sales WHERE ym LIKE '2017%%';
+SELECT ym, customer_state, total_gmv FROM mv_state_sales WHERE ym LIKE '2017%%' ORDER BY ym, total_gmv DESC;]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-04 11:14:51,431 [agents.data_analyst] ERROR: Agent execution error: (pymysql.err.ProgrammingError) (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'SELECT ym, customer_state, total_gmv FROM mv_state_sales WHERE ym LIKE '2017%' O' at line 2")
+[SQL: SELECT SUM(total_gmv) AS total_gmv_2017 FROM mv_state_sales WHERE ym LIKE '2017%%';
+SELECT ym, customer_state, total_gmv FROM mv_state_sales WHERE ym LIKE '2017%%' ORDER BY ym, total_gmv DESC;]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+Traceback (most recent call last):
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.ProgrammingError: (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'SELECT ym, customer_state, total_gmv FROM mv_state_sales WHERE ym LIKE '2017%' O' at line 2")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\agents\data_analyst.py", line 107, in analyze
+    rows = execute_query(executed_sql)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Business_Intelligence_Analysis\FinalProject\utils\db.py", line 43, in execute_query
+    result = conn.execute(text(sql), params)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\sql\elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.ProgrammingError: (pymysql.err.ProgrammingError) (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'SELECT ym, customer_state, total_gmv FROM mv_state_sales WHERE ym LIKE '2017%' O' at line 2")
+[SQL: SELECT SUM(total_gmv) AS total_gmv_2017 FROM mv_state_sales WHERE ym LIKE '2017%%';
+SELECT ym, customer_state, total_gmv FROM mv_state_sales WHERE ym LIKE '2017%%' ORDER BY ym, total_gmv DESC;]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-04 11:14:51,432 [agents.graph] ERROR: Data analyst error: (pymysql.err.ProgrammingError) (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'SELECT ym, customer_state, total_gmv FROM mv_state_sales WHERE ym LIKE '2017%' O' at line 2")
+[SQL: SELECT SUM(total_gmv) AS total_gmv_2017 FROM mv_state_sales WHERE ym LIKE '2017%%';
+SELECT ym, customer_state, total_gmv FROM mv_state_sales WHERE ym LIKE '2017%%' ORDER BY ym, total_gmv DESC;]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-04 11:15:53,808 [utils.db] ERROR: Query failed: (pymysql.err.OperationalError) (1055, "Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'overall.overall_on_time_rate_pct' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by")
+[SQL: WITH overall AS (
+  SELECT 
+    COUNT(*) AS total_delivered,
+    SUM(CASE WHEN order_delivered_customer_date <= order_estimated_delivery_date THEN 1 ELSE 0 END) AS on_time,
+    ROUND(SUM(CASE WHEN order_delivered_customer_date <= order_estimated_delivery_date THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) AS overall_on_time_rate_pct
+  FROM orders
+  JOIN customers ON orders.customer_id = customers.customer_id
+  WHERE order_status = 'delivered' AND order_delivered_customer_date IS NOT NULL
+)
+SELECT 
+  overall.overall_on_time_rate_pct,
+  c.customer_state,
+  COUNT(*) AS total_delivered_state,
+  SUM(CASE WHEN o.order_delivered_customer_date > o.order_estimated_delivery_date THEN 1 ELSE 0 END) AS delayed_orders,
+  ROUND(SUM(CASE WHEN o.order_delivered_customer_date > o.order_estimated_delivery_date THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) AS delay_rate_pct,
+  ROUND(AVG(CASE WHEN o.order_delivered_customer_date > o.order_estimated_delivery_date THEN DATEDIFF(o.order_delivered_customer_date, o.order_estimated_delivery_date) ELSE NULL END), 1) AS avg_delay_days
+FROM orders o
+JOIN customers c ON o.customer_id = c.customer_id
+CROSS JOIN overall
+WHERE o.order_status = 'delivered' AND o.order_delivered_customer_date IS NOT NULL
+GROUP BY c.customer_state
+ORDER BY delayed_orders DESC
+LIMIT 10;]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+Traceback (most recent call last):
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.OperationalError: (1055, "Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'overall.overall_on_time_rate_pct' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\utils\db.py", line 43, in execute_query
+    result = conn.execute(text(sql), params)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\sql\elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (1055, "Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'overall.overall_on_time_rate_pct' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by")
+[SQL: WITH overall AS (
+  SELECT 
+    COUNT(*) AS total_delivered,
+    SUM(CASE WHEN order_delivered_customer_date <= order_estimated_delivery_date THEN 1 ELSE 0 END) AS on_time,
+    ROUND(SUM(CASE WHEN order_delivered_customer_date <= order_estimated_delivery_date THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) AS overall_on_time_rate_pct
+  FROM orders
+  JOIN customers ON orders.customer_id = customers.customer_id
+  WHERE order_status = 'delivered' AND order_delivered_customer_date IS NOT NULL
+)
+SELECT 
+  overall.overall_on_time_rate_pct,
+  c.customer_state,
+  COUNT(*) AS total_delivered_state,
+  SUM(CASE WHEN o.order_delivered_customer_date > o.order_estimated_delivery_date THEN 1 ELSE 0 END) AS delayed_orders,
+  ROUND(SUM(CASE WHEN o.order_delivered_customer_date > o.order_estimated_delivery_date THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) AS delay_rate_pct,
+  ROUND(AVG(CASE WHEN o.order_delivered_customer_date > o.order_estimated_delivery_date THEN DATEDIFF(o.order_delivered_customer_date, o.order_estimated_delivery_date) ELSE NULL END), 1) AS avg_delay_days
+FROM orders o
+JOIN customers c ON o.customer_id = c.customer_id
+CROSS JOIN overall
+WHERE o.order_status = 'delivered' AND o.order_delivered_customer_date IS NOT NULL
+GROUP BY c.customer_state
+ORDER BY delayed_orders DESC
+LIMIT 10;]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-05-04 11:15:53,810 [agents.data_analyst] ERROR: Agent execution error: (pymysql.err.OperationalError) (1055, "Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'overall.overall_on_time_rate_pct' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by")
+[SQL: WITH overall AS (
+  SELECT 
+    COUNT(*) AS total_delivered,
+    SUM(CASE WHEN order_delivered_customer_date <= order_estimated_delivery_date THEN 1 ELSE 0 END) AS on_time,
+    ROUND(SUM(CASE WHEN order_delivered_customer_date <= order_estimated_delivery_date THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) AS overall_on_time_rate_pct
+  FROM orders
+  JOIN customers ON orders.customer_id = customers.customer_id
+  WHERE order_status = 'delivered' AND order_delivered_customer_date IS NOT NULL
+)
+SELECT 
+  overall.overall_on_time_rate_pct,
+  c.customer_state,
+  COUNT(*) AS total_delivered_state,
+  SUM(CASE WHEN o.order_delivered_customer_date > o.order_estimated_delivery_date THEN 1 ELSE 0 END) AS delayed_orders,
+  ROUND(SUM(CASE WHEN o.order_delivered_customer_date > o.order_estimated_delivery_date THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) AS delay_rate_pct,
+  ROUND(AVG(CASE WHEN o.order_delivered_customer_date > o.order_estimated_delivery_date THEN DATEDIFF(o.order_delivered_customer_date, o.order_estimated_delivery_date) ELSE NULL END), 1) AS avg_delay_days
+FROM orders o
+JOIN customers c ON o.customer_id = c.customer_id
+CROSS JOIN overall
+WHERE o.order_status = 'delivered' AND o.order_delivered_customer_date IS NOT NULL
+GROUP BY c.customer_state
+ORDER BY delayed_orders DESC
+LIMIT 10;]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+Traceback (most recent call last):
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.OperationalError: (1055, "Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'overall.overall_on_time_rate_pct' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\agents\data_analyst.py", line 107, in analyze
+    rows = execute_query(executed_sql)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Business_Intelligence_Analysis\FinalProject\utils\db.py", line 43, in execute_query
+    result = conn.execute(text(sql), params)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\sql\elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (1055, "Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'overall.overall_on_time_rate_pct' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by")
+[SQL: WITH overall AS (
+  SELECT 
+    COUNT(*) AS total_delivered,
+    SUM(CASE WHEN order_delivered_customer_date <= order_estimated_delivery_date THEN 1 ELSE 0 END) AS on_time,
+    ROUND(SUM(CASE WHEN order_delivered_customer_date <= order_estimated_delivery_date THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) AS overall_on_time_rate_pct
+  FROM orders
+  JOIN customers ON orders.customer_id = customers.customer_id
+  WHERE order_status = 'delivered' AND order_delivered_customer_date IS NOT NULL
+)
+SELECT 
+  overall.overall_on_time_rate_pct,
+  c.customer_state,
+  COUNT(*) AS total_delivered_state,
+  SUM(CASE WHEN o.order_delivered_customer_date > o.order_estimated_delivery_date THEN 1 ELSE 0 END) AS delayed_orders,
+  ROUND(SUM(CASE WHEN o.order_delivered_customer_date > o.order_estimated_delivery_date THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) AS delay_rate_pct,
+  ROUND(AVG(CASE WHEN o.order_delivered_customer_date > o.order_estimated_delivery_date THEN DATEDIFF(o.order_delivered_customer_date, o.order_estimated_delivery_date) ELSE NULL END), 1) AS avg_delay_days
+FROM orders o
+JOIN customers c ON o.customer_id = c.customer_id
+CROSS JOIN overall
+WHERE o.order_status = 'delivered' AND o.order_delivered_customer_date IS NOT NULL
+GROUP BY c.customer_state
+ORDER BY delayed_orders DESC
+LIMIT 10;]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-05-04 11:15:53,811 [agents.graph] ERROR: Data analyst error: (pymysql.err.OperationalError) (1055, "Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'overall.overall_on_time_rate_pct' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by")
+[SQL: WITH overall AS (
+  SELECT 
+    COUNT(*) AS total_delivered,
+    SUM(CASE WHEN order_delivered_customer_date <= order_estimated_delivery_date THEN 1 ELSE 0 END) AS on_time,
+    ROUND(SUM(CASE WHEN order_delivered_customer_date <= order_estimated_delivery_date THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) AS overall_on_time_rate_pct
+  FROM orders
+  JOIN customers ON orders.customer_id = customers.customer_id
+  WHERE order_status = 'delivered' AND order_delivered_customer_date IS NOT NULL
+)
+SELECT 
+  overall.overall_on_time_rate_pct,
+  c.customer_state,
+  COUNT(*) AS total_delivered_state,
+  SUM(CASE WHEN o.order_delivered_customer_date > o.order_estimated_delivery_date THEN 1 ELSE 0 END) AS delayed_orders,
+  ROUND(SUM(CASE WHEN o.order_delivered_customer_date > o.order_estimated_delivery_date THEN 1 ELSE 0 END) / COUNT(*) * 100, 2) AS delay_rate_pct,
+  ROUND(AVG(CASE WHEN o.order_delivered_customer_date > o.order_estimated_delivery_date THEN DATEDIFF(o.order_delivered_customer_date, o.order_estimated_delivery_date) ELSE NULL END), 1) AS avg_delay_days
+FROM orders o
+JOIN customers c ON o.customer_id = c.customer_id
+CROSS JOIN overall
+WHERE o.order_status = 'delivered' AND o.order_delivered_customer_date IS NOT NULL
+GROUP BY c.customer_state
+ORDER BY delayed_orders DESC
+LIMIT 10;]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-05-04 11:20:14,293 [prophet] INFO: n_changepoints greater than number of observations. Using 16.
+2026-05-04 11:21:29,375 [utils.db] ERROR: Query failed: (pymysql.err.NotSupportedError) (1235, "This version of MySQL doesn't yet support 'LIMIT & IN/ALL/ANY/SOME subquery'")
+[SQL: SELECT ym, total_gmv, total_orders, avg_basket, total_freight
+FROM mv_monthly_sales
+WHERE ym IN (
+  SELECT DISTINCT ym
+  FROM mv_monthly_sales
+  ORDER BY ym DESC
+  LIMIT 3
+)
+ORDER BY ym;]
+(Background on this error at: https://sqlalche.me/e/20/tw8g)
+Traceback (most recent call last):
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.NotSupportedError: (1235, "This version of MySQL doesn't yet support 'LIMIT & IN/ALL/ANY/SOME subquery'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\utils\db.py", line 43, in execute_query
+    result = conn.execute(text(sql), params)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\sql\elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.NotSupportedError: (pymysql.err.NotSupportedError) (1235, "This version of MySQL doesn't yet support 'LIMIT & IN/ALL/ANY/SOME subquery'")
+[SQL: SELECT ym, total_gmv, total_orders, avg_basket, total_freight
+FROM mv_monthly_sales
+WHERE ym IN (
+  SELECT DISTINCT ym
+  FROM mv_monthly_sales
+  ORDER BY ym DESC
+  LIMIT 3
+)
+ORDER BY ym;]
+(Background on this error at: https://sqlalche.me/e/20/tw8g)
+2026-05-04 11:21:29,376 [agents.data_analyst] ERROR: Agent execution error: (pymysql.err.NotSupportedError) (1235, "This version of MySQL doesn't yet support 'LIMIT & IN/ALL/ANY/SOME subquery'")
+[SQL: SELECT ym, total_gmv, total_orders, avg_basket, total_freight
+FROM mv_monthly_sales
+WHERE ym IN (
+  SELECT DISTINCT ym
+  FROM mv_monthly_sales
+  ORDER BY ym DESC
+  LIMIT 3
+)
+ORDER BY ym;]
+(Background on this error at: https://sqlalche.me/e/20/tw8g)
+Traceback (most recent call last):
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.NotSupportedError: (1235, "This version of MySQL doesn't yet support 'LIMIT & IN/ALL/ANY/SOME subquery'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\agents\data_analyst.py", line 107, in analyze
+    rows = execute_query(executed_sql)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Business_Intelligence_Analysis\FinalProject\utils\db.py", line 43, in execute_query
+    result = conn.execute(text(sql), params)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\sql\elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.NotSupportedError: (pymysql.err.NotSupportedError) (1235, "This version of MySQL doesn't yet support 'LIMIT & IN/ALL/ANY/SOME subquery'")
+[SQL: SELECT ym, total_gmv, total_orders, avg_basket, total_freight
+FROM mv_monthly_sales
+WHERE ym IN (
+  SELECT DISTINCT ym
+  FROM mv_monthly_sales
+  ORDER BY ym DESC
+  LIMIT 3
+)
+ORDER BY ym;]
+(Background on this error at: https://sqlalche.me/e/20/tw8g)
+2026-05-04 11:21:29,377 [agents.graph] ERROR: Data analyst error: (pymysql.err.NotSupportedError) (1235, "This version of MySQL doesn't yet support 'LIMIT & IN/ALL/ANY/SOME subquery'")
+[SQL: SELECT ym, total_gmv, total_orders, avg_basket, total_freight
+FROM mv_monthly_sales
+WHERE ym IN (
+  SELECT DISTINCT ym
+  FROM mv_monthly_sales
+  ORDER BY ym DESC
+  LIMIT 3
+)
+ORDER BY ym;]
+(Background on this error at: https://sqlalche.me/e/20/tw8g)
+2026-05-04 11:24:18,675 [agents.data_analyst] ERROR: Blocked non-SELECT SQL: -- Query 1: States where average delivery days exceed national average
+SELECT 
+    c.customer_state,
+    AVG(DATEDIFF(o.order_delivered_customer_date, o.order_purchase_timestamp)) AS avg_delivery_days
+2026-05-04 11:24:18,675 [agents.graph] ERROR: Data analyst error: Agent generated non-SELECT SQL — blocked.

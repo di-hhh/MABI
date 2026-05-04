@@ -1,0 +1,157 @@
+{
+  "Q1": {
+    "status": "FAIL",
+    "elapsed": 42.7,
+    "charts": 6,
+    "chart_types": [
+      "line",
+      "bar",
+      "geo_map",
+      "bar",
+      "scatter",
+      "heatmap"
+    ],
+    "analysis_type": "descriptive",
+    "error": "(pymysql.err.ProgrammingError) (1064, \"You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'SELECT ym, customer_state, total_gmv FROM mv_state_sales WHERE ym LIKE '2017%' O' at line 2\")\n[SQL: SELECT SUM(total_gmv) AS t"
+  },
+  "Q2": {
+    "status": "FAIL",
+    "elapsed": 93.6,
+    "charts": 7,
+    "chart_types": [
+      "line",
+      "bar",
+      "geo_map",
+      "bar",
+      "wordcloud",
+      "scatter",
+      "heatmap"
+    ],
+    "analysis_type": "diagnostic",
+    "error": "(pymysql.err.OperationalError) (1055, \"Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'overall.overall_on_time_rate_pct' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by\")\n[SQL: WITH ove"
+  },
+  "Q3": {
+    "status": "PASS",
+    "elapsed": 52.3,
+    "charts": 6,
+    "chart_types": [
+      "line",
+      "bar",
+      "geo_map",
+      "bar",
+      "scatter",
+      "heatmap"
+    ],
+    "analysis_type": "descriptive",
+    "error": ""
+  },
+  "Q4": {
+    "status": "PASS",
+    "elapsed": 42.1,
+    "charts": 6,
+    "chart_types": [
+      "line",
+      "bar",
+      "geo_map",
+      "bar",
+      "scatter",
+      "heatmap"
+    ],
+    "analysis_type": "descriptive",
+    "error": ""
+  },
+  "Q5": {
+    "status": "PASS",
+    "elapsed": 83.2,
+    "charts": 7,
+    "chart_types": [
+      "line",
+      "bar",
+      "geo_map",
+      "bar",
+      "wordcloud",
+      "scatter",
+      "heatmap"
+    ],
+    "analysis_type": "diagnostic",
+    "error": ""
+  },
+  "Q6": {
+    "status": "PASS",
+    "elapsed": 60.6,
+    "charts": 6,
+    "chart_types": [
+      "line",
+      "bar",
+      "geo_map",
+      "bar",
+      "scatter",
+      "heatmap"
+    ],
+    "analysis_type": "predictive",
+    "error": ""
+  },
+  "Q7": {
+    "status": "FAIL",
+    "elapsed": 90.9,
+    "charts": 7,
+    "chart_types": [
+      "line",
+      "bar",
+      "geo_map",
+      "bar",
+      "wordcloud",
+      "scatter",
+      "heatmap"
+    ],
+    "analysis_type": "prescriptive",
+    "error": "(pymysql.err.NotSupportedError) (1235, \"This version of MySQL doesn't yet support 'LIMIT & IN/ALL/ANY/SOME subquery'\")\n[SQL: SELECT ym, total_gmv, total_orders, avg_basket, total_freight\nFROM mv_monthly_sales\nWHERE ym IN (\n  SELECT DISTINCT ym\n  FROM mv_monthly_sales\n  ORDER BY ym DESC\n  LIMIT 3\n)\nO"
+  },
+  "Q8": {
+    "status": "PASS",
+    "elapsed": 68.8,
+    "charts": 6,
+    "chart_types": [
+      "line",
+      "bar",
+      "geo_map",
+      "bar",
+      "scatter",
+      "heatmap"
+    ],
+    "analysis_type": "descriptive",
+    "error": ""
+  },
+  "Q9": {
+    "status": "FAIL",
+    "elapsed": 111.3,
+    "charts": 7,
+    "chart_types": [
+      "line",
+      "bar",
+      "geo_map",
+      "bar",
+      "wordcloud",
+      "scatter",
+      "heatmap"
+    ],
+    "analysis_type": "diagnostic",
+    "error": "Agent generated non-SELECT SQL — blocked."
+  },
+  "Q10": {
+    "status": "PASS",
+    "elapsed": 83.6,
+    "charts": 7,
+    "chart_types": [
+      "line",
+      "bar",
+      "geo_map",
+      "bar",
+      "wordcloud",
+      "scatter",
+      "heatmap"
+    ],
+    "analysis_type": "prescriptive",
+    "error": ""
+  }
+}

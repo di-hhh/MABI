@@ -1,0 +1,15 @@
+2026-05-04 11:32:05,025 [agents.coordinator] ERROR: Coordinator parsing error: Expecting ',' delimiter: line 15 column 6 (char 672)
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\agents\coordinator.py", line 39, in parse_question
+    parsed = json.loads(m.group(0))
+             ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\json\__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\json\decoder.py", line 338, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\json\decoder.py", line 354, in raw_decode
+    obj, end = self.scan_once(s, idx)
+               ^^^^^^^^^^^^^^^^^^^^^^
+json.decoder.JSONDecodeError: Expecting ',' delimiter: line 15 column 6 (char 672)

@@ -1,0 +1,106 @@
+{
+  "Q1_descriptive": {
+    "status": "PASS",
+    "time": 106.0,
+    "strategy": "view",
+    "chart_count": 8,
+    "chart_types": [
+      "line",
+      "bar",
+      "geo_map",
+      "bar",
+      "bar",
+      "bar",
+      "scatter",
+      "heatmap"
+    ],
+    "error": ""
+  },
+  "Q4_base_table": {
+    "status": "PASS",
+    "time": 100.9,
+    "strategy": "base_table",
+    "chart_count": 8,
+    "chart_types": [
+      "line",
+      "bar",
+      "geo_map",
+      "bar",
+      "bar",
+      "bar",
+      "scatter",
+      "heatmap"
+    ],
+    "error": ""
+  },
+  "Q5_nlp": {
+    "status": "FAIL",
+    "time": 300.1,
+    "strategy": "error",
+    "chart_count": 9,
+    "chart_types": [
+      "line",
+      "bar",
+      "geo_map",
+      "bar",
+      "bar",
+      "bar",
+      "wordcloud",
+      "scatter",
+      "heatmap"
+    ],
+    "error": "(pymysql.err.OperationalError) (1054, \"Unknown column 'pcat.product_category_name_english' in 'field list'\")\n[SQL: WITH cat_stats AS (\n    SELECT \n        pcat.product_category_name_english,\n        AVG(r.review_score) AS avg_score,\n        COUNT(DISTINCT r.review_id) AS total_reviews,\n        SUM(C"
+  },
+  "Q6_predictive": {
+    "status": "PASS",
+    "time": 105.9,
+    "strategy": "base_table",
+    "chart_count": 8,
+    "chart_types": [
+      "line",
+      "bar",
+      "geo_map",
+      "bar",
+      "bar",
+      "bar",
+      "scatter",
+      "heatmap"
+    ],
+    "error": ""
+  },
+  "Q8_multi": {
+    "status": "PASS",
+    "time": 107.8,
+    "strategy": "view",
+    "chart_count": 8,
+    "chart_types": [
+      "line",
+      "bar",
+      "geo_map",
+      "bar",
+      "bar",
+      "bar",
+      "scatter",
+      "heatmap"
+    ],
+    "error": ""
+  },
+  "Q10_prescriptive": {
+    "status": "PASS",
+    "time": 253.5,
+    "strategy": "base_table",
+    "chart_count": 9,
+    "chart_types": [
+      "line",
+      "bar",
+      "geo_map",
+      "bar",
+      "bar",
+      "bar",
+      "wordcloud",
+      "scatter",
+      "heatmap"
+    ],
+    "error": ""
+  }
+}
