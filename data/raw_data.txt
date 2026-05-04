@@ -1,0 +1,5 @@
+原始数据在该目录下，但是太大了，就不上传 git
+
+BrazilianECommercePublicDatasetByOlist.csv
+
+54,865 KB

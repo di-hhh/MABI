@@ -1,0 +1,698 @@
+2026-05-04 11:09:37,802 [httpx] INFO: HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2026-05-04 11:09:50,788 [agents.coordinator] INFO: Coordinator plan: Identify the state with highest sales in 2017, the on-time delivery rate, and the most popular payment method. → 2 tasks [descriptive]
+2026-05-04 11:09:51,294 [httpx] INFO: HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2026-05-04 11:10:16,092 [agents.data_analyst] INFO: Strategy: view | SQL: WITH state_data AS (
+    SELECT s.customer_state,
+           SUM(s.total_gmv) AS total_gmv,
+           SUM(s.total_orders) AS total_orders,
+           SUM(d.delayed_orders) AS total_delayed
+    FROM m
+2026-05-04 11:10:16,133 [utils.db] INFO: Database engine created: 8.153.93.169:3306/MABI-team-DB?charset=utf8mb4
+2026-05-04 11:10:16,231 [utils.db] ERROR: Query failed: (pymysql.err.ProgrammingError) (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '::float / total_orders AS on_time_rate\n    FROM state_data\n    ORDER BY total_gm' at line 13")
+[SQL: WITH state_data AS (
+    SELECT s.customer_state,
+           SUM(s.total_gmv) AS total_gmv,
+           SUM(s.total_orders) AS total_orders,
+           SUM(d.delayed_orders) AS total_delayed
+    FROM mv_state_sales s
+    JOIN mv_delivery_perf d ON s.ym = d.ym AND s.customer_state = d.customer_state
+    WHERE s.ym LIKE '2017%%'
+    GROUP BY s.customer_state
+),
+top_state AS (
+    SELECT customer_state, total_gmv, total_orders, total_delayed,
+           (total_orders - total_delayed)::float / total_orders AS on_time_rate
+    FROM state_data
+    ORDER BY total_gmv DESC
+    LIMIT 1
+),
+payment_data AS (
+    SELECT payment_type, SUM(total_transactions) AS total_transactions
+    FROM mv_payment_dist
+    WHERE ym LIKE '2017%%'
+    GROUP BY payment_type
+    ORDER BY total_transactions DESC
+    LIMIT 1
+)
+SELECT ts.customer_state AS top_state,
+       ts.total_gmv,
+       ts.on_time_rate,
+       pd.payment_type AS most_popular_payment,
+       pd.total_transactions
+FROM top_state ts, payment_data pd;]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+Traceback (most recent call last):
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.ProgrammingError: (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '::float / total_orders AS on_time_rate\n    FROM state_data\n    ORDER BY total_gm' at line 13")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\utils\db.py", line 43, in execute_query
+    result = conn.execute(text(sql), params)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\sql\elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.ProgrammingError: (pymysql.err.ProgrammingError) (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '::float / total_orders AS on_time_rate\n    FROM state_data\n    ORDER BY total_gm' at line 13")
+[SQL: WITH state_data AS (
+    SELECT s.customer_state,
+           SUM(s.total_gmv) AS total_gmv,
+           SUM(s.total_orders) AS total_orders,
+           SUM(d.delayed_orders) AS total_delayed
+    FROM mv_state_sales s
+    JOIN mv_delivery_perf d ON s.ym = d.ym AND s.customer_state = d.customer_state
+    WHERE s.ym LIKE '2017%%'
+    GROUP BY s.customer_state
+),
+top_state AS (
+    SELECT customer_state, total_gmv, total_orders, total_delayed,
+           (total_orders - total_delayed)::float / total_orders AS on_time_rate
+    FROM state_data
+    ORDER BY total_gmv DESC
+    LIMIT 1
+),
+payment_data AS (
+    SELECT payment_type, SUM(total_transactions) AS total_transactions
+    FROM mv_payment_dist
+    WHERE ym LIKE '2017%%'
+    GROUP BY payment_type
+    ORDER BY total_transactions DESC
+    LIMIT 1
+)
+SELECT ts.customer_state AS top_state,
+       ts.total_gmv,
+       ts.on_time_rate,
+       pd.payment_type AS most_popular_payment,
+       pd.total_transactions
+FROM top_state ts, payment_data pd;]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-04 11:10:16,304 [agents.data_analyst] ERROR: Agent execution error: (pymysql.err.ProgrammingError) (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '::float / total_orders AS on_time_rate\n    FROM state_data\n    ORDER BY total_gm' at line 13")
+[SQL: WITH state_data AS (
+    SELECT s.customer_state,
+           SUM(s.total_gmv) AS total_gmv,
+           SUM(s.total_orders) AS total_orders,
+           SUM(d.delayed_orders) AS total_delayed
+    FROM mv_state_sales s
+    JOIN mv_delivery_perf d ON s.ym = d.ym AND s.customer_state = d.customer_state
+    WHERE s.ym LIKE '2017%%'
+    GROUP BY s.customer_state
+),
+top_state AS (
+    SELECT customer_state, total_gmv, total_orders, total_delayed,
+           (total_orders - total_delayed)::float / total_orders AS on_time_rate
+    FROM state_data
+    ORDER BY total_gmv DESC
+    LIMIT 1
+),
+payment_data AS (
+    SELECT payment_type, SUM(total_transactions) AS total_transactions
+    FROM mv_payment_dist
+    WHERE ym LIKE '2017%%'
+    GROUP BY payment_type
+    ORDER BY total_transactions DESC
+    LIMIT 1
+)
+SELECT ts.customer_state AS top_state,
+       ts.total_gmv,
+       ts.on_time_rate,
+       pd.payment_type AS most_popular_payment,
+       pd.total_transactions
+FROM top_state ts, payment_data pd;]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+Traceback (most recent call last):
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.ProgrammingError: (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '::float / total_orders AS on_time_rate\n    FROM state_data\n    ORDER BY total_gm' at line 13")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\agents\data_analyst.py", line 96, in analyze
+    rows = execute_query(executed_sql)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Business_Intelligence_Analysis\FinalProject\utils\db.py", line 43, in execute_query
+    result = conn.execute(text(sql), params)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\sql\elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.ProgrammingError: (pymysql.err.ProgrammingError) (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '::float / total_orders AS on_time_rate\n    FROM state_data\n    ORDER BY total_gm' at line 13")
+[SQL: WITH state_data AS (
+    SELECT s.customer_state,
+           SUM(s.total_gmv) AS total_gmv,
+           SUM(s.total_orders) AS total_orders,
+           SUM(d.delayed_orders) AS total_delayed
+    FROM mv_state_sales s
+    JOIN mv_delivery_perf d ON s.ym = d.ym AND s.customer_state = d.customer_state
+    WHERE s.ym LIKE '2017%%'
+    GROUP BY s.customer_state
+),
+top_state AS (
+    SELECT customer_state, total_gmv, total_orders, total_delayed,
+           (total_orders - total_delayed)::float / total_orders AS on_time_rate
+    FROM state_data
+    ORDER BY total_gmv DESC
+    LIMIT 1
+),
+payment_data AS (
+    SELECT payment_type, SUM(total_transactions) AS total_transactions
+    FROM mv_payment_dist
+    WHERE ym LIKE '2017%%'
+    GROUP BY payment_type
+    ORDER BY total_transactions DESC
+    LIMIT 1
+)
+SELECT ts.customer_state AS top_state,
+       ts.total_gmv,
+       ts.on_time_rate,
+       pd.payment_type AS most_popular_payment,
+       pd.total_transactions
+FROM top_state ts, payment_data pd;]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-04 11:10:16,311 [agents.graph] ERROR: Data analyst error: (pymysql.err.ProgrammingError) (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '::float / total_orders AS on_time_rate\n    FROM state_data\n    ORDER BY total_gm' at line 13")
+[SQL: WITH state_data AS (
+    SELECT s.customer_state,
+           SUM(s.total_gmv) AS total_gmv,
+           SUM(s.total_orders) AS total_orders,
+           SUM(d.delayed_orders) AS total_delayed
+    FROM mv_state_sales s
+    JOIN mv_delivery_perf d ON s.ym = d.ym AND s.customer_state = d.customer_state
+    WHERE s.ym LIKE '2017%%'
+    GROUP BY s.customer_state
+),
+top_state AS (
+    SELECT customer_state, total_gmv, total_orders, total_delayed,
+           (total_orders - total_delayed)::float / total_orders AS on_time_rate
+    FROM state_data
+    ORDER BY total_gmv DESC
+    LIMIT 1
+),
+payment_data AS (
+    SELECT payment_type, SUM(total_transactions) AS total_transactions
+    FROM mv_payment_dist
+    WHERE ym LIKE '2017%%'
+    GROUP BY payment_type
+    ORDER BY total_transactions DESC
+    LIMIT 1
+)
+SELECT ts.customer_state AS top_state,
+       ts.total_gmv,
+       ts.on_time_rate,
+       pd.payment_type AS most_popular_payment,
+       pd.total_transactions
+FROM top_state ts, payment_data pd;]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-04 11:10:16,881 [choreographer.browsers.chromium] INFO: Chromium init'ed with kwargs {}
+2026-05-04 11:10:16,915 [choreographer.browsers.chromium] INFO: Found chromium path: C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+2026-05-04 11:10:16,916 [choreographer.utils._tmpfile] INFO: Temp directory created: C:\Users\13801\AppData\Local\Temp\tmpqysgst8p.
+2026-05-04 11:10:16,918 [choreographer.browser_async] INFO: Opening browser.
+2026-05-04 11:10:16,918 [choreographer.utils._tmpfile] INFO: Temp directory created: C:\Users\13801\AppData\Local\Temp\tmpe5aj2wz9.
+2026-05-04 11:10:16,918 [choreographer.browsers.chromium] INFO: Temporary directory at: C:\Users\13801\AppData\Local\Temp\tmpe5aj2wz9
+2026-05-04 11:10:17,130 [kaleido.kaleido] INFO: Conforming 1 to file:///C:/Users/13801/AppData/Local/Temp/tmpqysgst8p/index.html
+2026-05-04 11:10:17,130 [kaleido.kaleido] INFO: Waiting on all navigates
+2026-05-04 11:10:17,959 [kaleido.kaleido] INFO: All navigates done, putting them all in queue.
+2026-05-04 11:10:18,049 [kaleido.kaleido] INFO: Getting tab from queue (has 1)
+2026-05-04 11:10:18,050 [kaleido.kaleido] INFO: Got EF20
+2026-05-04 11:10:18,050 [kaleido._kaleido_tab] INFO: Processing Monthly_Sales_Trend.png
+2026-05-04 11:10:18,050 [kaleido._kaleido_tab] INFO: Sending big command for Monthly_Sales_Trend.png.
+2026-05-04 11:10:18,116 [kaleido._kaleido_tab] INFO: Sent big command for Monthly_Sales_Trend.png.
+2026-05-04 11:10:18,117 [kaleido.kaleido] INFO: Reloading tab EF20 before return.
+2026-05-04 11:10:18,163 [kaleido.kaleido] INFO: Putting tab EF20 back (queue size: 0).
+2026-05-04 11:10:18,163 [kaleido.kaleido] INFO: Waiting for all cleanups to finish.
+2026-05-04 11:10:18,163 [kaleido.kaleido] INFO: Exiting Kaleido
+2026-05-04 11:10:18,163 [choreographer.browser_async] INFO: Closing browser.
+2026-05-04 11:10:18,252 [choreographer.browser_async] INFO: Closing browser.
+2026-05-04 11:10:18,253 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-05-04 11:10:18,253 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-05-04 11:10:18,253 [kaleido.kaleido] INFO: Cancelling tasks.
+2026-05-04 11:10:18,253 [kaleido.kaleido] INFO: Exiting Kaleido/Choreo
+2026-05-04 11:10:18,344 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-05-04 11:10:18,344 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-05-04 11:10:18,344 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-05-04 11:10:18,345 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-05-04 11:10:18,345 [kaleido.kaleido] INFO: Cancelling tasks.
+2026-05-04 11:10:18,345 [kaleido.kaleido] INFO: Exiting Kaleido/Choreo
+2026-05-04 11:10:18,366 [agents.visualizer] INFO: Saved chart: dashboard/static\01_line_chart.png
+2026-05-04 11:10:18,410 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-05-04 11:10:18,411 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-05-04 11:10:18,422 [choreographer.browsers.chromium] INFO: Chromium init'ed with kwargs {}
+2026-05-04 11:10:18,458 [choreographer.browsers.chromium] INFO: Found chromium path: C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+2026-05-04 11:10:18,458 [choreographer.utils._tmpfile] INFO: Temp directory created: C:\Users\13801\AppData\Local\Temp\tmp540xn2_j.
+2026-05-04 11:10:18,459 [choreographer.browser_async] INFO: Opening browser.
+2026-05-04 11:10:18,459 [choreographer.utils._tmpfile] INFO: Temp directory created: C:\Users\13801\AppData\Local\Temp\tmppjh075q2.
+2026-05-04 11:10:18,459 [choreographer.browsers.chromium] INFO: Temporary directory at: C:\Users\13801\AppData\Local\Temp\tmppjh075q2
+2026-05-04 11:10:18,700 [kaleido.kaleido] INFO: Conforming 1 to file:///C:/Users/13801/AppData/Local/Temp/tmp540xn2_j/index.html
+2026-05-04 11:10:18,700 [kaleido.kaleido] INFO: Waiting on all navigates
+2026-05-04 11:10:19,486 [kaleido.kaleido] INFO: All navigates done, putting them all in queue.
+2026-05-04 11:10:19,595 [kaleido.kaleido] INFO: Getting tab from queue (has 1)
+2026-05-04 11:10:19,595 [kaleido.kaleido] INFO: Got ECEB
+2026-05-04 11:10:19,595 [kaleido._kaleido_tab] INFO: Processing GMV_by_State.png
+2026-05-04 11:10:19,595 [kaleido._kaleido_tab] INFO: Sending big command for GMV_by_State.png.
+2026-05-04 11:10:19,644 [kaleido._kaleido_tab] INFO: Sent big command for GMV_by_State.png.
+2026-05-04 11:10:19,645 [kaleido.kaleido] INFO: Reloading tab ECEB before return.
+2026-05-04 11:10:19,690 [kaleido.kaleido] INFO: Putting tab ECEB back (queue size: 0).
+2026-05-04 11:10:19,690 [kaleido.kaleido] INFO: Waiting for all cleanups to finish.
+2026-05-04 11:10:19,690 [kaleido.kaleido] INFO: Exiting Kaleido
+2026-05-04 11:10:19,690 [choreographer.browser_async] INFO: Closing browser.
+2026-05-04 11:10:19,784 [choreographer.browser_async] INFO: Closing browser.
+2026-05-04 11:10:19,785 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-05-04 11:10:19,785 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-05-04 11:10:19,785 [kaleido.kaleido] INFO: Cancelling tasks.
+2026-05-04 11:10:19,785 [kaleido.kaleido] INFO: Exiting Kaleido/Choreo
+2026-05-04 11:10:19,871 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-05-04 11:10:19,871 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-05-04 11:10:19,871 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-05-04 11:10:19,871 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-05-04 11:10:19,871 [kaleido.kaleido] INFO: Cancelling tasks.
+2026-05-04 11:10:19,871 [kaleido.kaleido] INFO: Exiting Kaleido/Choreo
+2026-05-04 11:10:19,890 [agents.visualizer] INFO: Saved chart: dashboard/static\02_bar_chart.png
+2026-05-04 11:10:19,911 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-05-04 11:10:19,911 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-05-04 11:10:19,931 [choreographer.browsers.chromium] INFO: Chromium init'ed with kwargs {}
+2026-05-04 11:10:19,966 [choreographer.browsers.chromium] INFO: Found chromium path: C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+2026-05-04 11:10:19,966 [choreographer.utils._tmpfile] INFO: Temp directory created: C:\Users\13801\AppData\Local\Temp\tmpzkq4nyke.
+2026-05-04 11:10:19,966 [choreographer.browser_async] INFO: Opening browser.
+2026-05-04 11:10:19,967 [choreographer.utils._tmpfile] INFO: Temp directory created: C:\Users\13801\AppData\Local\Temp\tmp7yy2rty2.
+2026-05-04 11:10:19,967 [choreographer.browsers.chromium] INFO: Temporary directory at: C:\Users\13801\AppData\Local\Temp\tmp7yy2rty2
+2026-05-04 11:10:20,176 [kaleido.kaleido] INFO: Conforming 1 to file:///C:/Users/13801/AppData/Local/Temp/tmpzkq4nyke/index.html
+2026-05-04 11:10:20,176 [kaleido.kaleido] INFO: Waiting on all navigates
+2026-05-04 11:10:21,057 [kaleido.kaleido] INFO: All navigates done, putting them all in queue.
+2026-05-04 11:10:21,169 [kaleido.kaleido] INFO: Getting tab from queue (has 1)
+2026-05-04 11:10:21,169 [kaleido.kaleido] INFO: Got 348A
+2026-05-04 11:10:21,169 [kaleido._kaleido_tab] INFO: Processing Payment_Methods_Distribution.png
+2026-05-04 11:10:21,169 [kaleido._kaleido_tab] INFO: Sending big command for Payment_Methods_Distribution.png.
+2026-05-04 11:10:21,217 [kaleido._kaleido_tab] INFO: Sent big command for Payment_Methods_Distribution.png.
+2026-05-04 11:10:21,218 [kaleido.kaleido] INFO: Reloading tab 348A before return.
+2026-05-04 11:10:21,263 [kaleido.kaleido] INFO: Putting tab 348A back (queue size: 0).
+2026-05-04 11:10:21,263 [kaleido.kaleido] INFO: Waiting for all cleanups to finish.
+2026-05-04 11:10:21,263 [kaleido.kaleido] INFO: Exiting Kaleido
+2026-05-04 11:10:21,263 [choreographer.browser_async] INFO: Closing browser.
+2026-05-04 11:10:21,356 [choreographer.browser_async] INFO: Closing browser.
+2026-05-04 11:10:21,357 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-05-04 11:10:21,357 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-05-04 11:10:21,357 [kaleido.kaleido] INFO: Cancelling tasks.
+2026-05-04 11:10:21,357 [kaleido.kaleido] INFO: Exiting Kaleido/Choreo
+2026-05-04 11:10:21,448 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-05-04 11:10:21,448 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-05-04 11:10:21,448 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-05-04 11:10:21,449 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-05-04 11:10:21,449 [kaleido.kaleido] INFO: Cancelling tasks.
+2026-05-04 11:10:21,449 [kaleido.kaleido] INFO: Exiting Kaleido/Choreo
+2026-05-04 11:10:21,470 [agents.visualizer] INFO: Saved chart: dashboard/static\03_bar_chart.png
+2026-05-04 11:10:21,488 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-05-04 11:10:21,488 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-05-04 11:10:21,541 [choreographer.browsers.chromium] INFO: Chromium init'ed with kwargs {}
+2026-05-04 11:10:21,582 [choreographer.browsers.chromium] INFO: Found chromium path: C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+2026-05-04 11:10:21,583 [choreographer.utils._tmpfile] INFO: Temp directory created: C:\Users\13801\AppData\Local\Temp\tmppff0osnn.
+2026-05-04 11:10:21,583 [choreographer.browser_async] INFO: Opening browser.
+2026-05-04 11:10:21,584 [choreographer.utils._tmpfile] INFO: Temp directory created: C:\Users\13801\AppData\Local\Temp\tmp2fqwkbzr.
+2026-05-04 11:10:21,584 [choreographer.browsers.chromium] INFO: Temporary directory at: C:\Users\13801\AppData\Local\Temp\tmp2fqwkbzr
+2026-05-04 11:10:21,796 [kaleido.kaleido] INFO: Conforming 1 to file:///C:/Users/13801/AppData/Local/Temp/tmppff0osnn/index.html
+2026-05-04 11:10:21,796 [kaleido.kaleido] INFO: Waiting on all navigates
+2026-05-04 11:10:22,637 [kaleido.kaleido] INFO: All navigates done, putting them all in queue.
+2026-05-04 11:10:22,744 [kaleido.kaleido] INFO: Getting tab from queue (has 1)
+2026-05-04 11:10:22,744 [kaleido.kaleido] INFO: Got 66D8
+2026-05-04 11:10:22,744 [kaleido._kaleido_tab] INFO: Processing Product_Weight_vs_Freight_Cost.png
+2026-05-04 11:10:22,744 [kaleido._kaleido_tab] INFO: Sending big command for Product_Weight_vs_Freight_Cost.png.
+2026-05-04 11:10:23,314 [kaleido._kaleido_tab] INFO: Sent big command for Product_Weight_vs_Freight_Cost.png.
+2026-05-04 11:10:23,316 [kaleido.kaleido] INFO: Reloading tab 66D8 before return.
+2026-05-04 11:10:23,418 [kaleido.kaleido] INFO: Putting tab 66D8 back (queue size: 0).
+2026-05-04 11:10:23,419 [kaleido.kaleido] INFO: Waiting for all cleanups to finish.
+2026-05-04 11:10:23,419 [kaleido.kaleido] INFO: Exiting Kaleido
+2026-05-04 11:10:23,419 [choreographer.browser_async] INFO: Closing browser.
+2026-05-04 11:10:23,514 [choreographer.browser_async] INFO: Closing browser.
+2026-05-04 11:10:23,516 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-05-04 11:10:23,516 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-05-04 11:10:23,516 [kaleido.kaleido] INFO: Cancelling tasks.
+2026-05-04 11:10:23,516 [kaleido.kaleido] INFO: Exiting Kaleido/Choreo
+2026-05-04 11:10:23,636 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-05-04 11:10:23,637 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-05-04 11:10:23,637 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-05-04 11:10:23,637 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-05-04 11:10:23,637 [kaleido.kaleido] INFO: Cancelling tasks.
+2026-05-04 11:10:23,637 [kaleido.kaleido] INFO: Exiting Kaleido/Choreo
+2026-05-04 11:10:23,661 [agents.visualizer] INFO: Saved chart: dashboard/static\04_scatter_bubble.png
+2026-05-04 11:10:23,772 [choreographer.browsers.chromium] INFO: Chromium init'ed with kwargs {}
+2026-05-04 11:10:23,808 [choreographer.browsers.chromium] INFO: Found chromium path: C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+2026-05-04 11:10:23,809 [choreographer.utils._tmpfile] INFO: Temp directory created: C:\Users\13801\AppData\Local\Temp\tmpk1c7juc6.
+2026-05-04 11:10:23,809 [choreographer.browser_async] INFO: Opening browser.
+2026-05-04 11:10:23,810 [choreographer.utils._tmpfile] INFO: Temp directory created: C:\Users\13801\AppData\Local\Temp\tmp11o10lwl.
+2026-05-04 11:10:23,810 [choreographer.browsers.chromium] INFO: Temporary directory at: C:\Users\13801\AppData\Local\Temp\tmp11o10lwl
+2026-05-04 11:10:24,066 [kaleido.kaleido] INFO: Conforming 1 to file:///C:/Users/13801/AppData/Local/Temp/tmpk1c7juc6/index.html
+2026-05-04 11:10:24,066 [kaleido.kaleido] INFO: Waiting on all navigates
+2026-05-04 11:10:24,861 [kaleido.kaleido] INFO: All navigates done, putting them all in queue.
+2026-05-04 11:10:24,966 [kaleido.kaleido] INFO: Getting tab from queue (has 1)
+2026-05-04 11:10:24,966 [kaleido.kaleido] INFO: Got DCB8
+2026-05-04 11:10:24,966 [kaleido._kaleido_tab] INFO: Processing Payment_Type_x_Installments.png
+2026-05-04 11:10:24,966 [kaleido._kaleido_tab] INFO: Sending big command for Payment_Type_x_Installments.png.
+2026-05-04 11:10:25,029 [kaleido._kaleido_tab] INFO: Sent big command for Payment_Type_x_Installments.png.
+2026-05-04 11:10:25,029 [kaleido.kaleido] INFO: Reloading tab DCB8 before return.
+2026-05-04 11:10:25,083 [kaleido.kaleido] INFO: Putting tab DCB8 back (queue size: 0).
+2026-05-04 11:10:25,083 [kaleido.kaleido] INFO: Waiting for all cleanups to finish.
+2026-05-04 11:10:25,083 [kaleido.kaleido] INFO: Exiting Kaleido
+2026-05-04 11:10:25,083 [choreographer.browser_async] INFO: Closing browser.
+2026-05-04 11:10:25,182 [choreographer.browser_async] INFO: Closing browser.
+2026-05-04 11:10:25,183 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-05-04 11:10:25,183 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-05-04 11:10:25,183 [kaleido.kaleido] INFO: Cancelling tasks.
+2026-05-04 11:10:25,183 [kaleido.kaleido] INFO: Exiting Kaleido/Choreo
+2026-05-04 11:10:25,273 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-05-04 11:10:25,274 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-05-04 11:10:25,274 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-05-04 11:10:25,274 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-05-04 11:10:25,274 [kaleido.kaleido] INFO: Cancelling tasks.
+2026-05-04 11:10:25,274 [kaleido.kaleido] INFO: Exiting Kaleido/Choreo
+2026-05-04 11:10:25,294 [agents.visualizer] INFO: Saved chart: dashboard/static\05_matrix_heatmap.png
+2026-05-04 11:10:25,422 [httpx] INFO: HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2026-05-04 11:10:31,120 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-05-04 11:10:31,121 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-05-04 11:10:31,121 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-05-04 11:10:31,121 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-05-04 11:12:26,471 [httpx] INFO: HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2026-05-04 11:12:34,865 [agents.coordinator] INFO: Coordinator plan: 用户询问2017年巴西各州中销售额最高的州、该州的交付准时率，以及所有订单中最受欢迎的支付方式。 → 1 tasks [descriptive]
+2026-05-04 11:12:35,353 [httpx] INFO: HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2026-05-04 11:13:06,030 [agents.data_analyst] INFO: Strategy: view | SQL: WITH state_sales AS (
+    SELECT customer_state, SUM(total_gmv) as total_gmv
+    FROM mv_state_sales
+    WHERE ym LIKE '2017%'
+    GROUP BY customer_state
+    ORDER BY total_gmv DESC
+    LIMIT 1
+),
+de
+2026-05-04 11:13:06,071 [utils.db] INFO: Database engine created: 8.153.93.169:3306/MABI-team-DB?charset=utf8mb4
+2026-05-04 11:13:06,776 [choreographer.browsers.chromium] INFO: Chromium init'ed with kwargs {}
+2026-05-04 11:13:06,812 [choreographer.browsers.chromium] INFO: Found chromium path: C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+2026-05-04 11:13:06,814 [choreographer.utils._tmpfile] INFO: Temp directory created: C:\Users\13801\AppData\Local\Temp\tmpxiaokg42.
+2026-05-04 11:13:06,814 [choreographer.browser_async] INFO: Opening browser.
+2026-05-04 11:13:06,815 [choreographer.utils._tmpfile] INFO: Temp directory created: C:\Users\13801\AppData\Local\Temp\tmph21b5m0c.
+2026-05-04 11:13:06,815 [choreographer.browsers.chromium] INFO: Temporary directory at: C:\Users\13801\AppData\Local\Temp\tmph21b5m0c
+2026-05-04 11:13:07,037 [kaleido.kaleido] INFO: Conforming 1 to file:///C:/Users/13801/AppData/Local/Temp/tmpxiaokg42/index.html
+2026-05-04 11:13:07,037 [kaleido.kaleido] INFO: Waiting on all navigates
+2026-05-04 11:13:07,880 [kaleido.kaleido] INFO: All navigates done, putting them all in queue.
+2026-05-04 11:13:07,995 [kaleido.kaleido] INFO: Getting tab from queue (has 1)
+2026-05-04 11:13:07,995 [kaleido.kaleido] INFO: Got AC94
+2026-05-04 11:13:07,995 [kaleido._kaleido_tab] INFO: Processing Monthly_Sales_Trend.png
+2026-05-04 11:13:07,995 [kaleido._kaleido_tab] INFO: Sending big command for Monthly_Sales_Trend.png.
+2026-05-04 11:13:08,057 [kaleido._kaleido_tab] INFO: Sent big command for Monthly_Sales_Trend.png.
+2026-05-04 11:13:08,059 [kaleido.kaleido] INFO: Reloading tab AC94 before return.
+2026-05-04 11:13:08,111 [kaleido.kaleido] INFO: Putting tab AC94 back (queue size: 0).
+2026-05-04 11:13:08,111 [kaleido.kaleido] INFO: Waiting for all cleanups to finish.
+2026-05-04 11:13:08,111 [kaleido.kaleido] INFO: Exiting Kaleido
+2026-05-04 11:13:08,111 [choreographer.browser_async] INFO: Closing browser.
+2026-05-04 11:13:08,198 [choreographer.browser_async] INFO: Closing browser.
+2026-05-04 11:13:08,199 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-05-04 11:13:08,199 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-05-04 11:13:08,199 [kaleido.kaleido] INFO: Cancelling tasks.
+2026-05-04 11:13:08,199 [kaleido.kaleido] INFO: Exiting Kaleido/Choreo
+2026-05-04 11:13:08,361 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-05-04 11:13:08,361 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-05-04 11:13:08,361 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-05-04 11:13:08,361 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-05-04 11:13:08,362 [kaleido.kaleido] INFO: Cancelling tasks.
+2026-05-04 11:13:08,362 [kaleido.kaleido] INFO: Exiting Kaleido/Choreo
+2026-05-04 11:13:08,383 [agents.visualizer] INFO: Saved chart: dashboard/static\01_line_chart.png
+2026-05-04 11:13:08,430 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-05-04 11:13:08,430 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-05-04 11:13:08,438 [choreographer.browsers.chromium] INFO: Chromium init'ed with kwargs {}
+2026-05-04 11:13:08,472 [choreographer.browsers.chromium] INFO: Found chromium path: C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+2026-05-04 11:13:08,472 [choreographer.utils._tmpfile] INFO: Temp directory created: C:\Users\13801\AppData\Local\Temp\tmpiyacjj_p.
+2026-05-04 11:13:08,473 [choreographer.browser_async] INFO: Opening browser.
+2026-05-04 11:13:08,474 [choreographer.utils._tmpfile] INFO: Temp directory created: C:\Users\13801\AppData\Local\Temp\tmpdt4gbycv.
+2026-05-04 11:13:08,474 [choreographer.browsers.chromium] INFO: Temporary directory at: C:\Users\13801\AppData\Local\Temp\tmpdt4gbycv
+2026-05-04 11:13:08,681 [kaleido.kaleido] INFO: Conforming 1 to file:///C:/Users/13801/AppData/Local/Temp/tmpiyacjj_p/index.html
+2026-05-04 11:13:08,682 [kaleido.kaleido] INFO: Waiting on all navigates
+2026-05-04 11:13:09,489 [kaleido.kaleido] INFO: All navigates done, putting them all in queue.
+2026-05-04 11:13:09,603 [kaleido.kaleido] INFO: Getting tab from queue (has 1)
+2026-05-04 11:13:09,603 [kaleido.kaleido] INFO: Got 4B35
+2026-05-04 11:13:09,603 [kaleido._kaleido_tab] INFO: Processing GMV_by_State.png
+2026-05-04 11:13:09,603 [kaleido._kaleido_tab] INFO: Sending big command for GMV_by_State.png.
+2026-05-04 11:13:09,651 [kaleido._kaleido_tab] INFO: Sent big command for GMV_by_State.png.
+2026-05-04 11:13:09,652 [kaleido.kaleido] INFO: Reloading tab 4B35 before return.
+2026-05-04 11:13:09,706 [kaleido.kaleido] INFO: Putting tab 4B35 back (queue size: 0).
+2026-05-04 11:13:09,706 [kaleido.kaleido] INFO: Waiting for all cleanups to finish.
+2026-05-04 11:13:09,706 [kaleido.kaleido] INFO: Exiting Kaleido
+2026-05-04 11:13:09,706 [choreographer.browser_async] INFO: Closing browser.
+2026-05-04 11:13:09,806 [choreographer.browser_async] INFO: Closing browser.
+2026-05-04 11:13:09,806 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-05-04 11:13:09,806 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-05-04 11:13:09,806 [kaleido.kaleido] INFO: Cancelling tasks.
+2026-05-04 11:13:09,806 [kaleido.kaleido] INFO: Exiting Kaleido/Choreo
+2026-05-04 11:13:09,895 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-05-04 11:13:09,895 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-05-04 11:13:09,895 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-05-04 11:13:09,896 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-05-04 11:13:09,896 [kaleido.kaleido] INFO: Cancelling tasks.
+2026-05-04 11:13:09,896 [kaleido.kaleido] INFO: Exiting Kaleido/Choreo
+2026-05-04 11:13:09,914 [agents.visualizer] INFO: Saved chart: dashboard/static\02_bar_chart.png
+2026-05-04 11:13:10,000 [choreographer.browsers.chromium] INFO: Chromium init'ed with kwargs {}
+2026-05-04 11:13:10,035 [choreographer.browsers.chromium] INFO: Found chromium path: C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+2026-05-04 11:13:10,036 [choreographer.utils._tmpfile] INFO: Temp directory created: C:\Users\13801\AppData\Local\Temp\tmpv7qsbu3c.
+2026-05-04 11:13:10,036 [choreographer.browser_async] INFO: Opening browser.
+2026-05-04 11:13:10,037 [choreographer.utils._tmpfile] INFO: Temp directory created: C:\Users\13801\AppData\Local\Temp\tmp9g_38l8d.
+2026-05-04 11:13:10,037 [choreographer.browsers.chromium] INFO: Temporary directory at: C:\Users\13801\AppData\Local\Temp\tmp9g_38l8d
+2026-05-04 11:13:10,251 [kaleido.kaleido] INFO: Conforming 1 to file:///C:/Users/13801/AppData/Local/Temp/tmpv7qsbu3c/index.html
+2026-05-04 11:13:10,251 [kaleido.kaleido] INFO: Waiting on all navigates
+2026-05-04 11:13:11,038 [kaleido.kaleido] INFO: All navigates done, putting them all in queue.
+2026-05-04 11:13:11,150 [kaleido.kaleido] INFO: Getting tab from queue (has 1)
+2026-05-04 11:13:11,151 [kaleido.kaleido] INFO: Got E5CC
+2026-05-04 11:13:11,151 [kaleido._kaleido_tab] INFO: Processing Brazil_State_Sales_Distribution.png
+2026-05-04 11:13:11,151 [kaleido._kaleido_tab] INFO: Sending big command for Brazil_State_Sales_Distribution.png.
+2026-05-04 11:13:12,471 [kaleido._kaleido_tab] INFO: Sent big command for Brazil_State_Sales_Distribution.png.
+2026-05-04 11:13:12,472 [kaleido.kaleido] INFO: Reloading tab E5CC before return.
+2026-05-04 11:13:12,528 [kaleido.kaleido] INFO: Putting tab E5CC back (queue size: 0).
+2026-05-04 11:13:12,528 [kaleido.kaleido] INFO: Waiting for all cleanups to finish.
+2026-05-04 11:13:12,528 [kaleido.kaleido] INFO: Exiting Kaleido
+2026-05-04 11:13:12,528 [choreographer.browser_async] INFO: Closing browser.
+2026-05-04 11:13:12,628 [choreographer.browser_async] INFO: Closing browser.
+2026-05-04 11:13:12,629 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-05-04 11:13:12,629 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-05-04 11:13:12,629 [kaleido.kaleido] INFO: Cancelling tasks.
+2026-05-04 11:13:12,629 [kaleido.kaleido] INFO: Exiting Kaleido/Choreo
+2026-05-04 11:13:12,722 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-05-04 11:13:12,722 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-05-04 11:13:12,722 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-05-04 11:13:12,722 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-05-04 11:13:12,722 [kaleido.kaleido] INFO: Cancelling tasks.
+2026-05-04 11:13:12,723 [kaleido.kaleido] INFO: Exiting Kaleido/Choreo
+2026-05-04 11:13:12,743 [agents.visualizer] INFO: Saved chart: dashboard/static\03_geo_heatmap.png
+2026-05-04 11:13:12,767 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-05-04 11:13:12,767 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-05-04 11:13:12,767 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-05-04 11:13:12,767 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-05-04 11:13:12,785 [choreographer.browsers.chromium] INFO: Chromium init'ed with kwargs {}
+2026-05-04 11:13:12,819 [choreographer.browsers.chromium] INFO: Found chromium path: C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+2026-05-04 11:13:12,820 [choreographer.utils._tmpfile] INFO: Temp directory created: C:\Users\13801\AppData\Local\Temp\tmpkbu1ckht.
+2026-05-04 11:13:12,820 [choreographer.browser_async] INFO: Opening browser.
+2026-05-04 11:13:12,821 [choreographer.utils._tmpfile] INFO: Temp directory created: C:\Users\13801\AppData\Local\Temp\tmpg6x4db6l.
+2026-05-04 11:13:12,821 [choreographer.browsers.chromium] INFO: Temporary directory at: C:\Users\13801\AppData\Local\Temp\tmpg6x4db6l
+2026-05-04 11:13:13,037 [kaleido.kaleido] INFO: Conforming 1 to file:///C:/Users/13801/AppData/Local/Temp/tmpkbu1ckht/index.html
+2026-05-04 11:13:13,037 [kaleido.kaleido] INFO: Waiting on all navigates
+2026-05-04 11:13:13,809 [kaleido.kaleido] INFO: All navigates done, putting them all in queue.
+2026-05-04 11:13:13,922 [kaleido.kaleido] INFO: Getting tab from queue (has 1)
+2026-05-04 11:13:13,922 [kaleido.kaleido] INFO: Got B00E
+2026-05-04 11:13:13,922 [kaleido._kaleido_tab] INFO: Processing Payment_Methods_Distribution.png
+2026-05-04 11:13:13,922 [kaleido._kaleido_tab] INFO: Sending big command for Payment_Methods_Distribution.png.
+2026-05-04 11:13:13,967 [kaleido._kaleido_tab] INFO: Sent big command for Payment_Methods_Distribution.png.
+2026-05-04 11:13:13,968 [kaleido.kaleido] INFO: Reloading tab B00E before return.
+2026-05-04 11:13:14,019 [kaleido.kaleido] INFO: Putting tab B00E back (queue size: 0).
+2026-05-04 11:13:14,019 [kaleido.kaleido] INFO: Waiting for all cleanups to finish.
+2026-05-04 11:13:14,019 [kaleido.kaleido] INFO: Exiting Kaleido
+2026-05-04 11:13:14,019 [choreographer.browser_async] INFO: Closing browser.
+2026-05-04 11:13:14,109 [choreographer.browser_async] INFO: Closing browser.
+2026-05-04 11:13:14,110 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-05-04 11:13:14,110 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-05-04 11:13:14,110 [kaleido.kaleido] INFO: Cancelling tasks.
+2026-05-04 11:13:14,110 [kaleido.kaleido] INFO: Exiting Kaleido/Choreo
+2026-05-04 11:13:14,201 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-05-04 11:13:14,201 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-05-04 11:13:14,201 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-05-04 11:13:14,201 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-05-04 11:13:14,202 [kaleido.kaleido] INFO: Cancelling tasks.
+2026-05-04 11:13:14,202 [kaleido.kaleido] INFO: Exiting Kaleido/Choreo
+2026-05-04 11:13:14,221 [agents.visualizer] INFO: Saved chart: dashboard/static\04_bar_chart.png
+2026-05-04 11:13:14,240 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-05-04 11:13:14,240 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-05-04 11:13:14,293 [choreographer.browsers.chromium] INFO: Chromium init'ed with kwargs {}
+2026-05-04 11:13:14,327 [choreographer.browsers.chromium] INFO: Found chromium path: C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+2026-05-04 11:13:14,327 [choreographer.utils._tmpfile] INFO: Temp directory created: C:\Users\13801\AppData\Local\Temp\tmp1d722qh9.
+2026-05-04 11:13:14,328 [choreographer.browser_async] INFO: Opening browser.
+2026-05-04 11:13:14,328 [choreographer.utils._tmpfile] INFO: Temp directory created: C:\Users\13801\AppData\Local\Temp\tmpzcxnzpfq.
+2026-05-04 11:13:14,328 [choreographer.browsers.chromium] INFO: Temporary directory at: C:\Users\13801\AppData\Local\Temp\tmpzcxnzpfq
+2026-05-04 11:13:14,533 [kaleido.kaleido] INFO: Conforming 1 to file:///C:/Users/13801/AppData/Local/Temp/tmp1d722qh9/index.html
+2026-05-04 11:13:14,533 [kaleido.kaleido] INFO: Waiting on all navigates
+2026-05-04 11:13:15,339 [kaleido.kaleido] INFO: All navigates done, putting them all in queue.
+2026-05-04 11:13:15,440 [kaleido.kaleido] INFO: Getting tab from queue (has 1)
+2026-05-04 11:13:15,440 [kaleido.kaleido] INFO: Got 702A
+2026-05-04 11:13:15,440 [kaleido._kaleido_tab] INFO: Processing Product_Weight_vs_Freight_Cost.png
+2026-05-04 11:13:15,440 [kaleido._kaleido_tab] INFO: Sending big command for Product_Weight_vs_Freight_Cost.png.
+2026-05-04 11:13:15,948 [kaleido._kaleido_tab] INFO: Sent big command for Product_Weight_vs_Freight_Cost.png.
+2026-05-04 11:13:15,949 [kaleido.kaleido] INFO: Reloading tab 702A before return.
+2026-05-04 11:13:16,045 [kaleido.kaleido] INFO: Putting tab 702A back (queue size: 0).
+2026-05-04 11:13:16,045 [kaleido.kaleido] INFO: Waiting for all cleanups to finish.
+2026-05-04 11:13:16,045 [kaleido.kaleido] INFO: Exiting Kaleido
+2026-05-04 11:13:16,045 [choreographer.browser_async] INFO: Closing browser.
+2026-05-04 11:13:16,145 [choreographer.browser_async] INFO: Closing browser.
+2026-05-04 11:13:16,145 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-05-04 11:13:16,145 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-05-04 11:13:16,145 [kaleido.kaleido] INFO: Cancelling tasks.
+2026-05-04 11:13:16,145 [kaleido.kaleido] INFO: Exiting Kaleido/Choreo
+2026-05-04 11:13:16,236 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-05-04 11:13:16,236 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-05-04 11:13:16,236 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-05-04 11:13:16,236 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-05-04 11:13:16,236 [kaleido.kaleido] INFO: Cancelling tasks.
+2026-05-04 11:13:16,236 [kaleido.kaleido] INFO: Exiting Kaleido/Choreo
+2026-05-04 11:13:16,256 [agents.visualizer] INFO: Saved chart: dashboard/static\05_scatter_bubble.png
+2026-05-04 11:13:16,356 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-05-04 11:13:16,356 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-05-04 11:13:16,447 [choreographer.browsers.chromium] INFO: Chromium init'ed with kwargs {}
+2026-05-04 11:13:16,481 [choreographer.browsers.chromium] INFO: Found chromium path: C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+2026-05-04 11:13:16,481 [choreographer.utils._tmpfile] INFO: Temp directory created: C:\Users\13801\AppData\Local\Temp\tmpmbhbuow2.
+2026-05-04 11:13:16,481 [choreographer.browser_async] INFO: Opening browser.
+2026-05-04 11:13:16,482 [choreographer.utils._tmpfile] INFO: Temp directory created: C:\Users\13801\AppData\Local\Temp\tmp9m1okli4.
+2026-05-04 11:13:16,482 [choreographer.browsers.chromium] INFO: Temporary directory at: C:\Users\13801\AppData\Local\Temp\tmp9m1okli4
+2026-05-04 11:13:16,699 [kaleido.kaleido] INFO: Conforming 1 to file:///C:/Users/13801/AppData/Local/Temp/tmpmbhbuow2/index.html
+2026-05-04 11:13:16,699 [kaleido.kaleido] INFO: Waiting on all navigates
+2026-05-04 11:13:17,508 [kaleido.kaleido] INFO: All navigates done, putting them all in queue.
+2026-05-04 11:13:17,615 [kaleido.kaleido] INFO: Getting tab from queue (has 1)
+2026-05-04 11:13:17,615 [kaleido.kaleido] INFO: Got D6F7
+2026-05-04 11:13:17,615 [kaleido._kaleido_tab] INFO: Processing Payment_Type_x_Installments.png
+2026-05-04 11:13:17,615 [kaleido._kaleido_tab] INFO: Sending big command for Payment_Type_x_Installments.png.
+2026-05-04 11:13:17,675 [kaleido._kaleido_tab] INFO: Sent big command for Payment_Type_x_Installments.png.
+2026-05-04 11:13:17,676 [kaleido.kaleido] INFO: Reloading tab D6F7 before return.
+2026-05-04 11:13:17,728 [kaleido.kaleido] INFO: Putting tab D6F7 back (queue size: 0).
+2026-05-04 11:13:17,728 [kaleido.kaleido] INFO: Waiting for all cleanups to finish.
+2026-05-04 11:13:17,728 [kaleido.kaleido] INFO: Exiting Kaleido
+2026-05-04 11:13:17,728 [choreographer.browser_async] INFO: Closing browser.
+2026-05-04 11:13:17,817 [choreographer.browser_async] INFO: Closing browser.
+2026-05-04 11:13:17,818 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-05-04 11:13:17,818 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-05-04 11:13:17,818 [kaleido.kaleido] INFO: Cancelling tasks.
+2026-05-04 11:13:17,818 [kaleido.kaleido] INFO: Exiting Kaleido/Choreo
+2026-05-04 11:13:17,908 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-05-04 11:13:17,908 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-05-04 11:13:17,908 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-05-04 11:13:17,909 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-05-04 11:13:17,909 [kaleido.kaleido] INFO: Cancelling tasks.
+2026-05-04 11:13:17,909 [kaleido.kaleido] INFO: Exiting Kaleido/Choreo
+2026-05-04 11:13:17,927 [agents.visualizer] INFO: Saved chart: dashboard/static\06_matrix_heatmap.png
+2026-05-04 11:13:18,131 [httpx] INFO: HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2026-05-04 11:13:33,833 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-05-04 11:13:33,833 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
