@@ -31,18 +31,18 @@ def _save(fig, filename: str):
 
 
 def line_chart(data: list, x_col: str, y_cols: list, title: str,
-               forecast_data: list = None, forecast_x_col: str = None,
-               forecast_y_col: str = "yhat", forecast_lower: str = "yhat_lower",
-               forecast_upper: str = "yhat_upper", secondary_y: str = "total_orders") -> dict:
-    """Time series line chart, optionally with forecast overlay.
+               secondary_y: str = "total_orders") -> dict:
+    """Time series line chart (no forecast overlay — forecast is separate chart).
     Uses dual y-axis when secondary_y column is present.
     """
     df = pd.DataFrame(data)
     fig = go.Figure()
 
-    # Convert ym (e.g. "2017-01") to datetime for proper alignment with forecast
+    # Convert ym (e.g. "2017-01") to datetime
     x_vals = df[x_col]
-    if x_col == "ym" or (len(df) > 0 and isinstance(df[x_col].iloc[0], str) and len(str(df[x_col].iloc[0])) == 7 and str(df[x_col].iloc[0])[4] == "-"):
+    if x_col == "ym" or (len(df) > 0 and isinstance(df[x_col].iloc[0], str)
+                         and len(str(df[x_col].iloc[0])) == 7
+                         and str(df[x_col].iloc[0])[4] == "-"):
         x_vals = pd.to_datetime(df[x_col] + "-01")
         df["_ds"] = x_vals
         effective_x = "_ds"
@@ -58,22 +58,6 @@ def line_chart(data: list, x_col: str, y_cols: list, title: str,
                 yaxis="y2" if use_secondary else "y",
             ))
 
-    if forecast_data:
-        fdf = pd.DataFrame(forecast_data)
-        f_x = pd.to_datetime(fdf[forecast_x_col])
-        fig.add_trace(go.Scatter(
-            x=f_x, y=fdf[forecast_y_col],
-            mode="lines", name="Forecast", line=dict(dash="dash", color="red"),
-        ))
-        if forecast_lower in fdf.columns and forecast_upper in fdf.columns:
-            fig.add_trace(go.Scatter(
-                x=list(f_x) + list(f_x[::-1]),
-                y=list(fdf[forecast_upper]) + list(fdf[forecast_lower][::-1]),
-                fill="toself", fillcolor="rgba(255,0,0,0.1)",
-                line=dict(color="rgba(255,255,255,0)"),
-                name="Confidence Interval",
-            ))
-
     layout = dict(
         title=title, xaxis_title="Date",
         template="plotly_white", hovermode="x unified",
@@ -84,6 +68,71 @@ def line_chart(data: list, x_col: str, y_cols: list, title: str,
 
     fig.update_layout(**layout)
     return _save(fig, "line_chart")
+
+
+def forecast_chart(forecast_data: list, forecast_granularity: str = "weekly",
+                   title: str = "Sales Forecast") -> dict:
+    """Separate forecast chart (Bug 17):
+    - Solid deep yellow line
+    - Confidence interval shaded band
+    - CI labels in +/- xxx.xxx format on hover/summary
+    """
+    fdf = pd.DataFrame(forecast_data)
+    if fdf.empty:
+        return {"png": "", "html": ""}
+
+    f_x = pd.to_datetime(fdf["ds"])
+    fig = go.Figure()
+
+    # Forecast line — solid deep yellow
+    fig.add_trace(go.Scatter(
+        x=f_x, y=fdf["yhat"],
+        mode="lines+markers", name="Forecast",
+        line=dict(color="#CC9900", width=2.5),  # deep yellow
+        marker=dict(color="#CC9900", size=6),
+    ))
+
+    # Confidence interval band
+    if "yhat_lower" in fdf.columns and "yhat_upper" in fdf.columns:
+        fig.add_trace(go.Scatter(
+            x=list(f_x) + list(f_x[::-1]),
+            y=list(fdf["yhat_upper"]) + list(fdf["yhat_lower"][::-1]),
+            fill="toself", fillcolor="rgba(204,153,0,0.15)",
+            line=dict(color="rgba(255,255,255,0)"),
+            name="95% Confidence Interval",
+            hovertemplate="CI: %{y:,.0f}<extra></extra>",
+        ))
+
+    # X-axis interval: dynamic based on granularity
+    if forecast_granularity == "daily":
+        dtick = 86400000 * 1  # 1 day in ms
+    elif forecast_granularity == "weekly":
+        dtick = 86400000 * 7  # 7 days in ms
+    else:
+        dtick = "M1"
+
+    fig.update_xaxes(dtick=dtick, tickformat="%Y-%m-%d")
+
+    fig.update_layout(
+        title=title,
+        xaxis_title="Forecast Period",
+        yaxis_title="GMV (BRL)",
+        template="plotly_white",
+        hovermode="x unified",
+    )
+
+    return _save(fig, "forecast_chart")
+
+
+def confidence_interval_summary(forecast_data: list) -> str:
+    """Generate CI summary text in +/- xxx.xxx format."""
+    lines = ["### Confidence Intervals"]
+    for r in forecast_data:
+        ci = r.get("ci_range", "")
+        ds = r.get("ds", "")[:10]
+        yhat = r.get("yhat", 0)
+        lines.append(f"- **{ds}**: {yhat:,.0f} BRL ({ci})")
+    return "\n".join(lines)
 
 
 def bar_chart(data: list, x_col: str, y_col: str, title: str,
@@ -102,13 +151,12 @@ def bar_chart(data: list, x_col: str, y_col: str, title: str,
 
 def geo_heatmap(data: list, state_col: str, value_col: str, title: str,
                 loc_data: list = None) -> dict:
-    """Brazil state-level choropleth map."""
+    """Brazil state-level choropleth map with enlarged display area (Bug 17)."""
     df = pd.DataFrame(data)
 
     # Aggregate by state
     state_agg = df.groupby(state_col)[value_col].sum().reset_index()
 
-    # Brazil states GeoJSON URL (codeforamerica)
     geojson_url = "https://raw.githubusercontent.com/codeforamerica/click_that_hood/master/public/data/brazil-states.geojson"
 
     try:
@@ -126,9 +174,15 @@ def geo_heatmap(data: list, state_col: str, value_col: str, title: str,
         fig.update_geos(
             fitbounds="locations",
             visible=False,
+            center=dict(lat=-14, lon=-55),
+            projection_scale=4.5,  # larger map (was default ~1)
+        )
+        fig.update_layout(
+            margin=dict(l=10, r=10, t=50, b=10),
+            height=600,
         )
     except Exception:
-        # Fallback: use scatter_geo with smaller dots (better than nothing)
+        # Fallback: scatter_geo with larger projection
         try:
             from utils.db import execute_query
             loc_rows = execute_query("""
@@ -156,7 +210,11 @@ def geo_heatmap(data: list, state_col: str, value_col: str, title: str,
             )
             fig.update_geos(
                 center=dict(lat=-14, lon=-55),
-                projection_scale=2.5,
+                projection_scale=4.5,
+            )
+            fig.update_layout(
+                margin=dict(l=10, r=10, t=50, b=10),
+                height=600,
             )
         except Exception:
             fig = px.bar(state_agg, x=state_col, y=value_col, title=title,
@@ -178,10 +236,28 @@ def matrix_heatmap(data: list, x_col: str, y_col: str, value_col: str, title: st
 
 def scatter_bubble(data: list, x_col: str, y_col: str, title: str,
                    size_col: str = None, color_col: str = None) -> dict:
-    """Scatter / bubble chart."""
+    """Scatter / bubble chart with axis range filtering (Bug 17)."""
     df = pd.DataFrame(data)
-    fig = px.scatter(df, x=x_col, y=y_col, size=size_col, color=color_col,
+
+    # Filter outliers — use 95th percentile for cleaner display
+    if len(df) > 10:
+        x_p95 = df[x_col].quantile(0.95)
+        y_p95 = df[y_col].quantile(0.95)
+        df_plot = df[(df[x_col] <= x_p95) & (df[y_col] <= y_p95)].copy()
+        if len(df_plot) < 10:
+            df_plot = df  # fallback
+    else:
+        df_plot = df
+
+    fig = px.scatter(df_plot, x=x_col, y=y_col, size=size_col, color=color_col,
                      title=title, template="plotly_white", opacity=0.6)
+
+    # Set reasonable axis ranges based on filtered data
+    x_range = [df_plot[x_col].min() * 0.9, df_plot[x_col].max() * 1.05]
+    y_range = [df_plot[y_col].min() * 0.9, df_plot[y_col].max() * 1.05]
+    fig.update_xaxes(range=x_range)
+    fig.update_yaxes(range=y_range)
+
     fig.update_layout(template="plotly_white")
     return _save(fig, "scatter_bubble")
 
@@ -219,7 +295,6 @@ def wordcloud_image(positive_words: list, negative_words: list, title: str = "Re
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
-    # Quick test
     data = [
         {"state": "SP", "sales": 1000},
         {"state": "RJ", "sales": 600},

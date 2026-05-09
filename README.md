@@ -9,7 +9,7 @@ conda activate MABI
 pip install -r requirements.txt
 ```
 - 然后在根目录创建 `.env` 文件，填入 `assets/环境变量.png` 的值
-> 数据库用的是我租的服务器上的 MySQL
+> 数据库用的是我租的服务器上的 MySQL</br>
 > LLM 调用 DeepSeek 就直接用我的 API_KEY 吧
 - 启动
 ```cmd
