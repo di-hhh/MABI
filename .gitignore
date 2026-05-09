@@ -14,7 +14,8 @@
 /.env
 
 # 忽略 Python 缓存
-/__pycache__/
+__pycache__/
+*.py[cod]
 
 # 这些图片每次查询都会重新生成
 /dashboard/static/*.png

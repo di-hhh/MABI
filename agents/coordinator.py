@@ -34,11 +34,40 @@ Respond ONLY with valid JSON containing: question_summary, tasks, final_synthesi
     try:
         response = chat(messages, temperature=0.2, max_tokens=1024)
         json_str = response.strip()
+
+        parsed = None
+        # Strategy 1: Extract JSON object
         m = re.search(r"\{.*\}", json_str, re.DOTALL)
         if m:
-            parsed = json.loads(m.group(0))
-        else:
-            parsed = json.loads(json_str)
+            try:
+                parsed = json.loads(m.group(0))
+            except json.JSONDecodeError:
+                pass
+
+        # Strategy 2: Direct parse
+        if parsed is None:
+            try:
+                parsed = json.loads(json_str)
+            except json.JSONDecodeError:
+                pass
+
+        # Strategy 3: Clean trailing commas + unquoted keys
+        if parsed is None:
+            cleaned = re.sub(r",\s*([}\]])", r"\1", json_str)
+            cleaned = re.sub(r'([{,])\s*(\w+)\s*:', r'\1"\2":', cleaned)
+            try:
+                m2 = re.search(r"\{.*\}", cleaned, re.DOTALL)
+                if m2:
+                    parsed = json.loads(m2.group(0))
+                else:
+                    parsed = json.loads(cleaned)
+            except json.JSONDecodeError:
+                pass
+
+        # Strategy 4: Fallback — extract partial fields
+        if parsed is None:
+            logger.warning("All JSON parse strategies failed, using heuristic plan")
+            return _heuristic_plan(question)
 
         # Classify analysis type
         q_lower = question.lower()

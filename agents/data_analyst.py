@@ -29,38 +29,140 @@ def _build_data_dict_prompt() -> str:
 def _clean_sql(text: str) -> str:
     """Extract clean SQL from LLM output that may contain markdown fences."""
     text = text.strip()
-    # Remove markdown code fences
     m = re.search(r"```(?:sql)?\s*\n?(.*?)```", text, re.DOTALL)
     if m:
         text = m.group(1).strip()
-    # Remove leading SQL comments (lines starting with --)
+    # Remove leading SQL comments
     text = re.sub(r"^--.*$", "", text, flags=re.MULTILINE).strip()
-    # Keep only the first SQL statement (before any semicolon at end of line)
+    # Keep only first statement
     semi_idx = text.find(";")
     if semi_idx >= 0:
-        # Check if there's substantive SQL after the semicolon
         after = text[semi_idx+1:].strip()
         if after and (after.upper().startswith("SELECT") or after.upper().startswith("WITH")):
-            # Multiple statements — keep only first
             text = text[:semi_idx].strip()
         else:
-            # Just a trailing semicolon — remove it
             text = text[:semi_idx].strip()
     return text
 
 
 def _fix_mysql_syntax(sql: str) -> str:
-    """Fix common PostgreSQL-isms and LLM typos that break MySQL."""
-    # Replace ::float, ::int, ::decimal casts with MySQL CAST
+    """Fix common PostgreSQL-isms, LLM typos, and alias mistakes (Bug 20)."""
+    # PostgreSQL casts
     sql = re.sub(r"(\w+)::float\b", r"CAST(\1 AS DECIMAL(10,2))", sql)
     sql = re.sub(r"(\w+)::int\b", r"CAST(\1 AS SIGNED)", sql)
     sql = re.sub(r"(\w+)::decimal\b", r"CAST(\1 AS DECIMAL(10,2))", sql)
-    # Replace TO_CHAR with DATE_FORMAT
     sql = re.sub(r"TO_CHAR\s*\((.+?),\s*'(.+?)'\)", r"DATE_FORMAT(\1, '\2')", sql, flags=re.IGNORECASE)
-    # Fix common LLM typo: product_category_english → product_category_name_english
+
+    # Fix column name typos
     sql = re.sub(r"\bproduct_category_english\b", "product_category_name_english", sql)
     sql = re.sub(r"\bproduct_category_name_english_english\b", "product_category_name_english", sql)
+
+    # Fix common table alias mistakes (Bug 20)
+    # orders table aliased as 'o' — NEVER has customer_state/customer_city columns
+    # These columns belong to customers (usually aliased 'c') or geolocation
+    # Try to find the correct alias for customers table
+    cust_alias = "c"
+    cust_match = re.search(r'customers\s+(?:AS\s+)?(\w+)', sql, re.IGNORECASE)
+    if cust_match:
+        cust_alias = cust_match.group(1)
+    elif not re.search(r'\bc\b.*customers', sql, re.IGNORECASE):
+        # If no clear alias, try to detect from JOIN clause
+        join_match = re.search(r'JOIN\s+customers\s+(\w+)', sql, re.IGNORECASE)
+        if join_match:
+            cust_alias = join_match.group(1)
+
+    # Always fix o.customer_* — orders table doesn't have these
+    sql = re.sub(r'\bo\.customer_state\b', f'{cust_alias}.customer_state', sql)
+    sql = re.sub(r'\bo\.customer_city\b', f'{cust_alias}.customer_city', sql)
+    sql = re.sub(r'\bo\.customer_zip_code_prefix\b', f'{cust_alias}.customer_zip_code_prefix', sql)
+
+    # Fix geolocation state refs in JOIN queries
+    geo_match = re.search(r'geolocation\s+(?:AS\s+)?(\w+)', sql, re.IGNORECASE)
+    if geo_match:
+        geo_alias = geo_match.group(1)
+        sql = re.sub(r'\bo\.geolocation_state\b', f'{geo_alias}.geolocation_state', sql)
+    sql = re.sub(r'\bo\.geolocation_state\b', 'g.geolocation_state', sql)
+
+    # Fix double-decimal issues
+    sql = re.sub(r"CAST\((.+?)\s+AS\s+DECIMAL\(10,2\)\)\s+AS\s+DECIMAL", r"CAST(\1 AS DECIMAL(10,2))", sql)
+
     return sql
+
+
+def _parse_llm_json(response: str) -> dict:
+    """Robust LLM JSON parsing with multiple fallback strategies (Bug 20)."""
+    # Strategy 1: Extract JSON object from response
+    json_str = response.strip()
+    m = re.search(r"\{.*\}", json_str, re.DOTALL)
+    if m:
+        try:
+            return json.loads(m.group(0))
+        except json.JSONDecodeError:
+            pass
+
+    # Strategy 2: Try parsing directly
+    try:
+        return json.loads(json_str)
+    except json.JSONDecodeError:
+        pass
+
+    # Strategy 3: Clean up common LLM JSON issues
+    # Remove trailing commas before closing braces/brackets
+    cleaned = re.sub(r",\s*([}\]])", r"\1", json_str)
+    # Fix unquoted keys
+    cleaned = re.sub(r'([{,])\s*(\w+)\s*:', r'\1"\2":', cleaned)
+    try:
+        return json.loads(cleaned)
+    except json.JSONDecodeError:
+        pass
+
+    # Strategy 4: Try to extract SQL and strategy from partial JSON
+    result = {"strategy": "unknown", "sql": "", "reasoning": ""}
+    strat_m = re.search(r'"strategy"\s*:\s*"(\w+)"', response)
+    if strat_m:
+        result["strategy"] = strat_m.group(1)
+    sql_m = re.search(r'"sql"\s*:\s*"((?:[^"\\]|\\.)*)"', response, re.DOTALL)
+    if sql_m:
+        result["sql"] = sql_m.group(1).replace('\\"', '"').replace('\\n', '\n')
+    return result
+
+
+def _retry_with_correction(question: str, original_sql: str, error_msg: str) -> dict:
+    """Retry SQL generation with error context for correction (Bug 20)."""
+    data_dict = _build_data_dict_prompt()
+    correction_prompt = f"""Data Dictionary:
+{data_dict}
+
+User Question: {question}
+
+The previous SQL query FAILED with this error:
+{error_msg[:500]}
+
+Previous SQL that failed:
+```sql
+{original_sql}
+```
+
+Please fix the SQL. Generate a corrected version. Remember:
+- This is MySQL — NO PostgreSQL syntax (::float, ::int, etc.)
+- Every non-aggregated column in SELECT must be in GROUP BY
+- The 'orders' table aliased as 'o' does NOT have customer_state/customer_city columns
+- Use the correct table alias for each column
+
+Respond with JSON: {{"strategy": "...", "sql": "corrected SQL", "reasoning": "..."}}"""
+
+    messages = [
+        {"role": "system", "content": DATA_ANALYST_SYSTEM},
+        {"role": "user", "content": correction_prompt},
+    ]
+
+    try:
+        response = chat(messages, temperature=0.0)
+        parsed = _parse_llm_json(response)
+        return parsed
+    except Exception as e:
+        logger.error("Retry correction failed: %s", e)
+        return {"strategy": "error", "sql": "", "reasoning": str(e)}
 
 
 def analyze(question: str) -> dict:
@@ -80,7 +182,9 @@ IMPORTANT:
 - First check if ANY pre-aggregation view (mv_*) can answer this question.
 - Only use base tables if views cannot satisfy the required dimensions.
 - Use LIMIT 1000 for large unaggregated queries.
-- For date filters, patterns like '2017' map to ym LIKE '2017%'."""
+- For date filters, patterns like '2017' map to ym LIKE '2017%'.
+- The 'orders' table aliased as 'o' does NOT contain customer_state/customer_city/customer_zip_code_prefix columns.
+- Customer location columns are in the 'customers' table (aliased as 'c')."""
 
     messages = [
         {"role": "system", "content": DATA_ANALYST_SYSTEM},
@@ -95,44 +199,74 @@ IMPORTANT:
         "error": None,
     }
 
-    try:
-        response = chat(messages, temperature=0.1)
+    max_retries = 2
+    for attempt in range(max_retries + 1):
+        try:
+            if attempt == 0:
+                response = chat(messages, temperature=0.1)
+            # attempt > 0 is handled by _retry_with_correction (already called)
 
-        # Parse JSON from response
-        json_str = response.strip()
-        m = re.search(r"\{.*\}", json_str, re.DOTALL)
-        if m:
-            parsed = json.loads(m.group(0))
-        else:
-            parsed = json.loads(json_str)
+            if attempt == 0:
+                parsed = _parse_llm_json(response)
+            else:
+                parsed = _retry_with_correction(
+                    question, result["sql"], result.get("error", "Unknown error"))
 
-        result["strategy"] = parsed.get("strategy", "unknown")
-        result["sql"] = parsed.get("sql", "")
-        result["summary"] = parsed.get("reasoning", parsed.get("summary", ""))
-        executed_sql = _fix_mysql_syntax(_clean_sql(parsed.get("sql", "")))
+            strategy = parsed.get("strategy", "unknown")
+            sql = parsed.get("sql", "")
+            summary = parsed.get("reasoning", parsed.get("summary", ""))
 
-        logger.info("Strategy: %s | SQL: %s", result["strategy"], executed_sql[:200])
+            result["strategy"] = strategy
+            result["sql"] = sql
+            result["summary"] = summary
 
-        # Safety check — only allow SELECT and CTEs (WITH ... SELECT)
-        clean = executed_sql.strip().upper()
-        if not (clean.startswith("SELECT") or clean.startswith("WITH")):
-            result["error"] = "Agent generated non-SELECT SQL — blocked."
-            logger.error("Blocked non-SELECT SQL: %s", executed_sql[:200])
+            executed_sql = _fix_mysql_syntax(_clean_sql(sql))
+
+            if not executed_sql.strip():
+                result["error"] = "Empty SQL generated"
+                if attempt < max_retries:
+                    continue
+                return result
+
+            logger.info("Strategy: %s | SQL: %s", result["strategy"], executed_sql[:200])
+
+            # Safety check
+            clean = executed_sql.strip().upper()
+            if not (clean.startswith("SELECT") or clean.startswith("WITH")):
+                result["error"] = "Agent generated non-SELECT SQL — blocked."
+                logger.error("Blocked non-SELECT SQL: %s", executed_sql[:200])
+                if attempt < max_retries:
+                    continue
+                return result
+
+            rows = execute_query(executed_sql)
+            result["data"] = rows
+            result["summary"] = summary
+            if rows:
+                result["summary"] += f" | Returned {len(rows)} rows."
+            return result  # Success — exit retry loop
+
+        except json.JSONDecodeError as e:
+            logger.error("Failed to parse agent JSON (attempt %d): %s", attempt + 1, e)
+            result["error"] = f"Failed to parse agent response: {e}"
+            if attempt >= max_retries:
+                return result
+        except Exception as e:
+            err_str = str(e)
+            logger.error("Agent execution error (attempt %d): %s", attempt + 1, e, exc_info=True)
+            result["error"] = err_str
+
+            # Check if retryable SQL error
+            if attempt < max_retries and (
+                "OperationalError" in str(type(e).__name__) or
+                "column" in err_str.lower() or
+                "syntax" in err_str.lower() or
+                "group by" in err_str.lower() or
+                "doesn't exist" in err_str.lower()
+            ):
+                logger.info("Retrying with error correction (attempt %d)...", attempt + 1)
+                continue
             return result
-
-        rows = execute_query(executed_sql)
-        result["data"] = rows
-        result["summary"] = parsed.get("reasoning", parsed.get("summary", ""))
-
-        if rows:
-            result["summary"] += f" | Returned {len(rows)} rows."
-
-    except json.JSONDecodeError as e:
-        logger.error("Failed to parse agent JSON: %s", e)
-        result["error"] = f"Failed to parse agent response: {e}"
-    except Exception as e:
-        logger.error("Agent execution error: %s", e, exc_info=True)
-        result["error"] = str(e)
 
     return result
 

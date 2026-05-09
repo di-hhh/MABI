@@ -4,6 +4,7 @@ import pandas as pd
 import os
 import sys
 import logging
+import threading
 from datetime import datetime
 
 # Setup
@@ -31,13 +32,37 @@ from utils.db import execute_query
 
 
 def _embed_html(html_path: str, height: int = 500):
-    """Embed a Plotly HTML file. Uses st.components.v1.html (deprecated but works reliably)."""
+    """Embed a Plotly HTML file."""
     if not html_path or not os.path.exists(html_path):
         st.warning("Chart not available.")
         return
     with open(html_path, "r", encoding="utf-8") as f:
         html = f.read()
     st.components.v1.html(html, height=height, scrolling=True)
+
+
+def _run_base_table_comparison(question: str, result_holder: dict, stop_event: threading.Event):
+    """Background thread: re-run query using base tables for comparison (Bug 19)."""
+    import time
+    try:
+        from agents.data_analyst import analyze
+        t0 = time.time()
+        # Force base_table strategy by modifying question
+        forced_q = f"{question}\n\nCRITICAL: Do NOT use any mv_* pre-aggregation views. Use base tables only."
+        result = analyze(forced_q)
+        elapsed = round(time.time() - t0, 2)
+
+        if stop_event.is_set():
+            result_holder["status"] = "cancelled"
+            return
+
+        result_holder["status"] = "done"
+        result_holder["base_time"] = elapsed
+        result_holder["base_strategy"] = result.get("strategy", "error")
+        result_holder["base_data"] = result.get("data", [])
+    except Exception as e:
+        result_holder["status"] = "error"
+        result_holder["error"] = str(e)
 
 
 # ── Page config ──────────────────────────────────────────
@@ -47,6 +72,22 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
+
+# ── Initialize session state ──────────────────────────────
+if "prompt" not in st.session_state:
+    st.session_state.prompt = ""
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
+if "thread_id" not in st.session_state:
+    st.session_state.thread_id = f"session_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+if "last_analysis" not in st.session_state:
+    st.session_state.last_analysis = None
+if "pending_question" not in st.session_state:
+    st.session_state.pending_question = None
+if "comparison" not in st.session_state:
+    st.session_state.comparison = None
+if "comparison_stop" not in st.session_state:
+    st.session_state.comparison_stop = threading.Event()
 
 # ── Sidebar ───────────────────────────────────────────────
 with st.sidebar:
@@ -76,22 +117,9 @@ with st.sidebar:
     st.markdown("---")
     st.caption("Agentic BI Final Project | Built with LangGraph + Streamlit")
 
-# ── Initialize session state ──────────────────────────────
-if "prompt" not in st.session_state:
-    st.session_state.prompt = ""
-if "chat_history" not in st.session_state:
-    st.session_state.chat_history = []
-if "thread_id" not in st.session_state:
-    st.session_state.thread_id = f"session_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-if "last_analysis" not in st.session_state:
-    st.session_state.last_analysis = None
-if "pending_question" not in st.session_state:
-    st.session_state.pending_question = None
-
 # ── Main layout ──────────────────────────────────────────
 st.title("🤖 Agentic BI — Olist E-Commerce Intelligence")
 
-# Two-column layout
 left_col, right_col = st.columns([0.45, 0.55])
 
 with left_col:
@@ -113,6 +141,8 @@ with left_col:
                     meta_parts.append(f"Strategy: {strategy_label}")
                 if entry.get("query_time"):
                     meta_parts.append(f"Time: {entry['query_time']}s")
+                if entry.get("base_time"):
+                    meta_parts.append(f"Base table: {entry['base_time']}s")
                 if meta_parts:
                     st.caption(" | ".join(meta_parts))
 
@@ -121,7 +151,7 @@ with left_col:
 
     if prompt:
         st.session_state.prompt = prompt
-        st.session_state.pending_question = prompt  # Show immediately
+        st.session_state.pending_question = prompt
     elif st.session_state.prompt:
         prompt = st.session_state.prompt
         st.session_state.prompt = ""
@@ -130,7 +160,6 @@ with left_col:
         current_q = prompt or st.session_state.pending_question
 
         if st.session_state.pending_question and not prompt:
-            # Show user question immediately before analysis starts
             with st.chat_message("user"):
                 st.markdown(st.session_state.pending_question)
 
@@ -143,23 +172,46 @@ with left_col:
                 query_time = result.get("query_time_seconds", 0)
                 query_strategy = result.get("query_strategy", "unknown")
 
-                st.session_state.chat_history.append({
+                entry = {
                     "question": current_q,
                     "response": response_text,
                     "charts": charts,
                     "query_strategy": query_strategy,
                     "query_time": query_time,
-                })
+                    "base_time": None,
+                }
+
+                # Bug 19: Comparison analysis — background thread when view is hit
+                if query_strategy == "view":
+                    comp_holder = {"status": "running"}
+                    stop_event = threading.Event()
+                    thread = threading.Thread(
+                        target=_run_base_table_comparison,
+                        args=(current_q, comp_holder, stop_event),
+                        daemon=True,
+                    )
+                    thread.start()
+                    st.session_state.comparison = {
+                        "holder": comp_holder,
+                        "stop_event": stop_event,
+                        "thread": thread,
+                        "view_time": query_time,
+                    }
+                else:
+                    st.session_state.comparison = None
+
+                st.session_state.chat_history.append(entry)
                 st.session_state.last_analysis = result
                 st.session_state.pending_question = None
+                st.session_state.prompt = ""
 
                 st.rerun()
             except Exception as e:
                 st.error(f"Analysis failed: {e}")
                 logging.error("Analysis failed for prompt: %s | Error: %s", current_q, e, exc_info=True)
                 st.session_state.pending_question = None
+                st.session_state.prompt = ""
 
-    # Show "no history yet" message
     if not st.session_state.chat_history and not st.session_state.pending_question:
         st.info("👆 Ask a question above or click a Quick Action in the sidebar to get started!")
 
@@ -172,7 +224,33 @@ with right_col:
         # Show query info banner
         strategy_label = "Pre-Aggregation View" if latest.get("query_strategy") == "view" else "Base Table"
         query_time = latest.get("query_time", 0)
-        st.info(f"Query Strategy: **{strategy_label}** | Total Time: **{query_time}s**")
+        banner_text = f"Query Strategy: **{strategy_label}** | Total Time: **{query_time}s**"
+
+        # Bug 19: Show comparison status
+        comp = st.session_state.comparison
+        if comp and comp["holder"]["status"] == "running":
+            banner_text += " | 🔄 Background comparison with base table running..."
+        elif comp and comp["holder"]["status"] == "done":
+            bt = comp["holder"].get("base_time", 0)
+            vt = comp.get("view_time", query_time)
+            speedup = round(bt / vt, 1) if vt > 0 else 0
+            banner_text += f" | ⚡ Base table: {bt}s | View speedup: {speedup}x"
+            # Update the latest entry with base time
+            if latest.get("base_time") is None:
+                latest["base_time"] = bt
+        elif comp and comp["holder"]["status"] == "cancelled":
+            banner_text += " | ⏹ Comparison cancelled by user"
+        elif comp and comp["holder"]["status"] == "error":
+            banner_text += f" | ❌ Comparison failed: {comp['holder'].get('error', '')}"
+
+        st.info(banner_text)
+
+        # Bug 19: Stop comparison button
+        if comp and comp["holder"]["status"] == "running":
+            if st.button("⏹ Stop Comparison Query", key="stop_comp"):
+                comp["stop_event"].set()
+                comp["holder"]["status"] = "cancelled"
+                st.rerun()
 
         # Show charts
         tabs = st.tabs(["📊 Charts", "📋 Analysis", "🔍 Raw Data"])
@@ -181,8 +259,14 @@ with right_col:
             charts = latest.get("charts", [])
             if charts:
                 for i, chart in enumerate(charts):
-                    if chart.get("html"):
+                    ctype = chart.get("type", "")
+                    if ctype == "text":
+                        # Display text content (e.g., CI summary)
+                        st.markdown(chart.get("text", ""))
+                    elif chart.get("html"):
                         _embed_html(chart["html"], height=500)
+                    elif chart.get("png"):
+                        st.image(chart["png"], use_column_width=True)
                     st.caption(f"**{chart.get('title', f'Chart {i+1}')}**")
             else:
                 st.info("No charts generated for this query.")
@@ -200,8 +284,18 @@ with right_col:
                             st.caption(f"Strategy: {r.get('strategy', 'N/A')}")
                 elif result.get("data_summary"):
                     st.text(result["data_summary"])
+
+                # Show base table comparison data if available
+                if comp and comp["holder"]["status"] == "done":
+                    base_data = comp["holder"].get("base_data", [])
+                    if base_data:
+                        st.markdown("---")
+                        st.markdown("**Base Table Comparison Result:**")
+                        st.dataframe(pd.DataFrame(base_data), use_container_width=True)
+                        st.caption(f"Base table time: {comp['holder']['base_time']}s | "
+                                   f"View time: {comp.get('view_time', 0)}s")
     else:
-        # Show default dashboard overview when no query yet
+        # Default dashboard overview
         st.markdown("#### 📊 Dashboard Overview")
         try:
             monthly = get_monthly_sales()
@@ -216,7 +310,6 @@ with right_col:
         except Exception as e:
             st.warning(f"Could not load overview chart: {e}")
 
-        # Quick stats
         st.markdown("#### Key Metrics")
         col_a, col_b, col_c = st.columns(3)
         try:
@@ -235,6 +328,5 @@ with right_col:
         except Exception:
             pass
 
-# ── Footer ────────────────────────────────────────────────
 st.markdown("---")
 st.caption("Built with Python, Streamlit, LangGraph, MySQL | Agentic BI Final Project")

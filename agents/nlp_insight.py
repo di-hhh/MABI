@@ -16,7 +16,7 @@ bom boa bem ruim otimo excelente pessimo recomendo super veio comprei
 """.strip().split())
 
 
-def get_review_data(limit: int = 15000) -> list:
+def get_review_data(limit: int = 8000) -> list:
     """Fetch review data joined with product categories (sampled for performance).
 
     Uses a subquery to sample reviews before the expensive multi-table JOIN.
