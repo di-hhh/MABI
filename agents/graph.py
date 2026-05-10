@@ -1,4 +1,5 @@
 """LangGraph StateGraph — multi-agent orchestration with MemorySaver."""
+import json
 import logging
 from typing import TypedDict, Annotated
 from langgraph.graph import StateGraph, END
@@ -20,6 +21,7 @@ class AgentState(TypedDict):
     data_summary: str
     query_strategy: str
     query_time_seconds: float
+    sql_time_seconds: float
 
     # NLP outputs
     nlp_results: dict
@@ -40,56 +42,101 @@ class AgentState(TypedDict):
     error: str
 
 
-# ── Chart selection logic (Bug 16.1) ─────────────────────
+import re, json
+
+# ── Chart selection logic (LLM-PRIMARY with keyword fallback) ──
+
+CHART_TYPES_INFO = {
+    "line": "time series trend line chart",
+    "geo_map": "Brazil state-level geographic choropleth map",
+    "state_bar": "bar chart: GMV/orders by customer state",
+    "payment_bar": "bar chart: transactions by payment method",
+    "payment_heatmap": "matrix heatmap: payment type × installments",
+    "wordcloud": "positive/negative review keyword word cloud",
+    "category_bar": "horizontal bar: top product categories by sales",
+    "scatter": "scatter/bubble: product weight vs freight cost",
+    "delivery_bar": "bar chart: on-time delivery rate by state",
+    "basket_bar": "bar chart: average basket size by state",
+}
+
+
+def _select_charts_llm(question: str, analysis_type: str, data_results: list) -> set | None:
+    """LLM-based chart selection (PRIMARY). Returns None if LLM fails."""
+    from config.prompts import VISUALIZER_SYSTEM
+    from utils.llm import chat
+    from models.llm_outputs import ChartSelectionOutput, safe_parse_pydantic
+
+    data_ctx = ""
+    for i, r in enumerate(data_results[:3]):
+        if r.get("data") and len(r.get("data", [])) > 0:
+            cols = list(r["data"][0].keys())[:8]
+            data_ctx += f"\nResult {i+1}: cols={cols}, rows={len(r['data'])}"
+        if r.get("summary", ""):
+            data_ctx += f"\n  Summary: {r['summary'][:150]}"
+
+    chart_desc = "\n".join(f"- {k}: {v}" for k, v in CHART_TYPES_INFO.items())
+    prompt = f"""Question: {question}
+Analysis type: {analysis_type}{data_ctx}
+
+Available chart types:
+{chart_desc}
+
+Select ALL chart types relevant to the question. Return ONLY a JSON array: ["type1", "type2", ...]"""
+
+    try:
+        response = chat(
+            [{"role": "system", "content": VISUALIZER_SYSTEM},
+             {"role": "user", "content": prompt}],
+            temperature=0.0, max_tokens=200, timeout=25, json_mode=True,
+        )
+        parsed = safe_parse_pydantic(response, ChartSelectionOutput)
+        if parsed and parsed.charts:
+            logger.info("LLM charts: %s", parsed.charts)
+            return set(parsed.charts)
+    except Exception as e:
+        logger.warning("LLM chart selection failed: %s", e)
+    return None
+
 
 def _select_charts(question: str, analysis_type: str, data_results: list) -> set:
-    """Determine which chart types to generate based on question content.
-    Returns a set of chart keys: line, geo_map, state_bar, payment_bar,
-    payment_heatmap, wordcloud, category_bar, scatter, delivery_bar, basket_bar.
-    """
-    q = question.lower()
-    charts = set()
+    """Select chart types: LLM-first with keyword fallback."""
+    clean_q = question.strip()
+    charts = _select_charts_llm(clean_q, analysis_type, data_results)
 
-    # Signal-based selection
-    signals = {
-        "line": ["trend", "趋势", "monthly", "月度", "sales trend", "销售趋势",
-                  "overview", "概览", "预测", "predict", "forecast", "未来"],
-        "geo_map": ["state", "州", "geo", "地理", "region", "区域", "map",
-                     "地图", "巴西", "brazil"],
-        "payment_bar": ["payment", "支付", "installment", "分期"],
-        "payment_heatmap": ["payment", "支付", "installment", "分期"],
-        "wordcloud": ["review", "评论", "评价", "差评", "好评", "sentiment",
-                       "情感", "评分"],
-        "category_bar": ["category", "品类", "类别", "product category"],
-        "scatter": ["weight", "重量", "freight", "运费", "shipping",
-                     "产品重量", "尺寸", "size"],
-        "delivery_bar": ["delivery", "配送", "delay", "延迟", "on.time",
-                          "准时", "物流", "deliver", "delivery time"],
-        "basket_bar": ["basket", "客单价", "avg order", "average basket"],
-    }
+    if charts is None:
+        # KEYWORD FALLBACK
+        q = clean_q.lower()
+        charts = set()
+        signals = {
+            "line": ["trend", "趋势", "monthly", "月度", "sales trend", "销售趋势",
+                      "overview", "概览", "预测", "predict", "forecast", "未来", "时间序列"],
+            "geo_map": ["state", "州", "geo", "地理", "region", "区域", "map", "地图", "巴西", "brazil", "分布"],
+            "payment_bar": ["payment", "支付", "installment", "分期"],
+            "payment_heatmap": ["payment", "支付", "installment", "分期"],
+            "wordcloud": ["review", "评论", "评价", "差评", "好评", "sentiment", "情感", "评分", "反馈", "退货"],
+            "category_bar": ["category", "品类", "类别", "product category"],
+            "scatter": ["weight", "重量", "freight", "运费", "shipping", "尺寸", "size", "关系", "关联", "correlation", "相关性"],
+            "delivery_bar": ["delivery", "配送", "delay", "延迟", "on.time", "准时", "物流", "deliver", "ontime", "送达", "时效"],
+            "basket_bar": ["basket", "客单价", "avg order", "average basket"],
+        }
+        for ck, kws in signals.items():
+            if any(kw in q for kw in kws):
+                charts.add(ck)
+        if not charts:
+            charts = {"line", "geo_map", "state_bar", "payment_bar", "payment_heatmap", "category_bar", "scatter"}
 
-    for chart_key, keywords in signals.items():
-        if any(kw in q for kw in keywords):
-            charts.add(chart_key)
-
-    # analysis_type overrides
+    # Apply analysis_type overrides
     if analysis_type in ("diagnostic", "prescriptive"):
         charts.add("wordcloud")
+        charts.add("delivery_bar")
     if analysis_type == "predictive":
         charts.add("line")
-
-    # Default: if question is very general or empty signals, show core charts
-    if not charts:
-        charts = {"line", "geo_map", "state_bar", "payment_bar", "payment_heatmap",
-                   "category_bar", "scatter"}
-    # Always include state bar when geo_map is requested
     if "geo_map" in charts:
         charts.add("state_bar")
-    # Always include category bar when wordcloud is requested (review context)
     if "wordcloud" in charts:
         charts.add("category_bar")
 
-    logger.info("Selected charts for query: %s", charts)
+    logger.info("Selected charts: %s", charts)
     return charts
 
 
@@ -100,22 +147,27 @@ def coordinator_node(state: AgentState) -> dict:
     from agents.coordinator import parse_question
 
     question = state.get("question", "")
-    plan = parse_question(question)
+    # Strip prior context for coordinator parsing (Bug 22/23)
+    clean_question = question.strip()
+    plan = parse_question(clean_question)
 
     return {
-        "question_summary": plan.get("question_summary", question),
+        "question_summary": plan.get("question_summary", clean_question),
         "analysis_type": plan.get("analysis_type", "descriptive"),
         "task_plan": plan.get("tasks", []),
     }
 
 
 def data_analyst_node(state: AgentState) -> dict:
-    """Execute data analyst tasks — iterate through task_plan if available (Bug 16.3)."""
+    """Execute data analyst tasks — iterate through task_plan if available."""
     from agents.data_analyst import analyze
     import time
 
     question = state.get("question", "")
+    # Strip prior context for clean query (Bug 22/23)
+    clean_question = question.strip()
     task_plan = state.get("task_plan", [])
+    analysis_type = state.get("analysis_type", "")
     all_results = []
     summaries = []
     strategy = "unknown"
@@ -124,13 +176,19 @@ def data_analyst_node(state: AgentState) -> dict:
     # Determine which sub-questions to send
     data_tasks = [t for t in task_plan if t.get("agent") == "data_analyst"]
     if not data_tasks:
-        # Fallback: single query
-        data_tasks = [{"task": question}]
+        data_tasks = [{"task": clean_question}]
+    else:
+        # Clean task descriptions from prior context
+        for dt in data_tasks:
+            dt["task"] = dt["task"].strip()
 
     logger.info("Data analyst processing %d sub-task(s)", len(data_tasks))
 
     for dt in data_tasks:
-        sub_q = dt.get("task", question)
+        sub_q = dt.get("task", clean_question)
+        # Always inject parent question context for sub-tasks
+        if sub_q != clean_question:
+            sub_q = f"[Original question]: {clean_question}\n[Sub-task]: {sub_q}"
         try:
             t0 = time.time()
             result = analyze(sub_q)
@@ -155,24 +213,30 @@ def data_analyst_node(state: AgentState) -> dict:
         return {"error": "No data analysis tasks completed",
                 "query_strategy": "error", "query_time_seconds": 0.0}
 
+    # Extract SQL execution times from results (Bug 32)
+    sql_time = sum(r.get("sql_time", 0) for r in all_results if isinstance(r, dict))
+
     return {
         "data_results": all_results,
         "data_summary": " | ".join(s for s in summaries if s),
         "query_strategy": strategy,
         "query_time_seconds": round(query_time, 2),
+        "sql_time_seconds": round(sql_time, 2) if sql_time > 0 else 0.0,
     }
 
 
 def nlp_node(state: AgentState) -> dict:
-    """Run NLP review analysis — skips if not needed."""
-    question = state.get("question", "").lower()
+    """Run NLP review analysis — uses LLM-based Portuguese sentiment (Bug 25.1).
+    Uses clean question without MemorySaver context for keyword detection.
+    """
+    raw_question = state.get("question", "")
+    question = raw_question.strip().lower()
     atype = state.get("analysis_type", "")
     task_plan = state.get("task_plan", [])
 
     nlp_needed = any(w in question for w in
-        ["review", "评论", "评价", "评分", "差评", "好评", "sentiment", "情感"])
+        ["review", "评论", "评价", "评分", "差评", "好评", "sentiment", "情感", "退货"])
     nlp_needed = nlp_needed or atype in ("diagnostic", "prescriptive")
-    # Also check task_plan for nlp_insight tasks
     if not nlp_needed:
         nlp_tasks = [t for t in task_plan if t.get("agent") == "nlp_insight"]
         nlp_needed = len(nlp_tasks) > 0
@@ -198,9 +262,12 @@ def nlp_node(state: AgentState) -> dict:
 
 
 def predictor_node(state: AgentState) -> dict:
-    """Run time series forecasting — skips if not predictive."""
+    """Run time series forecasting — skips if not predictive.
+    Uses clean question without MemorySaver context.
+    """
     atype = state.get("analysis_type", "")
-    question = state.get("question", "").lower()
+    raw_question = state.get("question", "")
+    question = raw_question.strip().lower()
     task_plan = state.get("task_plan", [])
 
     pred_needed = atype == "predictive"
@@ -217,7 +284,20 @@ def predictor_node(state: AgentState) -> dict:
     from models.predictor import forecast_monthly
 
     try:
-        forecast = forecast_monthly(weeks=6)
+        # Determine forecast horizon from question
+        import re as _re
+        weeks = 6  # default
+        week_match = _re.search(r'(\d+)\s*周', question)
+        day_match = _re.search(r'(\d+)\s*天', question)
+        month_match = _re.search(r'(\d+)\s*个?月', question)
+        if week_match:
+            weeks = int(week_match.group(1))
+        elif day_match:
+            weeks = max(1, int(day_match.group(1)) // 7)
+        elif month_match:
+            weeks = int(month_match.group(1)) * 4
+
+        forecast = forecast_monthly(weeks=weeks)
         if forecast.get("error"):
             logger.warning("Forecast error: %s", forecast["error"])
             return {}
@@ -231,7 +311,7 @@ def predictor_node(state: AgentState) -> dict:
 
 
 def visualizer_node(state: AgentState) -> dict:
-    """Generate visualizations based on question content (Bug 16.1 fix)."""
+    """Generate visualizations based on question content and data results."""
     from agents.visualizer import (
         line_chart, bar_chart, geo_heatmap, matrix_heatmap,
         scatter_bubble, wordcloud_image, forecast_chart,
@@ -260,7 +340,7 @@ def visualizer_node(state: AgentState) -> dict:
                 )
                 charts.append({"type": "line", "title": "Monthly Sales Trend", **chart})
 
-        # Separate forecast chart + CI summary (Bug 17)
+        # Separate forecast chart + CI summary
         forecast = state.get("forecast_results", {})
         fc = forecast.get("forecast")
         if fc and len(fc) > 0:
@@ -324,7 +404,6 @@ def visualizer_node(state: AgentState) -> dict:
                     FROM mv_state_sales
                     GROUP BY customer_state
                     ORDER BY avg_basket DESC
-                    LIMIT 15
                 """)
                 if basket_data:
                     chart = bar_chart(
@@ -358,7 +437,7 @@ def visualizer_node(state: AgentState) -> dict:
             except Exception:
                 pass
 
-        # 7. Delivery performance (new chart for delivery queries)
+        # 7. Delivery performance — show ALL states (Bug 21)
         if "delivery_bar" in selected:
             try:
                 from utils.db import execute_query
@@ -369,12 +448,11 @@ def visualizer_node(state: AgentState) -> dict:
                     FROM mv_delivery_perf
                     GROUP BY customer_state
                     ORDER BY avg_on_time ASC
-                    LIMIT 15
                 """)
                 if delivery_data:
                     chart = bar_chart(
                         delivery_data, x_col="customer_state", y_col="avg_on_time",
-                        title="On-Time Delivery Rate by State",
+                        title="On-Time Delivery Rate by State (All States)",
                     )
                     charts.append({"type": "bar", "title": "Delivery Performance", **chart})
             except Exception:
@@ -444,21 +522,41 @@ def visualizer_node(state: AgentState) -> dict:
 
 
 def decision_node(state: AgentState) -> dict:
-    """Generate business recommendations — enhanced for prescriptive queries."""
+    """Generate business recommendations — injects actual data into prompt (Bug 25.3 + Bug 21)."""
     atype = state.get("analysis_type", "")
     question = state.get("question", "").lower()
 
     presc_needed = atype in ("prescriptive", "diagnostic")
     presc_needed = presc_needed or any(w in question for w in
-        ["建议", "优化", "改进", "策略", "recommend", "improve", "how to", "策略"])
+        ["建议", "优化", "改进", "策略", "recommend", "improve", "how to", "策略",
+         "如何", "方案", "降低", "提升"])
 
     from agents.decision import generate_recommendations
 
     try:
+        # Build data context with ACTUAL data rows (Bug 25.3)
+        data_tables_text = ""
+        data_results = state.get("data_results", [])
+        for i, dr in enumerate(data_results):
+            if dr.get("data") and len(dr.get("data", [])) > 0:
+                rows = dr["data"]
+                # Serialize first 20 rows as markdown table
+                if rows:
+                    cols = list(rows[0].keys())
+                    data_tables_text += f"\n### Data Table {i+1}: {dr.get('summary', '')[:100]}\n"
+                    data_tables_text += "| " + " | ".join(cols) + " |\n"
+                    data_tables_text += "|" + "|".join(["---"] * len(cols)) + "|\n"
+                    for row in rows[:20]:
+                        vals = [str(v)[:40] if v is not None else "NULL" for v in row.values()]
+                        data_tables_text += "| " + " | ".join(vals) + " |\n"
+                    if len(rows) > 20:
+                        data_tables_text += f"\n*(Showing 20 of {len(rows)} rows)*\n"
+
         recs = generate_recommendations(
             analysis_summary=state.get("data_summary", "No analysis available"),
             nlp_results=state.get("nlp_results"),
             forecast_summary=state.get("forecast_summary"),
+            data_tables=data_tables_text,
         )
         return {"recommendations": recs}
     except Exception as e:
@@ -496,7 +594,7 @@ def synthesis_node(state: AgentState) -> dict:
     return {"final_response": "\n\n".join(parts)}
 
 
-# ── Routing functions (Bug 16.2: use task_plan) ─────────
+# ── Routing functions ───────────────────────────────────
 
 def route_after_coordinator(state: AgentState) -> str:
     """Always go to data_analyst."""
@@ -504,30 +602,33 @@ def route_after_coordinator(state: AgentState) -> str:
 
 
 def route_after_analyst(state: AgentState) -> str:
-    """Route based on coordinator's task_plan, with fallback to keyword matching."""
+    """Route based on analysis_type (from coordinator) + plan_agents.
+
+    Uses clean question WITHOUT MemorySaver context to avoid keyword contamination.
+    """
     task_plan = state.get("task_plan", [])
     atype = state.get("analysis_type", "")
-    question = state.get("question", "").lower()
+    # Clean question of MemorySaver context before keyword matching
+    raw_question = state.get("question", "")
+    question = raw_question.strip().lower()
 
-    # Check task_plan for agent assignments
     plan_agents = {t.get("agent") for t in task_plan} if task_plan else set()
 
+    # Use plan_agents first, then analysis_type as fallback
     nlp_needed = "nlp_insight" in plan_agents
-    pred_needed = "predictor" in plan_agents
-
-    # Fallback: keyword-based detection
     if not nlp_needed:
         nlp_needed = any(w in question for w in
-            ["review", "评论", "评价", "评分", "差评", "好评", "sentiment"])
+            ["review", "评论", "评价", "评分", "差评", "好评", "sentiment", "退货", "反馈"])
         nlp_needed = nlp_needed or atype in ("diagnostic", "prescriptive")
 
+    pred_needed = "predictor" in plan_agents
     if not pred_needed:
         pred_needed = atype == "predictive"
         pred_needed = pred_needed or any(w in question for w in
             ["预测", "predict", "forecast", "未来"])
 
-    logger.info("Routing after analyst — NLP: %s, Predictor: %s (plan_agents: %s)",
-                nlp_needed, pred_needed, plan_agents)
+    logger.info("Routing after analyst — NLP: %s, Predictor: %s (type: %s, plan: %s)",
+                nlp_needed, pred_needed, atype, plan_agents)
 
     if nlp_needed:
         return "nlp"
@@ -537,14 +638,17 @@ def route_after_analyst(state: AgentState) -> str:
 
 
 def route_after_nlp(state: AgentState) -> str:
-    """After NLP, go to predictor or visualizer."""
+    """After NLP, go to predictor or visualizer.
+    Uses clean question without MemorySaver context.
+    """
     task_plan = state.get("task_plan", [])
     plan_agents = {t.get("agent") for t in task_plan} if task_plan else set()
 
     pred_needed = "predictor" in plan_agents
     if not pred_needed:
         atype = state.get("analysis_type", "")
-        question = state.get("question", "").lower()
+        raw_question = state.get("question", "")
+        question = raw_question.strip().lower()
         pred_needed = atype == "predictive"
         pred_needed = pred_needed or any(w in question for w in
             ["预测", "predict", "forecast", "未来"])
@@ -608,45 +712,42 @@ def get_graph():
 def run_query(question: str, thread_id: str = "default") -> AgentState:
     """Run a user question through the agent graph.
 
-    Args:
-        question: Natural language question.
-        thread_id: Conversation thread identifier (for MemorySaver).
-
-    Returns:
-        Final AgentState with all agent outputs.
+    Uses LangGraph persistence for conversation continuity.
+    Prior context stored in data_summary field, NOT appended to question string.
+    This prevents MemorySaver context from contaminating keyword matching.
     """
     import time
     graph = get_graph()
     config = {"configurable": {"thread_id": thread_id}}
 
-    # Build initial state — inject prior context for continuity (Bug 16.4)
+    # Retrieve prior conversation context from checkpointer — store as separate field
     prior_context = ""
     try:
         prior_state = graph.get_state(config)
         if prior_state and prior_state.values:
-            prev_summary = prior_state.values.get("data_summary", "")
-            prev_question = prior_state.values.get("question", "")
-            if prev_summary and prev_question:
+            prev_data = prior_state.values.get("data_summary", "")
+            prev_q = prior_state.values.get("question", "")
+            prev_recs = prior_state.values.get("recommendations", "")
+            if prev_q:
+                clean_prev_q = prev_q.strip()
                 prior_context = (
-                    f"\n\n[Previous Analysis Context]\n"
-                    f"Question: {prev_question}\n"
-                    f"Answer summary: {prev_summary[:500]}\n"
-                    f"Use this context to resolve references like '它', 'its', 'the' in the current question."
+                    f"Previous question: {clean_prev_q}\n"
+                    f"Previous findings: {prev_data[:200]}\n"
+                    f"Previous recommendations: {prev_recs[:200]}"
                 )
     except Exception:
         pass
 
-    question_with_context = question + prior_context if prior_context else question
-
     initial_state = {
-        "question": question_with_context,
+        "question": question,  # CLEAN question — no context appended
         "question_summary": "",
         "analysis_type": "",
         "task_plan": [],
         "data_results": [],
-        "data_summary": "",
+        "data_summary": prior_context,  # Prior context here — used by decision, NOT by routing
         "query_strategy": "unknown",
         "query_time_seconds": 0.0,
+        "sql_time_seconds": 0.0,
         "nlp_results": {},
         "nlp_summary": "",
         "forecast_results": {},

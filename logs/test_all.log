@@ -1,0 +1,2660 @@
+2026-05-09 23:26:17,678 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for DataAnalystOutput
+2026-05-09 23:26:39,042 [choreographer.browser_async] WARNING: Resorting to unclean kill browser.
+2026-05-09 23:28:36,750 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for CoordinatorOutput
+2026-05-09 23:28:36,750 [agents.coordinator] WARNING: Pydantic parse failed, using heuristic plan
+2026-05-09 23:29:43,943 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for DataAnalystOutput
+2026-05-09 23:32:05,078 [prophet] INFO: n_changepoints greater than number of observations. Using 16.
+2026-05-09 23:32:14,122 [choreographer.browser_async] WARNING: Resorting to unclean kill browser.
+2026-05-09 23:32:18,726 [choreographer.browser_async] WARNING: Resorting to unclean kill browser.
+2026-05-09 23:33:14,611 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for CoordinatorOutput
+2026-05-09 23:33:14,611 [agents.coordinator] WARNING: Pydantic parse failed, using heuristic plan
+2026-05-09 23:36:41,454 [utils.db] ERROR: Query failed: (pymysql.err.ProgrammingError) (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'rank FROM mv_state_sales WHERE ym LIKE '2017%' ORDER BY ym, total_gmv DESC' at line 1")
+[SQL: SELECT ym, customer_state, total_gmv, RANK() OVER (PARTITION BY ym ORDER BY total_gmv DESC) AS rank FROM mv_state_sales WHERE ym LIKE '2017%%' ORDER BY ym, total_gmv DESC]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+Traceback (most recent call last):
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.ProgrammingError: (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'rank FROM mv_state_sales WHERE ym LIKE '2017%' ORDER BY ym, total_gmv DESC' at line 1")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\utils\db.py", line 43, in execute_query
+    result = conn.execute(text(sql), params)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\sql\elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.ProgrammingError: (pymysql.err.ProgrammingError) (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'rank FROM mv_state_sales WHERE ym LIKE '2017%' ORDER BY ym, total_gmv DESC' at line 1")
+[SQL: SELECT ym, customer_state, total_gmv, RANK() OVER (PARTITION BY ym ORDER BY total_gmv DESC) AS rank FROM mv_state_sales WHERE ym LIKE '2017%%' ORDER BY ym, total_gmv DESC]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-09 23:36:41,458 [agents.data_analyst] ERROR: Agent execution error (attempt 1): (pymysql.err.ProgrammingError) (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'rank FROM mv_state_sales WHERE ym LIKE '2017%' ORDER BY ym, total_gmv DESC' at line 1")
+[SQL: SELECT ym, customer_state, total_gmv, RANK() OVER (PARTITION BY ym ORDER BY total_gmv DESC) AS rank FROM mv_state_sales WHERE ym LIKE '2017%%' ORDER BY ym, total_gmv DESC]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+Traceback (most recent call last):
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.ProgrammingError: (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'rank FROM mv_state_sales WHERE ym LIKE '2017%' ORDER BY ym, total_gmv DESC' at line 1")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\agents\data_analyst.py", line 208, in analyze
+    rows = execute_query(executed_sql)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Business_Intelligence_Analysis\FinalProject\utils\db.py", line 43, in execute_query
+    result = conn.execute(text(sql), params)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\sql\elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.ProgrammingError: (pymysql.err.ProgrammingError) (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'rank FROM mv_state_sales WHERE ym LIKE '2017%' ORDER BY ym, total_gmv DESC' at line 1")
+[SQL: SELECT ym, customer_state, total_gmv, RANK() OVER (PARTITION BY ym ORDER BY total_gmv DESC) AS rank FROM mv_state_sales WHERE ym LIKE '2017%%' ORDER BY ym, total_gmv DESC]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-09 23:36:59,336 [agents.graph] ERROR: Data analyst error for '查询2017年按月、按州的GMV，并计算每个月的各州GMV排名。使用olist_orders_view JOIN olist_order_items_view和': (pymysql.err.ProgrammingError) (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'rank FROM mv_state_sales WHERE ym LIKE '2017%' ORDER BY ym, total_gmv DESC' at line 1")
+[SQL: SELECT ym, customer_state, total_gmv, RANK() OVER (PARTITION BY ym ORDER BY total_gmv DESC) AS rank FROM mv_state_sales WHERE ym LIKE '2017%%' ORDER BY ym, total_gmv DESC]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-09 23:45:47,071 [prophet] INFO: n_changepoints greater than number of observations. Using 16.
+2026-05-09 23:46:57,115 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for CoordinatorOutput
+2026-05-09 23:46:57,115 [agents.coordinator] WARNING: Pydantic parse failed, using heuristic plan
+2026-05-09 23:52:45,297 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for CoordinatorOutput
+2026-05-09 23:52:45,297 [agents.coordinator] WARNING: Pydantic parse failed, using heuristic plan
+2026-05-10 00:29:08,554 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for CoordinatorOutput
+2026-05-10 00:29:08,554 [agents.coordinator] WARNING: Pydantic parse failed, using heuristic plan
+2026-05-10 00:30:16,866 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for DataAnalystOutput
+2026-05-10 00:32:47,801 [prophet] INFO: n_changepoints greater than number of observations. Using 16.
+2026-05-10 00:33:53,957 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for CoordinatorOutput
+2026-05-10 00:33:53,957 [agents.coordinator] WARNING: Pydantic parse failed, using heuristic plan
+2026-05-10 00:35:11,179 [choreographer.browser_async] WARNING: Resorting to unclean kill browser.
+2026-05-10 00:42:21,784 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for CoordinatorOutput
+2026-05-10 00:42:21,784 [agents.coordinator] WARNING: Pydantic parse failed, using heuristic plan
+2026-05-10 00:44:29,577 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for CoordinatorOutput
+2026-05-10 00:44:29,577 [agents.coordinator] WARNING: Pydantic parse failed, using heuristic plan
+2026-05-10 00:45:01,360 [prophet] INFO: n_changepoints greater than number of observations. Using 16.
+2026-05-10 00:46:51,925 [utils.db] ERROR: Query failed: (pymysql.err.ProgrammingError) (1146, "Table 'MABI-team-DB.vw_orders' doesn't exist")
+[SQL: SELECT 
+  DATE_FORMAT(order_purchase_date, '%%Y-%%u') AS week,
+  COUNT(*) AS total_orders,
+  SUM(CASE WHEN review_score <= 2 THEN 1 ELSE 0 END) * 1.0 / COUNT(*) AS negative_rate,
+  AVG(shipping_delay_days) AS avg_shipping_delay_days,
+  SUM(CAST(return_flag AS SIGNED)) * 1.0 / COUNT(*) AS return_rate,
+  GROUP_CONCAT(DISTINCT review_comment_message ORDER BY review_comment_message SEPARATOR ' ') AS all_negative_comments
+FROM vw_orders
+WHERE review_score <= 2
+  AND order_purchase_date >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
+GROUP BY week
+ORDER BY week]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+Traceback (most recent call last):
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.ProgrammingError: (1146, "Table 'MABI-team-DB.vw_orders' doesn't exist")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\utils\db.py", line 43, in execute_query
+    result = conn.execute(text(sql), params)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\sql\elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.ProgrammingError: (pymysql.err.ProgrammingError) (1146, "Table 'MABI-team-DB.vw_orders' doesn't exist")
+[SQL: SELECT 
+  DATE_FORMAT(order_purchase_date, '%%Y-%%u') AS week,
+  COUNT(*) AS total_orders,
+  SUM(CASE WHEN review_score <= 2 THEN 1 ELSE 0 END) * 1.0 / COUNT(*) AS negative_rate,
+  AVG(shipping_delay_days) AS avg_shipping_delay_days,
+  SUM(CAST(return_flag AS SIGNED)) * 1.0 / COUNT(*) AS return_rate,
+  GROUP_CONCAT(DISTINCT review_comment_message ORDER BY review_comment_message SEPARATOR ' ') AS all_negative_comments
+FROM vw_orders
+WHERE review_score <= 2
+  AND order_purchase_date >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
+GROUP BY week
+ORDER BY week]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-10 00:46:51,930 [agents.data_analyst] ERROR: Agent execution error (attempt 1): (pymysql.err.ProgrammingError) (1146, "Table 'MABI-team-DB.vw_orders' doesn't exist")
+[SQL: SELECT 
+  DATE_FORMAT(order_purchase_date, '%%Y-%%u') AS week,
+  COUNT(*) AS total_orders,
+  SUM(CASE WHEN review_score <= 2 THEN 1 ELSE 0 END) * 1.0 / COUNT(*) AS negative_rate,
+  AVG(shipping_delay_days) AS avg_shipping_delay_days,
+  SUM(CAST(return_flag AS SIGNED)) * 1.0 / COUNT(*) AS return_rate,
+  GROUP_CONCAT(DISTINCT review_comment_message ORDER BY review_comment_message SEPARATOR ' ') AS all_negative_comments
+FROM vw_orders
+WHERE review_score <= 2
+  AND order_purchase_date >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
+GROUP BY week
+ORDER BY week]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+Traceback (most recent call last):
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.ProgrammingError: (1146, "Table 'MABI-team-DB.vw_orders' doesn't exist")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\agents\data_analyst.py", line 215, in analyze
+    rows = execute_query(executed_sql)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Business_Intelligence_Analysis\FinalProject\utils\db.py", line 43, in execute_query
+    result = conn.execute(text(sql), params)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\sql\elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.ProgrammingError: (pymysql.err.ProgrammingError) (1146, "Table 'MABI-team-DB.vw_orders' doesn't exist")
+[SQL: SELECT 
+  DATE_FORMAT(order_purchase_date, '%%Y-%%u') AS week,
+  COUNT(*) AS total_orders,
+  SUM(CASE WHEN review_score <= 2 THEN 1 ELSE 0 END) * 1.0 / COUNT(*) AS negative_rate,
+  AVG(shipping_delay_days) AS avg_shipping_delay_days,
+  SUM(CAST(return_flag AS SIGNED)) * 1.0 / COUNT(*) AS return_rate,
+  GROUP_CONCAT(DISTINCT review_comment_message ORDER BY review_comment_message SEPARATOR ' ') AS all_negative_comments
+FROM vw_orders
+WHERE review_score <= 2
+  AND order_purchase_date >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
+GROUP BY week
+ORDER BY week]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-10 00:47:48,437 [agents.graph] ERROR: Data analyst error for '查询过去6个月内订单的差评率（评分<=2）、平均发货延迟天数、退货率，以及差评中高频关键词（通过评论内容），按周汇总。使用视图：vw_orders（包含orde': (pymysql.err.ProgrammingError) (1146, "Table 'MABI-team-DB.vw_orders' doesn't exist")
+[SQL: SELECT 
+  DATE_FORMAT(order_purchase_date, '%%Y-%%u') AS week,
+  COUNT(*) AS total_orders,
+  SUM(CASE WHEN review_score <= 2 THEN 1 ELSE 0 END) * 1.0 / COUNT(*) AS negative_rate,
+  AVG(shipping_delay_days) AS avg_shipping_delay_days,
+  SUM(CAST(return_flag AS SIGNED)) * 1.0 / COUNT(*) AS return_rate,
+  GROUP_CONCAT(DISTINCT review_comment_message ORDER BY review_comment_message SEPARATOR ' ') AS all_negative_comments
+FROM vw_orders
+WHERE review_score <= 2
+  AND order_purchase_date >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
+GROUP BY week
+ORDER BY week]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-10 00:50:57,265 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for CoordinatorOutput
+2026-05-10 00:50:57,265 [agents.coordinator] WARNING: Pydantic parse failed, using heuristic plan
+2026-05-10 00:54:27,816 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for DataAnalystOutput
+2026-05-10 00:54:27,817 [agents.data_analyst] WARNING: Empty SQL on attempt 1, will retry
+2026-05-10 00:55:33,997 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for SQLCorrectionOutput
+2026-05-10 00:55:33,997 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for DataAnalystOutput
+2026-05-10 00:55:33,997 [agents.data_analyst] WARNING: Empty SQL on attempt 2, will retry
+2026-05-10 00:56:46,234 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for SQLCorrectionOutput
+2026-05-10 00:56:46,234 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for DataAnalystOutput
+2026-05-10 00:56:46,234 [agents.data_analyst] WARNING: Empty SQL on attempt 3, will retry
+2026-05-10 00:56:46,234 [agents.graph] ERROR: Data analyst error for '查询巴西东北部地区（订单表+地理信息）的总体退货率，并按产品类别、卖家、付款方式、运输时间等维度分组统计退货率及退货数量，返回结果DataFrame。': Empty SQL generated
+2026-05-10 01:09:25,096 [prophet] INFO: n_changepoints greater than number of observations. Using 16.
+2026-05-10 01:11:39,889 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for DataAnalystOutput
+2026-05-10 01:11:39,889 [agents.data_analyst] WARNING: Empty SQL on attempt 1, will retry
+2026-05-10 01:13:56,633 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for SQLCorrectionOutput
+2026-05-10 01:13:56,633 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for DataAnalystOutput
+2026-05-10 01:13:56,633 [agents.data_analyst] WARNING: Empty SQL on attempt 2, will retry
+2026-05-10 01:15:09,446 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for SQLCorrectionOutput
+2026-05-10 01:15:09,446 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for DataAnalystOutput
+2026-05-10 01:15:09,446 [agents.data_analyst] WARNING: Empty SQL on attempt 3, will retry
+2026-05-10 01:15:09,446 [agents.graph] ERROR: Data analyst error for '查询巴西东北部地区的平均退货率，并与全国其他地区对比；同时按产品类别、卖家、物流延迟天数等维度分析退货订单的特征，找出主要退货原因（如订单状态为'invoice': Empty SQL generated
+2026-05-10 01:15:41,451 [utils.db] ERROR: Query failed: (pymysql.err.OperationalError) (1054, "Unknown column 'o.order_status' in 'field list'")
+[SQL: SELECT 
+    CASE WHEN o.order_status = 'returned' THEN '退货' ELSE '正常送达' END AS order_type,
+    AVG(days_to_delivery) AS avg_delivery_days,
+    AVG(total_freight) AS avg_freight_per_order,
+    COUNT(*) AS order_count
+FROM (
+    SELECT 
+        o.order_id,
+        o.order_status,
+        DATEDIFF(o.order_delivered_customer_date, o.order_purchase_timestamp) AS days_to_delivery,
+        SUM(oi.freight_value) AS total_freight
+    FROM orders o
+    JOIN customers c ON o.customer_id = c.customer_id
+    JOIN order_items oi ON o.order_id = oi.order_id
+    WHERE c.customer_state IN ('MA','PI','CE','RN','PB','PE','AL','SE','BA')
+      AND o.order_status IN ('delivered', 'returned')
+      AND o.order_delivered_customer_date IS NOT NULL
+    GROUP BY o.order_id, o.order_status, o.order_purchase_timestamp, o.order_delivered_customer_date
+) AS order_level
+GROUP BY order_type]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+Traceback (most recent call last):
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.OperationalError: (1054, "Unknown column 'o.order_status' in 'field list'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\utils\db.py", line 43, in execute_query
+    result = conn.execute(text(sql), params)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\sql\elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (1054, "Unknown column 'o.order_status' in 'field list'")
+[SQL: SELECT 
+    CASE WHEN o.order_status = 'returned' THEN '退货' ELSE '正常送达' END AS order_type,
+    AVG(days_to_delivery) AS avg_delivery_days,
+    AVG(total_freight) AS avg_freight_per_order,
+    COUNT(*) AS order_count
+FROM (
+    SELECT 
+        o.order_id,
+        o.order_status,
+        DATEDIFF(o.order_delivered_customer_date, o.order_purchase_timestamp) AS days_to_delivery,
+        SUM(oi.freight_value) AS total_freight
+    FROM orders o
+    JOIN customers c ON o.customer_id = c.customer_id
+    JOIN order_items oi ON o.order_id = oi.order_id
+    WHERE c.customer_state IN ('MA','PI','CE','RN','PB','PE','AL','SE','BA')
+      AND o.order_status IN ('delivered', 'returned')
+      AND o.order_delivered_customer_date IS NOT NULL
+    GROUP BY o.order_id, o.order_status, o.order_purchase_timestamp, o.order_delivered_customer_date
+) AS order_level
+GROUP BY order_type]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-05-10 01:15:41,454 [agents.data_analyst] ERROR: Agent execution error (attempt 1): (pymysql.err.OperationalError) (1054, "Unknown column 'o.order_status' in 'field list'")
+[SQL: SELECT 
+    CASE WHEN o.order_status = 'returned' THEN '退货' ELSE '正常送达' END AS order_type,
+    AVG(days_to_delivery) AS avg_delivery_days,
+    AVG(total_freight) AS avg_freight_per_order,
+    COUNT(*) AS order_count
+FROM (
+    SELECT 
+        o.order_id,
+        o.order_status,
+        DATEDIFF(o.order_delivered_customer_date, o.order_purchase_timestamp) AS days_to_delivery,
+        SUM(oi.freight_value) AS total_freight
+    FROM orders o
+    JOIN customers c ON o.customer_id = c.customer_id
+    JOIN order_items oi ON o.order_id = oi.order_id
+    WHERE c.customer_state IN ('MA','PI','CE','RN','PB','PE','AL','SE','BA')
+      AND o.order_status IN ('delivered', 'returned')
+      AND o.order_delivered_customer_date IS NOT NULL
+    GROUP BY o.order_id, o.order_status, o.order_purchase_timestamp, o.order_delivered_customer_date
+) AS order_level
+GROUP BY order_type]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+Traceback (most recent call last):
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.OperationalError: (1054, "Unknown column 'o.order_status' in 'field list'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\agents\data_analyst.py", line 274, in analyze
+    rows = execute_query(executed_sql)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Business_Intelligence_Analysis\FinalProject\utils\db.py", line 43, in execute_query
+    result = conn.execute(text(sql), params)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\sql\elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (1054, "Unknown column 'o.order_status' in 'field list'")
+[SQL: SELECT 
+    CASE WHEN o.order_status = 'returned' THEN '退货' ELSE '正常送达' END AS order_type,
+    AVG(days_to_delivery) AS avg_delivery_days,
+    AVG(total_freight) AS avg_freight_per_order,
+    COUNT(*) AS order_count
+FROM (
+    SELECT 
+        o.order_id,
+        o.order_status,
+        DATEDIFF(o.order_delivered_customer_date, o.order_purchase_timestamp) AS days_to_delivery,
+        SUM(oi.freight_value) AS total_freight
+    FROM orders o
+    JOIN customers c ON o.customer_id = c.customer_id
+    JOIN order_items oi ON o.order_id = oi.order_id
+    WHERE c.customer_state IN ('MA','PI','CE','RN','PB','PE','AL','SE','BA')
+      AND o.order_status IN ('delivered', 'returned')
+      AND o.order_delivered_customer_date IS NOT NULL
+    GROUP BY o.order_id, o.order_status, o.order_purchase_timestamp, o.order_delivered_customer_date
+) AS order_level
+GROUP BY order_type]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-05-10 01:16:32,551 [utils.db] ERROR: Query failed: (pymysql.err.OperationalError) (1054, "Unknown column 'o.order_status' in 'field list'")
+[SQL: SELECT 
+    CASE WHEN o.order_status = 'returned' THEN '退货' ELSE '正常送达' END AS order_type,
+    AVG(days_to_delivery) AS avg_delivery_days,
+    AVG(total_freight) AS avg_freight_per_order,
+    COUNT(*) AS order_count
+FROM (
+    SELECT 
+        o.order_id,
+        o.order_status,
+        DATEDIFF(o.order_delivered_customer_date, o.order_purchase_timestamp) AS days_to_delivery,
+        SUM(oi.freight_value) AS total_freight
+    FROM orders o
+    JOIN customers c ON o.customer_id = c.customer_id
+    JOIN order_items oi ON o.order_id = oi.order_id
+    WHERE c.customer_state IN ('MA','PI','CE','RN','PB','PE','AL','SE','BA')
+      AND o.order_status IN ('delivered', 'returned')
+      AND o.order_delivered_customer_date IS NOT NULL
+    GROUP BY o.order_id, o.order_status, o.order_purchase_timestamp, o.order_delivered_customer_date
+) AS order_level
+GROUP BY order_type]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+Traceback (most recent call last):
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.OperationalError: (1054, "Unknown column 'o.order_status' in 'field list'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\utils\db.py", line 43, in execute_query
+    result = conn.execute(text(sql), params)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\sql\elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (1054, "Unknown column 'o.order_status' in 'field list'")
+[SQL: SELECT 
+    CASE WHEN o.order_status = 'returned' THEN '退货' ELSE '正常送达' END AS order_type,
+    AVG(days_to_delivery) AS avg_delivery_days,
+    AVG(total_freight) AS avg_freight_per_order,
+    COUNT(*) AS order_count
+FROM (
+    SELECT 
+        o.order_id,
+        o.order_status,
+        DATEDIFF(o.order_delivered_customer_date, o.order_purchase_timestamp) AS days_to_delivery,
+        SUM(oi.freight_value) AS total_freight
+    FROM orders o
+    JOIN customers c ON o.customer_id = c.customer_id
+    JOIN order_items oi ON o.order_id = oi.order_id
+    WHERE c.customer_state IN ('MA','PI','CE','RN','PB','PE','AL','SE','BA')
+      AND o.order_status IN ('delivered', 'returned')
+      AND o.order_delivered_customer_date IS NOT NULL
+    GROUP BY o.order_id, o.order_status, o.order_purchase_timestamp, o.order_delivered_customer_date
+) AS order_level
+GROUP BY order_type]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-05-10 01:16:32,552 [agents.data_analyst] ERROR: Agent execution error (attempt 2): (pymysql.err.OperationalError) (1054, "Unknown column 'o.order_status' in 'field list'")
+[SQL: SELECT 
+    CASE WHEN o.order_status = 'returned' THEN '退货' ELSE '正常送达' END AS order_type,
+    AVG(days_to_delivery) AS avg_delivery_days,
+    AVG(total_freight) AS avg_freight_per_order,
+    COUNT(*) AS order_count
+FROM (
+    SELECT 
+        o.order_id,
+        o.order_status,
+        DATEDIFF(o.order_delivered_customer_date, o.order_purchase_timestamp) AS days_to_delivery,
+        SUM(oi.freight_value) AS total_freight
+    FROM orders o
+    JOIN customers c ON o.customer_id = c.customer_id
+    JOIN order_items oi ON o.order_id = oi.order_id
+    WHERE c.customer_state IN ('MA','PI','CE','RN','PB','PE','AL','SE','BA')
+      AND o.order_status IN ('delivered', 'returned')
+      AND o.order_delivered_customer_date IS NOT NULL
+    GROUP BY o.order_id, o.order_status, o.order_purchase_timestamp, o.order_delivered_customer_date
+) AS order_level
+GROUP BY order_type]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+Traceback (most recent call last):
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.OperationalError: (1054, "Unknown column 'o.order_status' in 'field list'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\agents\data_analyst.py", line 274, in analyze
+    rows = execute_query(executed_sql)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Business_Intelligence_Analysis\FinalProject\utils\db.py", line 43, in execute_query
+    result = conn.execute(text(sql), params)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\sql\elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (1054, "Unknown column 'o.order_status' in 'field list'")
+[SQL: SELECT 
+    CASE WHEN o.order_status = 'returned' THEN '退货' ELSE '正常送达' END AS order_type,
+    AVG(days_to_delivery) AS avg_delivery_days,
+    AVG(total_freight) AS avg_freight_per_order,
+    COUNT(*) AS order_count
+FROM (
+    SELECT 
+        o.order_id,
+        o.order_status,
+        DATEDIFF(o.order_delivered_customer_date, o.order_purchase_timestamp) AS days_to_delivery,
+        SUM(oi.freight_value) AS total_freight
+    FROM orders o
+    JOIN customers c ON o.customer_id = c.customer_id
+    JOIN order_items oi ON o.order_id = oi.order_id
+    WHERE c.customer_state IN ('MA','PI','CE','RN','PB','PE','AL','SE','BA')
+      AND o.order_status IN ('delivered', 'returned')
+      AND o.order_delivered_customer_date IS NOT NULL
+    GROUP BY o.order_id, o.order_status, o.order_purchase_timestamp, o.order_delivered_customer_date
+) AS order_level
+GROUP BY order_type]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-05-10 01:23:54,796 [choreographer.browser_async] WARNING: Resorting to unclean kill browser.
+2026-05-10 01:23:59,412 [choreographer.browser_async] WARNING: Resorting to unclean kill browser.
+2026-05-10 01:28:08,376 [prophet] INFO: n_changepoints greater than number of observations. Using 16.
+2026-05-10 01:34:54,717 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for CoordinatorOutput
+2026-05-10 01:34:54,717 [agents.coordinator] WARNING: Pydantic parse failed, using heuristic plan
+2026-05-10 01:38:30,193 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for DataAnalystOutput
+2026-05-10 01:38:30,193 [agents.data_analyst] WARNING: Empty SQL on attempt 1, will retry
+2026-05-10 01:39:41,045 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for SQLCorrectionOutput
+2026-05-10 01:39:41,046 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for DataAnalystOutput
+2026-05-10 01:39:41,046 [agents.data_analyst] WARNING: Empty SQL on attempt 2, will retry
+2026-05-10 01:40:33,075 [utils.db] ERROR: Query failed: (pymysql.err.ProgrammingError) (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'rank,\n           NULL AS review_score,\n           NULL AS comment_count\n    FROM' at line 18")
+[SQL: WITH
+
+ne_orders AS (
+    SELECT o.order_id, o.order_status,
+           c.customer_state
+    FROM orders o
+    JOIN customers c ON o.customer_id = c.customer_id
+    WHERE c.customer_state IN ('BA', 'PE', 'CE', 'RN', 'PB', 'AL', 'SE', 'PI', 'MA')
+),
+
+overall AS (
+    SELECT 'overall' AS metric_type,
+           NULL AS product_category,
+           NULL AS seller_id,
+           COUNT(DISTINCT order_id) AS total_orders,
+           COUNT(DISTINCT CASE WHEN order_status = 'canceled' THEN order_id END) AS canceled_orders,
+           ROUND(COUNT(DISTINCT CASE WHEN order_status = 'canceled' THEN order_id END) / COUNT(DISTINCT order_id), 4) AS return_rate,
+           NULL AS rank,
+           NULL AS review_score,
+           NULL AS comment_count
+    FROM ne_orders
+),
+
+order_items_expanded AS (
+    SELECT oi.order_id,
+           o.order_status,
+           t.product_category_name_english AS product_category,
+           oi.seller_id
+    FROM ne_orders o
+    JOIN order_items oi ON o.order_id = oi.order_id
+    JOIN products p ON oi.product_id = p.product_id
+    LEFT JOIN product_category_name_translation t ON p.product_category_name = t.product_category_name
+),
+
+category_seller_stats AS (
+    SELECT 'category_seller' AS metric_type,
+           COALESCE(product_category, 'Unknown') AS product_category,
+           seller_id,
+           COUNT(DISTINCT order_id) AS total_orders,
+           COUNT(DISTINCT CASE WHEN order_status = 'canceled' THEN order_id END) AS canceled_orders,
+           ROUND(COUNT(DISTINCT CASE WHEN order_status = 'canceled' THEN order_id END) / COUNT(DISTINCT order_id), 4) AS return_rate,
+           NULL AS rank,
+           NULL AS review_score,
+           NULL AS comment_count
+    FROM order_items_expanded
+    GROUP BY product_category, seller_id
+),
+
+ranked AS (
+    SELECT metric_type,
+           product_category,
+           seller_id,
+           total_orders,
+           canceled_orders,
+           return_rate,
+           ROW_NUMBER() OVER (ORDER BY return_rate DESC) AS rank,
+           review_score,
+           comment_count
+    FROM category_seller_stats
+),
+
+canceled_order_reviews AS (
+    SELECT r.review_score,
+           COUNT(*) AS comment_count
+    FROM ne_orders o
+    JOIN order_reviews r ON o.order_id = r.order_id
+    WHERE o.order_status = 'canceled'
+    GROUP BY r.review_score
+),
+review_dist AS (
+    SELECT 'reason_distribution' AS metric_type,
+           NULL AS product_category,
+           NULL AS seller_id,
+           NULL AS total_orders,
+           NULL AS canceled_orders,
+           NULL AS return_rate,
+           NULL AS rank,
+           review_score,
+           comment_count
+    FROM canceled_order_reviews
+)
+SELECT * FROM overall
+UNION ALL
+SELECT * FROM ranked
+UNION ALL
+SELECT * FROM review_dist
+ORDER BY metric_type, rank, review_score]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+Traceback (most recent call last):
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.ProgrammingError: (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'rank,\n           NULL AS review_score,\n           NULL AS comment_count\n    FROM' at line 18")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\utils\db.py", line 43, in execute_query
+    result = conn.execute(text(sql), params)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\sql\elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.ProgrammingError: (pymysql.err.ProgrammingError) (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'rank,\n           NULL AS review_score,\n           NULL AS comment_count\n    FROM' at line 18")
+[SQL: WITH
+
+ne_orders AS (
+    SELECT o.order_id, o.order_status,
+           c.customer_state
+    FROM orders o
+    JOIN customers c ON o.customer_id = c.customer_id
+    WHERE c.customer_state IN ('BA', 'PE', 'CE', 'RN', 'PB', 'AL', 'SE', 'PI', 'MA')
+),
+
+overall AS (
+    SELECT 'overall' AS metric_type,
+           NULL AS product_category,
+           NULL AS seller_id,
+           COUNT(DISTINCT order_id) AS total_orders,
+           COUNT(DISTINCT CASE WHEN order_status = 'canceled' THEN order_id END) AS canceled_orders,
+           ROUND(COUNT(DISTINCT CASE WHEN order_status = 'canceled' THEN order_id END) / COUNT(DISTINCT order_id), 4) AS return_rate,
+           NULL AS rank,
+           NULL AS review_score,
+           NULL AS comment_count
+    FROM ne_orders
+),
+
+order_items_expanded AS (
+    SELECT oi.order_id,
+           o.order_status,
+           t.product_category_name_english AS product_category,
+           oi.seller_id
+    FROM ne_orders o
+    JOIN order_items oi ON o.order_id = oi.order_id
+    JOIN products p ON oi.product_id = p.product_id
+    LEFT JOIN product_category_name_translation t ON p.product_category_name = t.product_category_name
+),
+
+category_seller_stats AS (
+    SELECT 'category_seller' AS metric_type,
+           COALESCE(product_category, 'Unknown') AS product_category,
+           seller_id,
+           COUNT(DISTINCT order_id) AS total_orders,
+           COUNT(DISTINCT CASE WHEN order_status = 'canceled' THEN order_id END) AS canceled_orders,
+           ROUND(COUNT(DISTINCT CASE WHEN order_status = 'canceled' THEN order_id END) / COUNT(DISTINCT order_id), 4) AS return_rate,
+           NULL AS rank,
+           NULL AS review_score,
+           NULL AS comment_count
+    FROM order_items_expanded
+    GROUP BY product_category, seller_id
+),
+
+ranked AS (
+    SELECT metric_type,
+           product_category,
+           seller_id,
+           total_orders,
+           canceled_orders,
+           return_rate,
+           ROW_NUMBER() OVER (ORDER BY return_rate DESC) AS rank,
+           review_score,
+           comment_count
+    FROM category_seller_stats
+),
+
+canceled_order_reviews AS (
+    SELECT r.review_score,
+           COUNT(*) AS comment_count
+    FROM ne_orders o
+    JOIN order_reviews r ON o.order_id = r.order_id
+    WHERE o.order_status = 'canceled'
+    GROUP BY r.review_score
+),
+review_dist AS (
+    SELECT 'reason_distribution' AS metric_type,
+           NULL AS product_category,
+           NULL AS seller_id,
+           NULL AS total_orders,
+           NULL AS canceled_orders,
+           NULL AS return_rate,
+           NULL AS rank,
+           review_score,
+           comment_count
+    FROM canceled_order_reviews
+)
+SELECT * FROM overall
+UNION ALL
+SELECT * FROM ranked
+UNION ALL
+SELECT * FROM review_dist
+ORDER BY metric_type, rank, review_score]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-10 01:40:33,077 [agents.data_analyst] ERROR: Agent execution error (attempt 3): (pymysql.err.ProgrammingError) (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'rank,\n           NULL AS review_score,\n           NULL AS comment_count\n    FROM' at line 18")
+[SQL: WITH
+
+ne_orders AS (
+    SELECT o.order_id, o.order_status,
+           c.customer_state
+    FROM orders o
+    JOIN customers c ON o.customer_id = c.customer_id
+    WHERE c.customer_state IN ('BA', 'PE', 'CE', 'RN', 'PB', 'AL', 'SE', 'PI', 'MA')
+),
+
+overall AS (
+    SELECT 'overall' AS metric_type,
+           NULL AS product_category,
+           NULL AS seller_id,
+           COUNT(DISTINCT order_id) AS total_orders,
+           COUNT(DISTINCT CASE WHEN order_status = 'canceled' THEN order_id END) AS canceled_orders,
+           ROUND(COUNT(DISTINCT CASE WHEN order_status = 'canceled' THEN order_id END) / COUNT(DISTINCT order_id), 4) AS return_rate,
+           NULL AS rank,
+           NULL AS review_score,
+           NULL AS comment_count
+    FROM ne_orders
+),
+
+order_items_expanded AS (
+    SELECT oi.order_id,
+           o.order_status,
+           t.product_category_name_english AS product_category,
+           oi.seller_id
+    FROM ne_orders o
+    JOIN order_items oi ON o.order_id = oi.order_id
+    JOIN products p ON oi.product_id = p.product_id
+    LEFT JOIN product_category_name_translation t ON p.product_category_name = t.product_category_name
+),
+
+category_seller_stats AS (
+    SELECT 'category_seller' AS metric_type,
+           COALESCE(product_category, 'Unknown') AS product_category,
+           seller_id,
+           COUNT(DISTINCT order_id) AS total_orders,
+           COUNT(DISTINCT CASE WHEN order_status = 'canceled' THEN order_id END) AS canceled_orders,
+           ROUND(COUNT(DISTINCT CASE WHEN order_status = 'canceled' THEN order_id END) / COUNT(DISTINCT order_id), 4) AS return_rate,
+           NULL AS rank,
+           NULL AS review_score,
+           NULL AS comment_count
+    FROM order_items_expanded
+    GROUP BY product_category, seller_id
+),
+
+ranked AS (
+    SELECT metric_type,
+           product_category,
+           seller_id,
+           total_orders,
+           canceled_orders,
+           return_rate,
+           ROW_NUMBER() OVER (ORDER BY return_rate DESC) AS rank,
+           review_score,
+           comment_count
+    FROM category_seller_stats
+),
+
+canceled_order_reviews AS (
+    SELECT r.review_score,
+           COUNT(*) AS comment_count
+    FROM ne_orders o
+    JOIN order_reviews r ON o.order_id = r.order_id
+    WHERE o.order_status = 'canceled'
+    GROUP BY r.review_score
+),
+review_dist AS (
+    SELECT 'reason_distribution' AS metric_type,
+           NULL AS product_category,
+           NULL AS seller_id,
+           NULL AS total_orders,
+           NULL AS canceled_orders,
+           NULL AS return_rate,
+           NULL AS rank,
+           review_score,
+           comment_count
+    FROM canceled_order_reviews
+)
+SELECT * FROM overall
+UNION ALL
+SELECT * FROM ranked
+UNION ALL
+SELECT * FROM review_dist
+ORDER BY metric_type, rank, review_score]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+Traceback (most recent call last):
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.ProgrammingError: (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'rank,\n           NULL AS review_score,\n           NULL AS comment_count\n    FROM' at line 18")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\agents\data_analyst.py", line 274, in analyze
+    rows = execute_query(executed_sql)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Business_Intelligence_Analysis\FinalProject\utils\db.py", line 43, in execute_query
+    result = conn.execute(text(sql), params)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\sql\elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.ProgrammingError: (pymysql.err.ProgrammingError) (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'rank,\n           NULL AS review_score,\n           NULL AS comment_count\n    FROM' at line 18")
+[SQL: WITH
+
+ne_orders AS (
+    SELECT o.order_id, o.order_status,
+           c.customer_state
+    FROM orders o
+    JOIN customers c ON o.customer_id = c.customer_id
+    WHERE c.customer_state IN ('BA', 'PE', 'CE', 'RN', 'PB', 'AL', 'SE', 'PI', 'MA')
+),
+
+overall AS (
+    SELECT 'overall' AS metric_type,
+           NULL AS product_category,
+           NULL AS seller_id,
+           COUNT(DISTINCT order_id) AS total_orders,
+           COUNT(DISTINCT CASE WHEN order_status = 'canceled' THEN order_id END) AS canceled_orders,
+           ROUND(COUNT(DISTINCT CASE WHEN order_status = 'canceled' THEN order_id END) / COUNT(DISTINCT order_id), 4) AS return_rate,
+           NULL AS rank,
+           NULL AS review_score,
+           NULL AS comment_count
+    FROM ne_orders
+),
+
+order_items_expanded AS (
+    SELECT oi.order_id,
+           o.order_status,
+           t.product_category_name_english AS product_category,
+           oi.seller_id
+    FROM ne_orders o
+    JOIN order_items oi ON o.order_id = oi.order_id
+    JOIN products p ON oi.product_id = p.product_id
+    LEFT JOIN product_category_name_translation t ON p.product_category_name = t.product_category_name
+),
+
+category_seller_stats AS (
+    SELECT 'category_seller' AS metric_type,
+           COALESCE(product_category, 'Unknown') AS product_category,
+           seller_id,
+           COUNT(DISTINCT order_id) AS total_orders,
+           COUNT(DISTINCT CASE WHEN order_status = 'canceled' THEN order_id END) AS canceled_orders,
+           ROUND(COUNT(DISTINCT CASE WHEN order_status = 'canceled' THEN order_id END) / COUNT(DISTINCT order_id), 4) AS return_rate,
+           NULL AS rank,
+           NULL AS review_score,
+           NULL AS comment_count
+    FROM order_items_expanded
+    GROUP BY product_category, seller_id
+),
+
+ranked AS (
+    SELECT metric_type,
+           product_category,
+           seller_id,
+           total_orders,
+           canceled_orders,
+           return_rate,
+           ROW_NUMBER() OVER (ORDER BY return_rate DESC) AS rank,
+           review_score,
+           comment_count
+    FROM category_seller_stats
+),
+
+canceled_order_reviews AS (
+    SELECT r.review_score,
+           COUNT(*) AS comment_count
+    FROM ne_orders o
+    JOIN order_reviews r ON o.order_id = r.order_id
+    WHERE o.order_status = 'canceled'
+    GROUP BY r.review_score
+),
+review_dist AS (
+    SELECT 'reason_distribution' AS metric_type,
+           NULL AS product_category,
+           NULL AS seller_id,
+           NULL AS total_orders,
+           NULL AS canceled_orders,
+           NULL AS return_rate,
+           NULL AS rank,
+           review_score,
+           comment_count
+    FROM canceled_order_reviews
+)
+SELECT * FROM overall
+UNION ALL
+SELECT * FROM ranked
+UNION ALL
+SELECT * FROM review_dist
+ORDER BY metric_type, rank, review_score]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-10 01:40:33,078 [agents.graph] ERROR: Data analyst error for '查询巴西东北部地区（订单的customer_state为'BA', 'PE', 'CE', 'RN', 'PB', 'AL', 'SE', 'PI', 'MA'': (pymysql.err.ProgrammingError) (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'rank,\n           NULL AS review_score,\n           NULL AS comment_count\n    FROM' at line 18")
+[SQL: WITH
+
+ne_orders AS (
+    SELECT o.order_id, o.order_status,
+           c.customer_state
+    FROM orders o
+    JOIN customers c ON o.customer_id = c.customer_id
+    WHERE c.customer_state IN ('BA', 'PE', 'CE', 'RN', 'PB', 'AL', 'SE', 'PI', 'MA')
+),
+
+overall AS (
+    SELECT 'overall' AS metric_type,
+           NULL AS product_category,
+           NULL AS seller_id,
+           COUNT(DISTINCT order_id) AS total_orders,
+           COUNT(DISTINCT CASE WHEN order_status = 'canceled' THEN order_id END) AS canceled_orders,
+           ROUND(COUNT(DISTINCT CASE WHEN order_status = 'canceled' THEN order_id END) / COUNT(DISTINCT order_id), 4) AS return_rate,
+           NULL AS rank,
+           NULL AS review_score,
+           NULL AS comment_count
+    FROM ne_orders
+),
+
+order_items_expanded AS (
+    SELECT oi.order_id,
+           o.order_status,
+           t.product_category_name_english AS product_category,
+           oi.seller_id
+    FROM ne_orders o
+    JOIN order_items oi ON o.order_id = oi.order_id
+    JOIN products p ON oi.product_id = p.product_id
+    LEFT JOIN product_category_name_translation t ON p.product_category_name = t.product_category_name
+),
+
+category_seller_stats AS (
+    SELECT 'category_seller' AS metric_type,
+           COALESCE(product_category, 'Unknown') AS product_category,
+           seller_id,
+           COUNT(DISTINCT order_id) AS total_orders,
+           COUNT(DISTINCT CASE WHEN order_status = 'canceled' THEN order_id END) AS canceled_orders,
+           ROUND(COUNT(DISTINCT CASE WHEN order_status = 'canceled' THEN order_id END) / COUNT(DISTINCT order_id), 4) AS return_rate,
+           NULL AS rank,
+           NULL AS review_score,
+           NULL AS comment_count
+    FROM order_items_expanded
+    GROUP BY product_category, seller_id
+),
+
+ranked AS (
+    SELECT metric_type,
+           product_category,
+           seller_id,
+           total_orders,
+           canceled_orders,
+           return_rate,
+           ROW_NUMBER() OVER (ORDER BY return_rate DESC) AS rank,
+           review_score,
+           comment_count
+    FROM category_seller_stats
+),
+
+canceled_order_reviews AS (
+    SELECT r.review_score,
+           COUNT(*) AS comment_count
+    FROM ne_orders o
+    JOIN order_reviews r ON o.order_id = r.order_id
+    WHERE o.order_status = 'canceled'
+    GROUP BY r.review_score
+),
+review_dist AS (
+    SELECT 'reason_distribution' AS metric_type,
+           NULL AS product_category,
+           NULL AS seller_id,
+           NULL AS total_orders,
+           NULL AS canceled_orders,
+           NULL AS return_rate,
+           NULL AS rank,
+           review_score,
+           comment_count
+    FROM canceled_order_reviews
+)
+SELECT * FROM overall
+UNION ALL
+SELECT * FROM ranked
+UNION ALL
+SELECT * FROM review_dist
+ORDER BY metric_type, rank, review_score]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-10 01:54:36,191 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for CoordinatorOutput
+2026-05-10 01:54:36,191 [agents.coordinator] WARNING: Pydantic parse failed, using heuristic plan
+2026-05-10 01:57:37,075 [prophet] INFO: n_changepoints greater than number of observations. Using 16.
+2026-05-10 01:59:00,345 [choreographer.browser_async] WARNING: Resorting to unclean kill browser.
+2026-05-10 02:03:25,730 [agents.data_analyst] ERROR: Blocked non-SELECT SQL: (SELECT 'ALL' AS customer_state, AVG(on_time_rate) AS avg_on_time_rate, SUM(delayed_orders) AS total_delayed_orders FROM mv_delivery_perf) UNION ALL (SELECT customer_state, AVG(on_time_rate), SUM(dela
+2026-05-10 02:04:21,062 [agents.data_analyst] ERROR: Blocked non-SELECT SQL: (SELECT 'ALL' AS customer_state, COUNT(*) AS total_delivered, SUM(CASE WHEN order_delivered_customer_date > order_estimated_delivery_date THEN 1 ELSE 0 END) AS delayed_orders, AVG(CASE WHEN order_deli
+2026-05-10 02:08:26,523 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for DataAnalystOutput
+2026-05-10 02:08:26,523 [agents.data_analyst] WARNING: Empty SQL on attempt 1, will retry
+2026-05-10 02:10:41,916 [utils.db] ERROR: Query failed: (pymysql.err.OperationalError) (1054, "Unknown column 't.product_category_english' in 'field list'")
+[SQL: SELECT t.product_category_english AS category_name,
+       COUNT(DISTINCT r.order_id) AS bad_review_order_count,
+       GROUP_CONCAT(DISTINCT r.review_comment_message SEPARATOR ' || ') AS review_comments
+FROM order_reviews r
+JOIN order_items oi ON r.order_id = oi.order_id
+JOIN products p ON oi.product_id = p.product_id
+JOIN product_category_name_translation t ON p.product_category_name = t.product_category_name
+WHERE r.review_score <= 2
+  AND r.review_comment_message IS NOT NULL
+GROUP BY t.product_category_english
+ORDER BY bad_review_order_count DESC
+LIMIT 10]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+Traceback (most recent call last):
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.OperationalError: (1054, "Unknown column 't.product_category_english' in 'field list'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\utils\db.py", line 43, in execute_query
+    result = conn.execute(text(sql), params)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\sql\elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (1054, "Unknown column 't.product_category_english' in 'field list'")
+[SQL: SELECT t.product_category_english AS category_name,
+       COUNT(DISTINCT r.order_id) AS bad_review_order_count,
+       GROUP_CONCAT(DISTINCT r.review_comment_message SEPARATOR ' || ') AS review_comments
+FROM order_reviews r
+JOIN order_items oi ON r.order_id = oi.order_id
+JOIN products p ON oi.product_id = p.product_id
+JOIN product_category_name_translation t ON p.product_category_name = t.product_category_name
+WHERE r.review_score <= 2
+  AND r.review_comment_message IS NOT NULL
+GROUP BY t.product_category_english
+ORDER BY bad_review_order_count DESC
+LIMIT 10]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-05-10 02:10:41,920 [agents.data_analyst] ERROR: Agent execution error (attempt 1): (pymysql.err.OperationalError) (1054, "Unknown column 't.product_category_english' in 'field list'")
+[SQL: SELECT t.product_category_english AS category_name,
+       COUNT(DISTINCT r.order_id) AS bad_review_order_count,
+       GROUP_CONCAT(DISTINCT r.review_comment_message SEPARATOR ' || ') AS review_comments
+FROM order_reviews r
+JOIN order_items oi ON r.order_id = oi.order_id
+JOIN products p ON oi.product_id = p.product_id
+JOIN product_category_name_translation t ON p.product_category_name = t.product_category_name
+WHERE r.review_score <= 2
+  AND r.review_comment_message IS NOT NULL
+GROUP BY t.product_category_english
+ORDER BY bad_review_order_count DESC
+LIMIT 10]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+Traceback (most recent call last):
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.OperationalError: (1054, "Unknown column 't.product_category_english' in 'field list'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\agents\data_analyst.py", line 287, in analyze
+    rows = execute_query(executed_sql)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Business_Intelligence_Analysis\FinalProject\utils\db.py", line 43, in execute_query
+    result = conn.execute(text(sql), params)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\sql\elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (1054, "Unknown column 't.product_category_english' in 'field list'")
+[SQL: SELECT t.product_category_english AS category_name,
+       COUNT(DISTINCT r.order_id) AS bad_review_order_count,
+       GROUP_CONCAT(DISTINCT r.review_comment_message SEPARATOR ' || ') AS review_comments
+FROM order_reviews r
+JOIN order_items oi ON r.order_id = oi.order_id
+JOIN products p ON oi.product_id = p.product_id
+JOIN product_category_name_translation t ON p.product_category_name = t.product_category_name
+WHERE r.review_score <= 2
+  AND r.review_comment_message IS NOT NULL
+GROUP BY t.product_category_english
+ORDER BY bad_review_order_count DESC
+LIMIT 10]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-05-10 02:11:17,698 [choreographer.browser_async] WARNING: Resorting to unclean kill browser.
+2026-05-10 02:11:22,316 [choreographer.browser_async] WARNING: Resorting to unclean kill browser.
+2026-05-10 02:12:28,577 [prophet] INFO: n_changepoints greater than number of observations. Using 16.
+2026-05-10 02:15:57,707 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for CoordinatorOutput
+2026-05-10 02:15:57,707 [agents.coordinator] WARNING: Pydantic parse failed, using heuristic plan
+2026-05-10 02:16:31,008 [utils.db] ERROR: Query failed: (pymysql.err.ProgrammingError) (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'UNION ALL SELECT 'seller_worst' AS question_part, seller_id AS entity, ROUND(avg' at line 1")
+[SQL: SELECT 'delivery_comparison' AS question_part, customer_state AS entity, ROUND(AVG(avg_delivery_days), 2) AS value1, ROUND((SELECT AVG(avg_delivery_days) FROM mv_delivery_perf), 2) AS overall_avg FROM mv_delivery_perf GROUP BY customer_state ORDER BY value1 DESC LIMIT 10 UNION ALL SELECT 'seller_worst' AS question_part, seller_id AS entity, ROUND(avg_review_score, 2) AS value1, total_orders AS value2 FROM mv_seller_perf ORDER BY value1 ASC LIMIT 10]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+Traceback (most recent call last):
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.ProgrammingError: (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'UNION ALL SELECT 'seller_worst' AS question_part, seller_id AS entity, ROUND(avg' at line 1")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\utils\db.py", line 43, in execute_query
+    result = conn.execute(text(sql), params)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\sql\elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.ProgrammingError: (pymysql.err.ProgrammingError) (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'UNION ALL SELECT 'seller_worst' AS question_part, seller_id AS entity, ROUND(avg' at line 1")
+[SQL: SELECT 'delivery_comparison' AS question_part, customer_state AS entity, ROUND(AVG(avg_delivery_days), 2) AS value1, ROUND((SELECT AVG(avg_delivery_days) FROM mv_delivery_perf), 2) AS overall_avg FROM mv_delivery_perf GROUP BY customer_state ORDER BY value1 DESC LIMIT 10 UNION ALL SELECT 'seller_worst' AS question_part, seller_id AS entity, ROUND(avg_review_score, 2) AS value1, total_orders AS value2 FROM mv_seller_perf ORDER BY value1 ASC LIMIT 10]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-10 02:16:31,009 [agents.data_analyst] ERROR: Agent execution error (attempt 1): (pymysql.err.ProgrammingError) (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'UNION ALL SELECT 'seller_worst' AS question_part, seller_id AS entity, ROUND(avg' at line 1")
+[SQL: SELECT 'delivery_comparison' AS question_part, customer_state AS entity, ROUND(AVG(avg_delivery_days), 2) AS value1, ROUND((SELECT AVG(avg_delivery_days) FROM mv_delivery_perf), 2) AS overall_avg FROM mv_delivery_perf GROUP BY customer_state ORDER BY value1 DESC LIMIT 10 UNION ALL SELECT 'seller_worst' AS question_part, seller_id AS entity, ROUND(avg_review_score, 2) AS value1, total_orders AS value2 FROM mv_seller_perf ORDER BY value1 ASC LIMIT 10]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+Traceback (most recent call last):
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.ProgrammingError: (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'UNION ALL SELECT 'seller_worst' AS question_part, seller_id AS entity, ROUND(avg' at line 1")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\agents\data_analyst.py", line 287, in analyze
+    rows = execute_query(executed_sql)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Business_Intelligence_Analysis\FinalProject\utils\db.py", line 43, in execute_query
+    result = conn.execute(text(sql), params)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\sql\elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.ProgrammingError: (pymysql.err.ProgrammingError) (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'UNION ALL SELECT 'seller_worst' AS question_part, seller_id AS entity, ROUND(avg' at line 1")
+[SQL: SELECT 'delivery_comparison' AS question_part, customer_state AS entity, ROUND(AVG(avg_delivery_days), 2) AS value1, ROUND((SELECT AVG(avg_delivery_days) FROM mv_delivery_perf), 2) AS overall_avg FROM mv_delivery_perf GROUP BY customer_state ORDER BY value1 DESC LIMIT 10 UNION ALL SELECT 'seller_worst' AS question_part, seller_id AS entity, ROUND(avg_review_score, 2) AS value1, total_orders AS value2 FROM mv_seller_perf ORDER BY value1 ASC LIMIT 10]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-10 02:17:04,576 [agents.data_analyst] ERROR: Blocked non-SELECT SQL: (SELECT 'delivery_high' AS question_part, d.customer_state AS entity, ROUND(AVG(d.avg_delivery_days), 2) AS metric1, ROUND((SELECT AVG(avg_delivery_days) FROM mv_delivery_perf), 2) AS metric2 FROM mv_
+2026-05-10 02:18:01,821 [agents.data_analyst] ERROR: Blocked non-SELECT SQL: (
+    SELECT 
+        'high_delivery' AS question_part,
+        customer_state AS entity,
+        ROUND(AVG(avg_delivery_days), 2) AS metric1,
+        ROUND((SELECT AVG(avg_delivery_days) FROM mv_deli
+2026-05-10 02:18:01,821 [agents.graph] ERROR: Data analyst error for '为什么某些州的平均配送时长显著高于全国均值？哪些卖家的差评率最高？': Agent generated non-SELECT SQL — blocked.
+2026-05-10 02:20:14,227 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for CoordinatorOutput
+2026-05-10 02:20:14,227 [agents.coordinator] WARNING: Pydantic parse failed, using heuristic plan
+2026-05-10 02:26:01,065 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for CoordinatorOutput
+2026-05-10 02:26:01,065 [agents.coordinator] WARNING: Pydantic parse failed, using heuristic plan
+2026-05-10 02:27:36,027 [prophet] INFO: n_changepoints greater than number of observations. Using 16.
+2026-05-10 02:29:55,771 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for CoordinatorOutput
+2026-05-10 02:29:55,771 [agents.coordinator] WARNING: Pydantic parse failed, using heuristic plan
+2026-05-10 02:30:19,119 [agents.data_analyst] ERROR: Blocked non-SELECT SQL: (
+  SELECT 
+    ym,
+    customer_state,
+    total_gmv,
+    RANK() OVER (PARTITION BY ym ORDER BY total_gmv DESC) AS state_rank
+  FROM mv_state_sales
+  WHERE ym LIKE '2017-%'
+)
+UNION ALL
+(
+  SELECT 
+  
+2026-05-10 02:35:28,119 [choreographer.browser_async] WARNING: Resorting to unclean kill browser.
+2026-05-10 02:35:32,860 [choreographer.browser_async] WARNING: Resorting to unclean kill browser.
+2026-05-10 02:37:58,389 [utils.db] ERROR: Query failed: (pymysql.err.ProgrammingError) (1146, "Table 'MABI-team-DB.olist_order_reviews_dataset' doesn't exist")
+[SQL: SELECT t.product_category_name_english AS category_name, COUNT(*) AS low_review_count
+FROM olist_order_reviews_dataset r
+JOIN olist_orders_dataset o ON r.order_id = o.order_id
+JOIN olist_order_items_dataset oi ON o.order_id = oi.order_id
+JOIN olist_products_dataset p ON oi.product_id = p.product_id
+JOIN product_category_name_translation t ON p.product_category_name = t.product_category_name
+WHERE r.review_score <= 2
+GROUP BY t.product_category_name_english
+ORDER BY low_review_count DESC
+LIMIT 10]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+Traceback (most recent call last):
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.ProgrammingError: (1146, "Table 'MABI-team-DB.olist_order_reviews_dataset' doesn't exist")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\utils\db.py", line 43, in execute_query
+    result = conn.execute(text(sql), params)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\sql\elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.ProgrammingError: (pymysql.err.ProgrammingError) (1146, "Table 'MABI-team-DB.olist_order_reviews_dataset' doesn't exist")
+[SQL: SELECT t.product_category_name_english AS category_name, COUNT(*) AS low_review_count
+FROM olist_order_reviews_dataset r
+JOIN olist_orders_dataset o ON r.order_id = o.order_id
+JOIN olist_order_items_dataset oi ON o.order_id = oi.order_id
+JOIN olist_products_dataset p ON oi.product_id = p.product_id
+JOIN product_category_name_translation t ON p.product_category_name = t.product_category_name
+WHERE r.review_score <= 2
+GROUP BY t.product_category_name_english
+ORDER BY low_review_count DESC
+LIMIT 10]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-10 02:37:58,394 [agents.data_analyst] ERROR: Agent execution error (attempt 1): (pymysql.err.ProgrammingError) (1146, "Table 'MABI-team-DB.olist_order_reviews_dataset' doesn't exist")
+[SQL: SELECT t.product_category_name_english AS category_name, COUNT(*) AS low_review_count
+FROM olist_order_reviews_dataset r
+JOIN olist_orders_dataset o ON r.order_id = o.order_id
+JOIN olist_order_items_dataset oi ON o.order_id = oi.order_id
+JOIN olist_products_dataset p ON oi.product_id = p.product_id
+JOIN product_category_name_translation t ON p.product_category_name = t.product_category_name
+WHERE r.review_score <= 2
+GROUP BY t.product_category_name_english
+ORDER BY low_review_count DESC
+LIMIT 10]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+Traceback (most recent call last):
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.ProgrammingError: (1146, "Table 'MABI-team-DB.olist_order_reviews_dataset' doesn't exist")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\agents\data_analyst.py", line 303, in analyze
+    rows = execute_query(executed_sql)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Business_Intelligence_Analysis\FinalProject\utils\db.py", line 43, in execute_query
+    result = conn.execute(text(sql), params)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\sql\elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.ProgrammingError: (pymysql.err.ProgrammingError) (1146, "Table 'MABI-team-DB.olist_order_reviews_dataset' doesn't exist")
+[SQL: SELECT t.product_category_name_english AS category_name, COUNT(*) AS low_review_count
+FROM olist_order_reviews_dataset r
+JOIN olist_orders_dataset o ON r.order_id = o.order_id
+JOIN olist_order_items_dataset oi ON o.order_id = oi.order_id
+JOIN olist_products_dataset p ON oi.product_id = p.product_id
+JOIN product_category_name_translation t ON p.product_category_name = t.product_category_name
+WHERE r.review_score <= 2
+GROUP BY t.product_category_name_english
+ORDER BY low_review_count DESC
+LIMIT 10]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-10 02:40:44,266 [prophet] INFO: n_changepoints greater than number of observations. Using 16.
+2026-05-10 02:41:38,740 [prophet] INFO: n_changepoints greater than number of observations. Using 16.
+2026-05-10 02:42:52,906 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for CoordinatorOutput
+2026-05-10 02:42:52,906 [agents.coordinator] WARNING: Pydantic parse failed, using heuristic plan
+2026-05-10 02:43:01,364 [choreographer.browser_async] WARNING: Resorting to unclean kill browser.
+2026-05-10 02:43:53,380 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for CoordinatorOutput
+2026-05-10 02:43:53,380 [agents.coordinator] WARNING: Pydantic parse failed, using heuristic plan
+2026-05-10 02:55:29,359 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for CoordinatorOutput
+2026-05-10 02:55:29,359 [agents.coordinator] WARNING: Pydantic parse failed, using heuristic plan
+2026-05-10 02:55:34,066 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 02:56:34,892 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for CoordinatorOutput
+2026-05-10 02:56:34,893 [agents.coordinator] WARNING: Pydantic parse failed, using heuristic plan
+2026-05-10 02:56:51,686 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 02:56:55,476 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 02:58:09,129 [prophet] INFO: n_changepoints greater than number of observations. Using 16.
+2026-05-10 02:58:12,285 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 02:59:16,177 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 02:59:20,171 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 03:00:40,375 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for CoordinatorOutput
+2026-05-10 03:00:40,376 [agents.coordinator] WARNING: Pydantic parse failed, using heuristic plan
+2026-05-10 03:01:13,646 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 03:01:17,968 [choreographer.browser_async] WARNING: Resorting to unclean kill browser.
+2026-05-10 03:01:22,494 [choreographer.browser_async] WARNING: Resorting to unclean kill browser.
+2026-05-10 03:03:58,604 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 03:05:27,103 [utils.db] ERROR: Query failed: (pymysql.err.ProgrammingError) (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'UNION ALL SELECT 'Overall Average', SUM(total_transactions), ROUND(SUM(total_tra' at line 1")
+[SQL: SELECT payment_type, total_transactions, avg_installments FROM mv_payment_dist ORDER BY total_transactions DESC LIMIT 1 UNION ALL SELECT 'Overall Average', SUM(total_transactions), ROUND(SUM(total_transactions * avg_installments) / SUM(total_transactions), 2) FROM mv_payment_dist]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+Traceback (most recent call last):
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.ProgrammingError: (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'UNION ALL SELECT 'Overall Average', SUM(total_transactions), ROUND(SUM(total_tra' at line 1")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\utils\db.py", line 43, in execute_query
+    result = conn.execute(text(sql), params)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\sql\elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.ProgrammingError: (pymysql.err.ProgrammingError) (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'UNION ALL SELECT 'Overall Average', SUM(total_transactions), ROUND(SUM(total_tra' at line 1")
+[SQL: SELECT payment_type, total_transactions, avg_installments FROM mv_payment_dist ORDER BY total_transactions DESC LIMIT 1 UNION ALL SELECT 'Overall Average', SUM(total_transactions), ROUND(SUM(total_transactions * avg_installments) / SUM(total_transactions), 2) FROM mv_payment_dist]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-10 03:05:27,108 [agents.data_analyst] ERROR: Agent execution error (attempt 1): (pymysql.err.ProgrammingError) (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'UNION ALL SELECT 'Overall Average', SUM(total_transactions), ROUND(SUM(total_tra' at line 1")
+[SQL: SELECT payment_type, total_transactions, avg_installments FROM mv_payment_dist ORDER BY total_transactions DESC LIMIT 1 UNION ALL SELECT 'Overall Average', SUM(total_transactions), ROUND(SUM(total_transactions * avg_installments) / SUM(total_transactions), 2) FROM mv_payment_dist]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+Traceback (most recent call last):
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.ProgrammingError: (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'UNION ALL SELECT 'Overall Average', SUM(total_transactions), ROUND(SUM(total_tra' at line 1")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\agents\data_analyst.py", line 303, in analyze
+    rows = execute_query(executed_sql)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Business_Intelligence_Analysis\FinalProject\utils\db.py", line 43, in execute_query
+    result = conn.execute(text(sql), params)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\sql\elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 157, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\cursors.py", line 328, in _query
+    conn.query(q)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 826, in _read_query_result
+    result.read()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\anaconda3\envs\MABI\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.ProgrammingError: (pymysql.err.ProgrammingError) (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'UNION ALL SELECT 'Overall Average', SUM(total_transactions), ROUND(SUM(total_tra' at line 1")
+[SQL: SELECT payment_type, total_transactions, avg_installments FROM mv_payment_dist ORDER BY total_transactions DESC LIMIT 1 UNION ALL SELECT 'Overall Average', SUM(total_transactions), ROUND(SUM(total_transactions * avg_installments) / SUM(total_transactions), 2) FROM mv_payment_dist]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-10 03:05:45,102 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 03:07:04,470 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 03:07:10,552 [choreographer.browser_async] WARNING: Resorting to unclean kill browser.
+2026-05-10 03:09:30,797 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 03:09:33,051 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 03:10:36,013 [prophet] INFO: n_changepoints greater than number of observations. Using 16.
+2026-05-10 03:10:40,330 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 03:11:46,585 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 03:11:50,271 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 03:12:48,141 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 03:14:03,395 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 03:14:07,388 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 03:15:25,744 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for CoordinatorOutput
+2026-05-10 03:15:25,744 [agents.coordinator] WARNING: Pydantic parse failed, using heuristic plan
+2026-05-10 03:15:41,953 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 03:15:45,707 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 03:15:56,174 [choreographer.browser_async] WARNING: Resorting to unclean kill browser.
+2026-05-10 12:47:04,912 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 12:48:11,020 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 12:48:14,502 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 12:49:01,316 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for CoordinatorOutput
+2026-05-10 12:49:01,316 [agents.coordinator] WARNING: Pydantic parse failed, using heuristic plan
+2026-05-10 12:49:18,731 [prophet] INFO: n_changepoints greater than number of observations. Using 16.
+2026-05-10 12:49:23,341 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 12:50:20,468 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 12:50:20,575 [prophet] INFO: n_changepoints greater than number of observations. Using 16.
+2026-05-10 12:50:25,346 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 12:52:17,311 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 12:52:21,319 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 12:53:06,065 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 12:54:04,382 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 12:55:58,415 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 12:56:02,458 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 12:58:41,008 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 12:58:44,844 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 12:59:54,040 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 12:59:54,121 [prophet] INFO: n_changepoints greater than number of observations. Using 16.
+2026-05-10 12:59:58,810 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 13:00:57,053 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 13:01:01,058 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 13:02:00,494 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 13:03:02,994 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 13:03:07,065 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 13:04:09,699 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 13:04:13,591 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 13:20:39,745 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 13:22:14,689 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 13:22:18,702 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 13:23:56,626 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 13:23:56,794 [prophet] INFO: n_changepoints greater than number of observations. Using 16.
+2026-05-10 13:23:59,433 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 13:25:05,303 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 13:25:08,969 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 13:26:43,568 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 13:27:30,437 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 13:28:40,179 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 13:30:07,497 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 13:30:12,048 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 13:31:46,640 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 13:31:50,105 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 13:33:16,208 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 13:33:16,283 [prophet] INFO: n_changepoints greater than number of observations. Using 16.
+2026-05-10 13:33:18,969 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 13:34:14,517 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 13:34:18,039 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 13:35:18,449 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 13:36:24,445 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 13:36:28,356 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 13:37:32,601 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 13:37:36,627 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 13:40:43,530 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 13:42:18,497 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 13:42:22,088 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 13:44:02,290 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 13:44:02,444 [prophet] INFO: n_changepoints greater than number of observations. Using 16.
+2026-05-10 13:44:05,984 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 13:45:09,994 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 13:45:13,874 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 13:46:39,506 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 13:48:11,103 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 13:50:43,641 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 13:51:55,847 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 13:51:58,829 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 13:53:43,780 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 13:53:48,081 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 13:55:04,475 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 13:55:04,556 [prophet] INFO: n_changepoints greater than number of observations. Using 16.
+2026-05-10 13:55:09,388 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 13:56:10,073 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 13:56:13,800 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 13:58:39,416 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 14:00:38,716 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 14:00:43,324 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 14:02:26,546 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 14:02:30,847 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 14:06:09,002 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 14:07:13,625 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 14:07:17,369 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 14:08:17,080 [prophet] INFO: n_changepoints greater than number of observations. Using 16.
+2026-05-10 14:08:20,677 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 14:09:13,145 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 14:09:16,750 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 14:10:16,060 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 14:11:05,521 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 14:12:10,172 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 14:13:28,973 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 14:13:32,680 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 14:14:49,607 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 14:14:52,983 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 14:16:02,996 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 14:16:03,076 [prophet] INFO: n_changepoints greater than number of observations. Using 16.
+2026-05-10 14:16:06,401 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 14:17:03,008 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 14:17:06,618 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 14:18:07,966 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 14:19:00,723 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for CoordinatorOutput
+2026-05-10 14:19:00,723 [agents.coordinator] WARNING: Pydantic parse failed, using heuristic plan
+2026-05-10 14:19:18,231 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 14:19:21,772 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 14:20:38,507 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 14:20:42,792 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 14:56:00,832 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 14:57:11,438 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 14:57:14,696 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 14:58:15,426 [agents.data_analyst] ERROR: Agent execution error (attempt 1): name 'time' is not defined
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\agents\data_analyst.py", line 333, in analyze
+    sql_t0 = time.time()
+             ^^^^
+NameError: name 'time' is not defined. Did you forget to import 'time'
+2026-05-10 14:58:15,427 [agents.graph] ERROR: Data analyst error for '[Original question]: 根据历史订单趋势，预测未来6周的销售额
+[Sub-task]: 查询历史订单数据，按周聚合销售额，生成时间序列': name 'time' is not defined
+2026-05-10 14:58:31,099 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 14:58:31,247 [prophet] INFO: n_changepoints greater than number of observations. Using 16.
+2026-05-10 14:58:34,658 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 14:59:30,780 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 14:59:34,166 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 15:01:16,426 [agents.data_analyst] ERROR: Agent execution error (attempt 1): name 'time' is not defined
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\agents\data_analyst.py", line 333, in analyze
+    sql_t0 = time.time()
+             ^^^^
+NameError: name 'time' is not defined. Did you forget to import 'time'
+2026-05-10 15:01:16,426 [agents.graph] ERROR: Data analyst error for '[Original question]: 2017 年 GMV 是多少？按月和各州排名的趋势怎样？
+[Sub-task]: 查询2017年GMV总额，并按月、按': name 'time' is not defined
+2026-05-10 15:01:33,539 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 15:01:36,048 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 15:02:56,824 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 15:04:49,002 [agents.data_analyst] ERROR: Agent execution error (attempt 1): name 'time' is not defined
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\agents\data_analyst.py", line 333, in analyze
+    sql_t0 = time.time()
+             ^^^^
+NameError: name 'time' is not defined. Did you forget to import 'time'
+2026-05-10 15:04:49,002 [agents.graph] ERROR: Data analyst error for '[Original question]: 哪种支付方式最受欢迎？平均分期数是多少？
+[Sub-task]: Query payment_type and pay': name 'time' is not defined
+2026-05-10 15:04:53,137 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 15:05:29,924 [agents.data_analyst] ERROR: Agent execution error (attempt 1): name 'time' is not defined
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\agents\data_analyst.py", line 333, in analyze
+    sql_t0 = time.time()
+             ^^^^
+NameError: name 'time' is not defined. Did you forget to import 'time'
+2026-05-10 15:05:29,925 [agents.graph] ERROR: Data analyst error for '[Original question]: 产品的重量、尺寸与运费之间有什么关系？
+[Sub-task]: 从订单与产品表中提取产品的重量、尺寸（长度、宽度、高度': name 'time' is not defined
+2026-05-10 15:05:33,805 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 15:06:18,861 [agents.data_analyst] ERROR: Agent execution error (attempt 1): name 'time' is not defined
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\agents\data_analyst.py", line 333, in analyze
+    sql_t0 = time.time()
+             ^^^^
+NameError: name 'time' is not defined. Did you forget to import 'time'
+2026-05-10 15:06:18,862 [agents.graph] ERROR: Data analyst error for '[Original question]: Top 10 差评品类及其主要差评原因是什么？
+[Sub-task]: 查询订单评论数据，统计每个品类的差评（评分<=': name 'time' is not defined
+2026-05-10 15:06:35,655 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 15:06:39,547 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 15:07:14,252 [agents.data_analyst] ERROR: Agent execution error (attempt 1): name 'time' is not defined
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\agents\data_analyst.py", line 333, in analyze
+    sql_t0 = time.time()
+             ^^^^
+NameError: name 'time' is not defined. Did you forget to import 'time'
+2026-05-10 15:07:14,253 [agents.graph] ERROR: Data analyst error for '[Original question]: 根据历史订单趋势，预测未来 6 周的销售额，并给出趋势解读。
+[Sub-task]: 查询历史订单数据，包括日期和销售': name 'time' is not defined
+2026-05-10 15:07:30,032 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 15:07:30,110 [prophet] INFO: n_changepoints greater than number of observations. Using 16.
+2026-05-10 15:07:32,795 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 15:08:22,052 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 15:08:25,532 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 15:09:21,280 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 15:24:24,601 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 15:25:33,315 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 15:25:37,238 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 15:26:46,566 [agents.data_analyst] ERROR: Agent execution error (attempt 1): name 'time' is not defined
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\agents\data_analyst.py", line 333, in analyze
+    sql_t0 = time.time()
+             ^^^^
+NameError: name 'time' is not defined. Did you forget to import 'time'
+2026-05-10 15:26:46,567 [agents.graph] ERROR: Data analyst error for '[Original question]: 根据历史订单趋势，预测未来6周的销售额
+[Sub-task]: 从订单数据中按周汇总历史销售额，提取至少过去52周的周': name 'time' is not defined
+2026-05-10 15:27:04,179 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 15:27:04,320 [prophet] INFO: n_changepoints greater than number of observations. Using 16.
+2026-05-10 15:27:08,991 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 15:28:00,708 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 15:28:04,218 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 15:29:06,243 [agents.data_analyst] ERROR: Blocked non-SELECT SQL: (
+  SELECT 'TOTAL' AS level, NULL AS ym, NULL AS customer_state, CAST(SUM(total_gmv) AS DECIMAL(12,2)) AS total_gmv, NULL AS rank
+  FROM mv_state_sales
+  WHERE ym LIKE '2017%'
+)
+UNION ALL
+(
+  SELECT '
+2026-05-10 15:29:29,637 [agents.data_analyst] ERROR: Agent execution error (attempt 2): name 'time' is not defined
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\agents\data_analyst.py", line 333, in analyze
+    sql_t0 = time.time()
+             ^^^^
+NameError: name 'time' is not defined. Did you forget to import 'time'
+2026-05-10 15:29:29,637 [agents.graph] ERROR: Data analyst error for '[Original question]: 2017 年 GMV 是多少？按月和各州排名的趋势怎样？
+[Sub-task]: 查询2017年全年GMV总额，并按月': name 'time' is not defined
+2026-05-10 15:29:33,276 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 15:30:03,894 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 15:31:01,958 [agents.data_analyst] ERROR: Agent execution error (attempt 1): name 'time' is not defined
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\agents\data_analyst.py", line 333, in analyze
+    sql_t0 = time.time()
+             ^^^^
+NameError: name 'time' is not defined. Did you forget to import 'time'
+2026-05-10 15:31:01,958 [agents.graph] ERROR: Data analyst error for '[Original question]: 哪种支付方式最受欢迎？平均分期数是多少？
+[Sub-task]: 统计每种支付方式的订单数量，计算每种支付方式的平均分': name 'time' is not defined
+2026-05-10 15:31:05,439 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 15:31:23,154 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for CoordinatorOutput
+2026-05-10 15:31:23,154 [agents.coordinator] WARNING: Pydantic parse failed, using heuristic plan
+2026-05-10 15:31:57,097 [agents.data_analyst] ERROR: Agent execution error (attempt 1): name 'time' is not defined
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\agents\data_analyst.py", line 333, in analyze
+    sql_t0 = time.time()
+             ^^^^
+NameError: name 'time' is not defined. Did you forget to import 'time'
+2026-05-10 15:31:57,098 [agents.graph] ERROR: Data analyst error for '产品的重量、尺寸与运费之间有什么关系？': name 'time' is not defined
+2026-05-10 15:31:59,302 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 15:32:36,634 [agents.data_analyst] ERROR: Agent execution error (attempt 1): name 'time' is not defined
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\agents\data_analyst.py", line 333, in analyze
+    sql_t0 = time.time()
+             ^^^^
+NameError: name 'time' is not defined. Did you forget to import 'time'
+2026-05-10 15:32:36,636 [agents.graph] ERROR: Data analyst error for '[Original question]: Top 10 差评品类及其主要差评原因是什么？
+[Sub-task]: 查询所有差评订单，按产品品类分组统计差评数量，': name 'time' is not defined
+2026-05-10 15:32:54,704 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 15:32:58,901 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 15:34:01,423 [agents.data_analyst] ERROR: Agent execution error (attempt 1): name 'time' is not defined
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\agents\data_analyst.py", line 333, in analyze
+    sql_t0 = time.time()
+             ^^^^
+NameError: name 'time' is not defined. Did you forget to import 'time'
+2026-05-10 15:34:01,424 [agents.graph] ERROR: Data analyst error for '[Original question]: 根据历史订单趋势，预测未来 6 周的销售额，并给出趋势解读。
+[Sub-task]: 查询历史订单数据，使用时间序列模': name 'time' is not defined
+2026-05-10 15:34:17,671 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 15:34:17,746 [prophet] INFO: n_changepoints greater than number of observations. Using 16.
+2026-05-10 15:34:22,811 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 15:35:07,929 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 15:35:11,953 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 15:36:05,991 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 15:37:14,396 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 15:37:17,941 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 15:38:24,030 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 15:38:28,638 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 15:42:11,092 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 15:43:13,250 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 15:43:17,341 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 15:44:29,320 [agents.data_analyst] ERROR: Agent execution error (attempt 1): name 'time' is not defined
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\agents\data_analyst.py", line 333, in analyze
+    sql_t0 = time.time()
+             ^^^^
+NameError: name 'time' is not defined. Did you forget to import 'time'
+2026-05-10 15:44:29,322 [agents.graph] ERROR: Data analyst error for '[Original question]: 根据历史订单趋势，预测未来6周的销售额
+[Sub-task]: 查询历史订单数据，按周聚合销售额，输出时间序列数据': name 'time' is not defined
+2026-05-10 15:44:47,192 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 15:44:47,331 [prophet] INFO: n_changepoints greater than number of observations. Using 16.
+2026-05-10 15:44:50,503 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 15:45:44,791 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 15:45:49,406 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 15:47:13,345 [agents.data_analyst] ERROR: Agent execution error (attempt 1): name 'time' is not defined
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\agents\data_analyst.py", line 333, in analyze
+    sql_t0 = time.time()
+             ^^^^
+NameError: name 'time' is not defined. Did you forget to import 'time'
+2026-05-10 15:47:13,346 [agents.graph] ERROR: Data analyst error for '[Original question]: 2017 年 GMV 是多少？按月和各州排名的趋势怎样？
+[Sub-task]: 查询2017年每月各州的GMV数据，': name 'time' is not defined
+2026-05-10 15:47:17,193 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 15:48:25,664 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 15:50:09,168 [agents.data_analyst] ERROR: Agent execution error (attempt 1): name 'time' is not defined
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\agents\data_analyst.py", line 333, in analyze
+    sql_t0 = time.time()
+             ^^^^
+NameError: name 'time' is not defined. Did you forget to import 'time'
+2026-05-10 15:50:09,168 [agents.graph] ERROR: Data analyst error for '[Original question]: 哪种支付方式最受欢迎？平均分期数是多少？
+[Sub-task]: 查询各支付方式的订单数量或占比以判断最受欢迎的方式，': name 'time' is not defined
+2026-05-10 15:50:13,617 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 15:51:36,782 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for DataAnalystOutput
+2026-05-10 15:51:36,782 [agents.data_analyst] WARNING: Empty SQL on attempt 1, will retry
+2026-05-10 15:53:14,664 [agents.data_analyst] ERROR: Agent execution error (attempt 2): name 'time' is not defined
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\agents\data_analyst.py", line 333, in analyze
+    sql_t0 = time.time()
+             ^^^^
+NameError: name 'time' is not defined. Did you forget to import 'time'
+2026-05-10 15:53:14,665 [agents.graph] ERROR: Data analyst error for '[Original question]: 产品的重量、尺寸与运费之间有什么关系？
+[Sub-task]: 查询订单数据中的产品重量、尺寸和运费字段，计算重量与运': name 'time' is not defined
+2026-05-10 15:53:19,099 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 15:54:00,026 [agents.data_analyst] ERROR: Agent execution error (attempt 1): name 'time' is not defined
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\agents\data_analyst.py", line 333, in analyze
+    sql_t0 = time.time()
+             ^^^^
+NameError: name 'time' is not defined. Did you forget to import 'time'
+2026-05-10 15:54:00,027 [agents.graph] ERROR: Data analyst error for '[Original question]: Top 10 差评品类及其主要差评原因是什么？
+[Sub-task]: Query the top 10 produc': name 'time' is not defined
+2026-05-10 15:54:17,698 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 15:54:20,807 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 15:55:08,522 [agents.data_analyst] ERROR: Agent execution error (attempt 1): name 'time' is not defined
+Traceback (most recent call last):
+  File "D:\Business_Intelligence_Analysis\FinalProject\agents\data_analyst.py", line 333, in analyze
+    sql_t0 = time.time()
+             ^^^^
+NameError: name 'time' is not defined. Did you forget to import 'time'
+2026-05-10 15:55:08,522 [agents.graph] ERROR: Data analyst error for '[Original question]: 根据历史订单趋势，预测未来 6 周的销售额，并给出趋势解读。
+[Sub-task]: 提取历史订单数据，包括日期和销售': name 'time' is not defined
+2026-05-10 15:55:26,124 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 15:55:26,205 [prophet] INFO: n_changepoints greater than number of observations. Using 16.
+2026-05-10 15:55:29,639 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 15:56:21,834 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 15:56:26,365 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 15:57:20,158 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 15:58:26,750 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 15:58:30,603 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 15:59:33,997 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 15:59:37,796 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 16:02:32,506 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 16:04:07,427 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 16:04:11,381 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 16:05:36,967 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 16:05:37,118 [prophet] INFO: n_changepoints greater than number of observations. Using 16.
+2026-05-10 16:05:42,060 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 16:06:40,024 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 16:06:43,612 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 16:07:53,960 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 16:09:19,664 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 16:11:16,956 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 16:12:23,996 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 16:12:27,368 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 16:13:30,961 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 16:13:34,095 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 16:14:30,495 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 16:14:30,578 [prophet] INFO: n_changepoints greater than number of observations. Using 16.
+2026-05-10 16:14:33,468 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 16:15:36,116 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 16:15:40,633 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 16:16:56,617 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 16:18:41,391 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 16:18:45,234 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 16:20:31,379 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 16:20:35,012 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 16:22:26,821 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 16:23:42,025 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 16:23:45,948 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 16:25:10,621 [prophet] INFO: n_changepoints greater than number of observations. Using 16.
+2026-05-10 16:25:13,044 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 16:26:17,283 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 16:26:20,969 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 16:27:11,797 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 16:28:09,048 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 16:28:12,905 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 16:28:55,074 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 16:29:41,502 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 16:29:43,867 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 16:30:37,508 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 16:30:40,266 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 16:31:41,091 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 16:31:41,171 [prophet] INFO: n_changepoints greater than number of observations. Using 16.
+2026-05-10 16:31:44,260 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 16:32:48,074 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 16:32:48,167 [prophet] INFO: n_changepoints greater than number of observations. Using 16.
+2026-05-10 16:32:53,330 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 16:33:49,477 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 16:34:58,171 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 16:35:02,604 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 16:36:05,284 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 16:36:09,429 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput

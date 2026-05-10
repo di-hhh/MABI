@@ -1,9 +1,10 @@
 """Time Series Predictor — Prophet-based forecasting on mv_monthly_sales.
 
-Supports dynamic forecast granularity:
-- weeks=6 (default) → weekly forecast for next 6 weeks
-- days=7 → daily forecast for next 7 days
-- months=N → monthly forecast for next N months
+Supports dynamic forecast granularity (Bug 24):
+- ≤1 week: daily
+- >1 week and ≤12 weeks: weekly
+- >12 weeks and ≤12 months: monthly
+- >12 months: annual
 """
 import logging
 import pandas as pd
@@ -41,45 +42,38 @@ def _train_prophet(df: pd.DataFrame) -> Prophet:
     return model
 
 
-def _build_weekly_forecast(model: Prophet, df: pd.DataFrame, weeks: int) -> pd.DataFrame:
-    """Generate weekly forecast for the next N weeks."""
-    # Expand historical to daily, then aggregate to weekly for forecast period
-    future = model.make_future_dataframe(periods=weeks * 7, freq="D")
-    forecast_df = model.predict(future)
-    last_date = df["ds"].max()
+def _determine_granularity(weeks: float) -> tuple:
+    """Determine forecast granularity and periods based on horizon.
 
-    # Keep only future rows
-    future_fc = forecast_df[forecast_df["ds"] > last_date].copy()
-    # Group by ISO week
-    future_fc["week"] = future_fc["ds"].dt.isocalendar().week.astype(int)
-    future_fc["year"] = future_fc["ds"].dt.isocalendar().year.astype(int)
-    future_fc["week_label"] = future_fc["ds"].dt.strftime("%Y-W%V")
-
-    weekly = future_fc.groupby("week_label", sort=False).agg(
-        ds=("ds", "first"),
-        yhat=("yhat", "mean"),
-        yhat_lower=("yhat_lower", "mean"),
-        yhat_upper=("yhat_upper", "mean"),
-    ).reset_index(drop=True)
-
-    expected_weeks = min(weeks, len(weekly))
-    return weekly.head(expected_weeks)
+    Returns: (granularity: str, periods: int, freq: str)
+    """
+    if weeks <= 1:
+        return ("daily", int(weeks * 7), "D")
+    elif weeks <= 12:
+        return ("weekly", int(weeks), "W")
+    elif weeks <= 48:
+        # Monthly: weeks / ~4.33 = number of months
+        return ("monthly", max(1, round(weeks / 4.33)), "MS")
+    else:
+        # Annual: weeks / ~52 = number of years
+        return ("annual", max(1, round(weeks / 52)), "YS")
 
 
 def forecast_monthly(weeks: int = 6) -> dict:
-    """Forecast sales for the next N weeks using Prophet.
+    """Forecast sales using Prophet with dynamic granularity.
 
-    Uses weekly aggregation for fine-grained forecast with dynamic x-axis.
-    For very short forecasts (<=7 days), uses daily granularity.
+    Args:
+        weeks: Forecast horizon in weeks.
 
     Returns:
         {
-            "forecast": list[dict] — forecast rows with ds, yhat, yhat_lower, yhat_upper, ci_range,
+            "forecast": list[dict] — forecast rows,
             "historical": list[dict] — historical rows,
             "model_summary": str,
             "last_historical_date": str,
-            "forecast_granularity": "weekly" | "daily",
-            "trend_direction": "up" | "down" | "flat"
+            "forecast_granularity": "daily"|"weekly"|"monthly"|"annual",
+            "forecast_periods": int,
+            "trend_direction": "up"|"down"|"flat"
         }
     """
     logger.info("Training Prophet forecast for %d weeks...", weeks)
@@ -90,21 +84,28 @@ def forecast_monthly(weeks: int = 6) -> dict:
 
     model = _train_prophet(df)
 
-    # Dynamic granularity
-    if weeks <= 1:
-        # Daily forecast for very short horizons
-        future = model.make_future_dataframe(periods=weeks * 7, freq="D")
-        granularity = "daily"
+    granularity, periods, freq = _determine_granularity(weeks)
+    logger.info("Forecast granularity: %s, periods: %d, freq: %s", granularity, periods, freq)
+
+    # Build future dataframe with appropriate frequency
+    if granularity == "annual":
+        # For annual, we need to extend far enough
+        future_days = weeks * 7 + 30
+        future = model.make_future_dataframe(periods=future_days, freq="D")
+    elif granularity == "monthly":
+        future = model.make_future_dataframe(periods=periods, freq="MS")
     else:
-        # Weekly aggregation for longer horizons
-        future = model.make_future_dataframe(periods=weeks * 7, freq="D")
-        granularity = "weekly"
+        future = model.make_future_dataframe(periods=max(periods, 1) * 7, freq="D")
 
     forecast_df = model.predict(future)
     last_date = df["ds"].max()
     future_fc = forecast_df[forecast_df["ds"] > last_date].copy()
 
-    if granularity == "weekly":
+    # Aggregate based on granularity
+    if granularity == "daily":
+        grouped = future_fc.head(periods).copy()
+        grouped["label"] = grouped["ds"].dt.strftime("%m-%d")
+    elif granularity == "weekly":
         future_fc["week_label"] = future_fc["ds"].dt.strftime("%Y-W%V")
         grouped = future_fc.groupby("week_label", sort=False).agg(
             ds=("ds", "first"),
@@ -112,15 +113,38 @@ def forecast_monthly(weeks: int = 6) -> dict:
             yhat_lower=("yhat_lower", "mean"),
             yhat_upper=("yhat_upper", "mean"),
         ).reset_index(drop=True)
-        grouped = grouped.head(weeks)
-    else:
-        grouped = future_fc.head(weeks * 7)
+        grouped = grouped.head(periods)
+    elif granularity == "monthly":
+        future_fc["month_label"] = future_fc["ds"].dt.strftime("%Y-%m")
+        grouped = future_fc.groupby("month_label", sort=False).agg(
+            ds=("ds", "first"),
+            yhat=("yhat", "mean"),
+            yhat_lower=("yhat_lower", "mean"),
+            yhat_upper=("yhat_upper", "mean"),
+        ).reset_index(drop=True)
+        grouped = grouped.head(periods)
+    else:  # annual
+        future_fc["year_label"] = future_fc["ds"].dt.year.astype(str)
+        grouped = future_fc.groupby("year_label", sort=False).agg(
+            ds=("ds", "first"),
+            yhat=("yhat", "mean"),
+            yhat_lower=("yhat_lower", "mean"),
+            yhat_upper=("yhat_upper", "mean"),
+        ).reset_index(drop=True)
+        grouped = grouped.head(periods)
 
+    # Build forecast rows
     forecast_rows = []
     for _, row in grouped.iterrows():
         ci_half = round((row["yhat_upper"] - row["yhat_lower"]) / 2, 2)
+        if granularity == "monthly":
+            ds_str = row["ds"].strftime("%Y-%m")
+        elif granularity == "annual":
+            ds_str = str(int(row["ds"].year))
+        else:
+            ds_str = row["ds"].strftime("%Y-%m-%d")
         forecast_rows.append({
-            "ds": row["ds"].strftime("%Y-%m-%d"),
+            "ds": ds_str,
             "yhat": round(row["yhat"], 2),
             "yhat_lower": round(row["yhat_lower"], 2),
             "yhat_upper": round(row["yhat_upper"], 2),
@@ -142,6 +166,7 @@ def forecast_monthly(weeks: int = 6) -> dict:
     else:
         direction = "flat"
 
+    # Historical rows
     hist_rows = []
     for _, row in df.iterrows():
         hist_rows.append({
@@ -166,5 +191,6 @@ def forecast_monthly(weeks: int = 6) -> dict:
         "model_summary": summary,
         "last_historical_date": last_date.strftime("%Y-%m-%d"),
         "forecast_granularity": granularity,
+        "forecast_periods": len(forecast_rows),
         "trend_direction": direction,
     }

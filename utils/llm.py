@@ -29,6 +29,7 @@ def chat(
     max_tokens: int = 4096,
     timeout: int = 60,
     max_retries: int = 3,
+    json_mode: bool = False,
 ) -> str:
     """Send a chat completion request with retry/backoff.
 
@@ -39,6 +40,7 @@ def chat(
         max_tokens: Max output tokens.
         timeout: Request timeout in seconds.
         max_retries: Number of retries on transient failures.
+        json_mode: If True, use response_format json_object for valid JSON output.
 
     Returns:
         The model's text response.
@@ -49,15 +51,17 @@ def chat(
     client = get_client()
     last_error = None
 
+    kwargs = dict(
+        model=model, messages=messages,
+        temperature=temperature, max_tokens=max_tokens,
+        timeout=timeout,
+    )
+    if json_mode:
+        kwargs["response_format"] = {"type": "json_object"}
+
     for attempt in range(max_retries):
         try:
-            response = client.chat.completions.create(
-                model=model,
-                messages=messages,
-                temperature=temperature,
-                max_tokens=max_tokens,
-                timeout=timeout,
-            )
+            response = client.chat.completions.create(**kwargs)
             return response.choices[0].message.content
         except Exception as e:
             last_error = e
