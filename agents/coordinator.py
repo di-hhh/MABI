@@ -53,7 +53,26 @@ Example:
 def _heuristic_plan(question: str) -> dict:
     """Rule-based task planning when LLM/Pydantic fails."""
     q = question.lower()
-    tasks = [{"agent": "data_analyst", "task": question}]
+
+    # Detect multi-part questions and split into separate data_analyst sub-tasks
+    has_state = any(w in q for w in ["哪个州", "销售额最高", "各州", "州排名"])
+    has_delivery = any(w in q for w in ["准时", "配送", "交付", "延迟"])
+    has_payment = any(w in q for w in ["支付", "分期"])
+    part_count = sum([has_state, has_delivery, has_payment])
+
+    if part_count >= 2:
+        tasks = []
+        if has_state:
+            tasks.append({"agent": "data_analyst",
+                          "task": "查询2017年各州销售额排名，找出销售额最高的州。使用 mv_state_sales 预聚合视图。"})
+        if has_delivery:
+            tasks.append({"agent": "data_analyst",
+                          "task": "查询平台整体交付准时率。使用 mv_delivery_perf 预聚合视图，计算所有州的平均 on_time_rate。"})
+        if has_payment:
+            tasks.append({"agent": "data_analyst",
+                          "task": "查询哪种支付方式最受欢迎。使用 mv_payment_dist 预聚合视图，按 payment_type 聚合总交易数。"})
+    else:
+        tasks = [{"agent": "data_analyst", "task": question}]
 
     if any(w in q for w in ["预测", "predict", "forecast", "未来"]):
         atype = "predictive"
