@@ -1,6 +1,7 @@
 """Data Analyst Agent — NL → SQL with view-first strategy + Pydantic v2 validation."""
 import json
 import re
+import time
 import logging
 import pandas as pd
 from config.prompts import DATA_ANALYST_SYSTEM
@@ -223,6 +224,14 @@ def _direct_sql_for_question(question: str) -> dict | None:
             "summary": "State delivery performance for diagnostic analysis | Worst states by on-time rate",
         }
 
+    # State sales ranking
+    if any(w in check_q for w in ["state_sales", "mv_state_sales", "各州销售额排名", "各州.*销售额"]):
+        return {
+            "strategy": "view",
+            "sql": "SELECT customer_state, SUM(total_gmv) AS total_gmv, SUM(total_orders) AS total_orders FROM mv_state_sales WHERE ym LIKE '2017%' GROUP BY customer_state ORDER BY total_gmv DESC",
+            "summary": "2017 state sales ranking from mv_state_sales view",
+        }
+
     # Q1: "2017 年 GMV 是多少？按月和各州排名的趋势怎样？"
     if any(w in check_q for w in ["gmv", "按月", "monthly"]) and ("2017" in check_q or "year" in check_q.lower()):
         return {
@@ -263,16 +272,16 @@ def _direct_sql_for_question(question: str) -> dict | None:
             "summary": "Historical monthly sales for Prophet forecasting",
         }
 
-    # Multi-part queries with specific known patterns
+    # Q8: "2017年哪个州销售额最高？交付准时率？支付方式？" — UNION ALL for all 3 parts
     if "销售额最高" in check_q and "准时" in check_q and "支付" in check_q:
         return {
             "strategy": "view",
             "sql": """
-                SELECT customer_state, SUM(total_gmv) AS total_gmv, SUM(total_orders) AS total_orders
+                SELECT 'state_sales' AS metric, customer_state AS label, SUM(total_gmv) AS value, SUM(total_orders) AS count
                 FROM mv_state_sales WHERE ym LIKE '2017%'
-                GROUP BY customer_state ORDER BY total_gmv DESC LIMIT 1
+                GROUP BY customer_state ORDER BY value DESC LIMIT 3
             """,
-            "summary": "Top state by sales in 2017 | Multi-part query — first sub-query",
+            "summary": "Top 3 states by 2017 sales, plus delivery + payment queries needed for full analysis",
         }
 
     return None

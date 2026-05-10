@@ -2658,3 +2658,56 @@ NameError: name 'time' is not defined. Did you forget to import 'time'
 2026-05-10 16:35:02,604 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
 2026-05-10 16:36:05,284 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
 2026-05-10 16:36:09,429 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 17:44:17,451 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 17:45:16,126 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 17:45:19,711 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 17:46:05,141 [prophet] INFO: n_changepoints greater than number of observations. Using 16.
+2026-05-10 17:46:09,070 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 17:47:14,811 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 17:47:18,806 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 17:48:17,132 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 17:48:21,152 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 17:49:02,278 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 17:49:52,467 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 17:50:48,523 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 17:50:52,673 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 17:51:44,290 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 17:51:48,570 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 17:52:45,815 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 17:52:45,895 [prophet] INFO: n_changepoints greater than number of observations. Using 16.
+2026-05-10 17:52:48,683 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 17:53:48,680 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 17:53:52,712 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 17:54:46,597 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 17:55:50,382 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 17:55:54,233 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 17:57:04,965 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 17:57:08,975 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 17:58:41,314 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 18:00:25,345 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for CoordinatorOutput
+2026-05-10 18:00:25,345 [agents.coordinator] WARNING: Pydantic parse failed, using heuristic plan
+2026-05-10 18:00:45,009 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 18:00:48,870 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 18:02:15,881 [prophet] INFO: n_changepoints greater than number of observations. Using 16.
+2026-05-10 18:02:17,699 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 18:03:18,569 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 18:03:22,824 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 18:04:15,151 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 18:04:56,583 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 18:05:59,131 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 18:06:50,498 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 18:06:53,261 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 18:07:57,035 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 18:07:59,409 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 18:08:58,522 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 18:08:58,602 [prophet] INFO: n_changepoints greater than number of observations. Using 16.
+2026-05-10 18:09:01,144 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 18:10:01,985 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 18:10:05,840 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 18:11:17,849 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 18:12:08,900 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for CoordinatorOutput
+2026-05-10 18:12:08,900 [agents.coordinator] WARNING: Pydantic parse failed, using heuristic plan
+2026-05-10 18:12:24,927 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 18:12:28,632 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-05-10 18:13:39,284 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-05-10 18:13:42,996 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput

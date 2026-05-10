@@ -189,7 +189,7 @@ with left_col:
         # Bug 28: Kill any running comparison thread before starting a new query
         _kill_comparison_thread()
 
-        with st.spinner("🔄 Analyzing... this may take 30-60 seconds"):
+        with st.spinner("🔄 Analyzing... this may take 1-2 minutes"):
             try:
                 result = run_query(current_q, thread_id=st.session_state.thread_id)
 
@@ -258,6 +258,7 @@ with right_col:
         latest = st.session_state.chat_history[-1]
 
         # Bug 32: Proper timing strategy
+        query_time = latest.get("query_time", 0)
         sql_time = latest.get("sql_time", 0)
         if latest.get("query_strategy") == "view":
             banner_text = (f"Query Strategy: **Pre-Aggregation View** | "

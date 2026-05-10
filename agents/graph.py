@@ -177,17 +177,28 @@ def data_analyst_node(state: AgentState) -> dict:
     data_tasks = [t for t in task_plan if t.get("agent") == "data_analyst"]
     if not data_tasks:
         data_tasks = [{"task": clean_question}]
-    else:
-        # Clean task descriptions from prior context
-        for dt in data_tasks:
-            dt["task"] = dt["task"].strip()
+
+    # Auto-split multi-part questions when coordinator only produced 1 task
+    if len(data_tasks) == 1:
+        q = clean_question.lower()
+        parts = []
+        if any(w in q for w in ["哪个州", "销售额最高", "各州", "州排名"]):
+            parts.append("查询各州销售额排名，使用 mv_state_sales 视图")
+        if any(w in q for w in ["准时", "配送", "交付", "延迟"]):
+            parts.append("查询平台整体交付准时率及各州延迟情况，使用 mv_delivery_perf 视图")
+        if any(w in q for w in ["支付", "分期"]):
+            parts.append("查询哪种支付方式最受欢迎，使用 mv_payment_dist 视图")
+        if len(parts) >= 2:
+            data_tasks = [{"task": p} for p in parts]
+            logger.info("Auto-split multi-part query into %d sub-tasks", len(parts))
 
     logger.info("Data analyst processing %d sub-task(s)", len(data_tasks))
 
     for dt in data_tasks:
         sub_q = dt.get("task", clean_question)
-        # Always inject parent question context for sub-tasks
-        if sub_q != clean_question:
+        # Only inject original question context when there's exactly 1 sub-task
+        # For multi-part auto-split, each sub-task is self-contained
+        if len(data_tasks) == 1 and sub_q != clean_question:
             sub_q = f"[Original question]: {clean_question}\n[Sub-task]: {sub_q}"
         try:
             t0 = time.time()

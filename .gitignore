@@ -16,6 +16,7 @@
 # 忽略 Python 缓存
 __pycache__/
 *.py[cod]
+.pytest_cache/
 
 # 这些图片每次查询都会重新生成
 /dashboard/static/*.png
