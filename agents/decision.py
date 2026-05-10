@@ -10,6 +10,7 @@ def generate_recommendations(
     analysis_summary: str,
     nlp_results: dict = None,
     forecast_summary: str = None,
+    data_tables: str = "",
 ) -> str:
     """Generate prioritized business recommendations.
 
@@ -17,6 +18,7 @@ def generate_recommendations(
         analysis_summary: Text summary from data analyst findings.
         nlp_results: Optional NLP analysis output.
         forecast_summary: Optional forecast summary text.
+        data_tables: Optional markdown tables with actual query results.
 
     Returns:
         Structured recommendation text.
@@ -35,6 +37,9 @@ def generate_recommendations(
 
     if forecast_summary:
         context_parts.append(f"## Forecast Summary\n{forecast_summary}")
+
+    if data_tables:
+        context_parts.append(f"## Actual Query Results (use these specific numbers in your recommendations)\n{data_tables}")
 
     context = "\n\n".join(context_parts)
 

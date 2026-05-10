@@ -1,13 +1,16 @@
-"""NLP / Review Insight Agent — sentiment analysis on customer reviews."""
+"""NLP / Review Insight Agent — LLM + Pydantic v2 Portuguese sentiment analysis."""
 import logging
 import re
 from collections import Counter
 from textblob import TextBlob
 from utils.db import execute_query
+from utils.llm import chat
+from config.prompts import NLP_INSIGHT_SYSTEM
+from models.llm_outputs import NLPSentimentOutput, safe_parse_pydantic
 
 logger = logging.getLogger(__name__)
 
-# Brazilian Portuguese stopwords + common words
+# Brazilian Portuguese stopwords
 STOPWORDS_PT = set("""
 a o e de da do das dos para por em com uma um que se nao no na os as aos
 foi sua seu ele ela mais ja muito muito foi assim entre esse essa estao
@@ -17,10 +20,7 @@ bom boa bem ruim otimo excelente pessimo recomendo super veio comprei
 
 
 def get_review_data(limit: int = 8000) -> list:
-    """Fetch review data joined with product categories (sampled for performance).
-
-    Uses a subquery to sample reviews before the expensive multi-table JOIN.
-    """
+    """Fetch review data joined with product categories (sampled for performance)."""
     return execute_query(f"""
         SELECT r.review_score, r.review_comment_title, r.review_comment_message,
                COALESCE(t.product_category_name_english, p.product_category_name) AS category
@@ -42,21 +42,57 @@ def _tokenize(text: str) -> list:
     return [w for w in words if w not in STOPWORDS_PT]
 
 
-def analyze_sentiment(text: str) -> dict:
-    """Run TextBlob sentiment on a single text.
+def _llm_sentiment_analysis(reviews_sample: list) -> dict:
+    """Use LLM (NLP_INSIGHT_SYSTEM) for Portuguese sentiment analysis."""
+    # Build a representative sample for LLM analysis
+    sample_texts = []
+    for r in reviews_sample[:50]:
+        msg = str(r.get("review_comment_message", ""))[:200]
+        title = str(r.get("review_comment_title", ""))[:100]
+        score = r.get("review_score", 0)
+        cat = r.get("category", "unknown")
+        sample_texts.append(f"[score={score}] [{cat}] {title}: {msg}")
 
-    TextBlob has limitations with Portuguese, but provides a baseline.
-    Returns polarity [-1, 1] and subjectivity [0, 1].
-    """
+    user_prompt = f"""Analyze the following sample of {len(sample_texts)} Brazilian Portuguese customer reviews from the Olist e-commerce platform.
+
+Review samples:
+{chr(10).join(sample_texts[:30])}
+
+Please provide:
+1. Overall sentiment summary (in Chinese and English)
+2. Top 5 positive keywords/themes with frequency
+3. Top 5 negative keywords/themes with frequency
+4. Key business insights from these reviews
+
+Respond with JSON:
+{{
+  "sentiment_summary": "...",
+  "top_positive_keywords": ["word1", "word2", ...],
+  "top_negative_keywords": ["word1", "word2", ...],
+  "key_insights": "..."
+}}"""
+
     try:
-        blob = TextBlob(text)
-        return {"polarity": blob.sentiment.polarity, "subjectivity": blob.sentiment.subjectivity}
-    except Exception:
-        return {"polarity": 0.0, "subjectivity": 0.0}
+        response = chat(
+            [{"role": "system", "content": NLP_INSIGHT_SYSTEM},
+             {"role": "user", "content": user_prompt}],
+            temperature=0.2, max_tokens=1024, json_mode=True,
+        )
+        parsed = safe_parse_pydantic(response, NLPSentimentOutput)
+        if parsed is not None:
+            return parsed.model_dump()
+        return {}
+    except Exception as e:
+        logger.warning("LLM sentiment analysis failed: %s", e)
+        return {}
 
 
 def analyze_reviews() -> dict:
-    """Full review analysis: score distribution, keywords, sentiment."""
+    """Full review analysis: score distribution, keywords, sentiment (LLM + TextBlob).
+
+    Uses NLP_INSIGHT_SYSTEM + LLM for Portuguese understanding,
+    with statistical keyword extraction as fallback/enrichment.
+    """
     logger.info("Fetching review data for NLP analysis...")
     reviews = get_review_data()
     logger.info("Fetched %d reviews", len(reviews))
@@ -64,22 +100,17 @@ def analyze_reviews() -> dict:
     if not reviews:
         return {"error": "No review data available"}
 
+    # Score statistics
     scores = [r["review_score"] for r in reviews]
     avg_score = sum(scores) / len(scores)
 
-    positive_reviews = [
-        r for r in reviews
-        if r["review_score"] is not None and r["review_score"] >= 4
-    ]
-    negative_reviews = [
-        r for r in reviews
-        if r["review_score"] is not None and r["review_score"] <= 2
-    ]
+    positive_reviews = [r for r in reviews if r["review_score"] is not None and r["review_score"] >= 4]
+    negative_reviews = [r for r in reviews if r["review_score"] is not None and r["review_score"] <= 2]
 
     pos_pct = len(positive_reviews) / len(reviews) * 100
     neg_pct = len(negative_reviews) / len(reviews) * 100
 
-    # Extract keywords from review messages
+    # Statistical keyword extraction
     pos_words = []
     for r in positive_reviews:
         if r["review_comment_message"]:
@@ -93,8 +124,19 @@ def analyze_reviews() -> dict:
     pos_counter = Counter(pos_words)
     neg_counter = Counter(neg_words)
 
-    pos_keywords = [w for w, _ in pos_counter.most_common(15)]
-    neg_keywords = [w for w, _ in neg_counter.most_common(15)]
+    stat_pos_keywords = [w for w, _ in pos_counter.most_common(15)]
+    stat_neg_keywords = [w for w, _ in neg_counter.most_common(15)]
+
+    # LLM-based Portuguese sentiment analysis
+    llm_insights = _llm_sentiment_analysis(reviews)
+
+    # Merge LLM insights with statistical keywords
+    llm_pos = llm_insights.get("top_positive_keywords", [])
+    llm_neg = llm_insights.get("top_negative_keywords", [])
+
+    # Combine and deduplicate, LLM first then statistical
+    combined_pos = list(dict.fromkeys(llm_pos + stat_pos_keywords))[:15]
+    combined_neg = list(dict.fromkeys(llm_neg + stat_neg_keywords))[:15]
 
     # Category-level sentiment
     cat_stats = {}
@@ -116,8 +158,15 @@ def analyze_reviews() -> dict:
             })
 
     cat_sentiment.sort(key=lambda x: x["avg_score"])
-
     top_negative_cats = [c for c in cat_sentiment if c["avg_score"] < 3.5][:10]
+
+    sentiment_summary = llm_insights.get("sentiment_summary", "")
+    if not sentiment_summary:
+        sentiment_summary = (
+            f"Average review score: {avg_score:.1f}/5. "
+            f"{pos_pct:.0f}% positive (4-5★), {neg_pct:.0f}% negative (1-2★). "
+            f"Top negative keywords: {', '.join(stat_neg_keywords[:5])}."
+        )
 
     return {
         "total_reviews": len(reviews),
@@ -131,13 +180,10 @@ def analyze_reviews() -> dict:
             "2": scores.count(2),
             "1": scores.count(1),
         },
-        "top_positive_keywords": pos_keywords,
-        "top_negative_keywords": neg_keywords,
+        "top_positive_keywords": combined_pos,
+        "top_negative_keywords": combined_neg,
         "top_negative_categories": top_negative_cats,
         "category_sentiment": cat_sentiment,
-        "sentiment_summary": (
-            f"Average review score: {avg_score:.1f}/5. "
-            f"{pos_pct:.0f}% positive (4-5★), {neg_pct:.0f}% negative (1-2★). "
-            f"Top negative keywords: {', '.join(neg_keywords[:5])}."
-        ),
+        "sentiment_summary": sentiment_summary,
+        "llm_insights": llm_insights.get("key_insights", ""),
     }

@@ -42,18 +42,25 @@ def _embed_html(html_path: str, height: int = 500):
 
 
 def _run_base_table_comparison(question: str, result_holder: dict, stop_event: threading.Event):
-    """Background thread: re-run query using base tables for comparison (Bug 19)."""
+    """Background thread: re-run the SAME query using base tables for performance comparison (Bug 28)."""
     import time
     try:
         from agents.data_analyst import analyze
         t0 = time.time()
-        # Force base_table strategy by modifying question
-        forced_q = f"{question}\n\nCRITICAL: Do NOT use any mv_* pre-aggregation views. Use base tables only."
+        # Force base_table strategy — the LLM MUST use base table JOINs to get the same result
+        forced_q = (f"IMPORTANT: You MUST use base tables (JOIN orders, order_items, etc.) "
+                    f"for this query. Do NOT use any mv_* pre-aggregation views.\n\n{question}")
         result = analyze(forced_q)
         elapsed = round(time.time() - t0, 2)
 
         if stop_event.is_set():
             result_holder["status"] = "cancelled"
+            result_holder["base_time"] = None  # Don't show partial time
+            return
+
+        if result.get("error"):
+            result_holder["status"] = "error"
+            result_holder["error"] = result["error"]
             return
 
         result_holder["status"] = "done"
@@ -61,8 +68,23 @@ def _run_base_table_comparison(question: str, result_holder: dict, stop_event: t
         result_holder["base_strategy"] = result.get("strategy", "error")
         result_holder["base_data"] = result.get("data", [])
     except Exception as e:
-        result_holder["status"] = "error"
-        result_holder["error"] = str(e)
+        if stop_event.is_set():
+            result_holder["status"] = "cancelled"
+        else:
+            result_holder["status"] = "error"
+            result_holder["error"] = str(e)
+
+
+def _kill_comparison_thread():
+    """Kill any running comparison thread before starting a new query (Bug 28)."""
+    comp = st.session_state.get("comparison")
+    if comp and comp["holder"]["status"] == "running":
+        comp["stop_event"].set()
+        comp["holder"]["status"] = "cancelled"
+        # Wait briefly for thread to die
+        if comp.get("thread") and comp["thread"].is_alive():
+            comp["thread"].join(timeout=2)
+    st.session_state.comparison = None
 
 
 # ── Page config ──────────────────────────────────────────
@@ -86,8 +108,6 @@ if "pending_question" not in st.session_state:
     st.session_state.pending_question = None
 if "comparison" not in st.session_state:
     st.session_state.comparison = None
-if "comparison_stop" not in st.session_state:
-    st.session_state.comparison_stop = threading.Event()
 
 # ── Sidebar ───────────────────────────────────────────────
 with st.sidebar:
@@ -140,7 +160,10 @@ with left_col:
                     strategy_label = "View" if entry["query_strategy"] == "view" else "Base Table"
                     meta_parts.append(f"Strategy: {strategy_label}")
                 if entry.get("query_time"):
-                    meta_parts.append(f"Time: {entry['query_time']}s")
+                    total_str = f"Total: {entry['query_time']}s"
+                    if entry.get("sql_time") and entry["sql_time"] > 0:
+                        total_str += f" (SQL: {entry['sql_time']}s)"
+                    meta_parts.append(total_str)
                 if entry.get("base_time"):
                     meta_parts.append(f"Base table: {entry['base_time']}s")
                 if meta_parts:
@@ -163,6 +186,9 @@ with left_col:
             with st.chat_message("user"):
                 st.markdown(st.session_state.pending_question)
 
+        # Bug 28: Kill any running comparison thread before starting a new query
+        _kill_comparison_thread()
+
         with st.spinner("🔄 Analyzing... this may take 30-60 seconds"):
             try:
                 result = run_query(current_q, thread_id=st.session_state.thread_id)
@@ -172,18 +198,28 @@ with left_col:
                 query_time = result.get("query_time_seconds", 0)
                 query_strategy = result.get("query_strategy", "unknown")
 
+                # Determine if ANY data result actually used a view
+                data_results = result.get("data_results", [])
+                any_view_hit = any(
+                    r.get("strategy") == "view" and not r.get("error")
+                    for r in data_results
+                )
+
+                sql_time = result.get("sql_time_seconds", 0)
+
                 entry = {
                     "question": current_q,
                     "response": response_text,
                     "charts": charts,
                     "query_strategy": query_strategy,
                     "query_time": query_time,
+                    "sql_time": sql_time,
                     "base_time": None,
                 }
 
-                # Bug 19: Comparison analysis — background thread when view is hit
-                if query_strategy == "view":
-                    comp_holder = {"status": "running"}
+                # Bug 32: Only start comparison when view was ACTUALLY used
+                if any_view_hit:
+                    comp_holder = {"status": "running", "view_time": query_time}
                     stop_event = threading.Event()
                     thread = threading.Thread(
                         target=_run_base_table_comparison,
@@ -221,27 +257,37 @@ with right_col:
     if st.session_state.chat_history:
         latest = st.session_state.chat_history[-1]
 
-        # Show query info banner
-        strategy_label = "Pre-Aggregation View" if latest.get("query_strategy") == "view" else "Base Table"
-        query_time = latest.get("query_time", 0)
-        banner_text = f"Query Strategy: **{strategy_label}** | Total Time: **{query_time}s**"
+        # Bug 32: Proper timing strategy
+        sql_time = latest.get("sql_time", 0)
+        if latest.get("query_strategy") == "view":
+            banner_text = (f"Query Strategy: **Pre-Aggregation View** | "
+                          f"Pre-Aggregation Total Time: **{query_time}s**")
+            if sql_time > 0:
+                banner_text += f" | Pre-Aggregation SQL Time: **{sql_time}s**"
+        else:
+            banner_text = (f"Query Strategy: **Base Table** | "
+                          f"Base Table Total Time: **{query_time}s**")
+            if sql_time > 0:
+                banner_text += f" | Base Table SQL Time: **{sql_time}s**"
 
-        # Bug 19: Show comparison status
+        # Bug 32: Comparison status with SQL time
         comp = st.session_state.comparison
-        if comp and comp["holder"]["status"] == "running":
-            banner_text += " | 🔄 Background comparison with base table running..."
-        elif comp and comp["holder"]["status"] == "done":
-            bt = comp["holder"].get("base_time", 0)
-            vt = comp.get("view_time", query_time)
-            speedup = round(bt / vt, 1) if vt > 0 else 0
-            banner_text += f" | ⚡ Base table: {bt}s | View speedup: {speedup}x"
-            # Update the latest entry with base time
-            if latest.get("base_time") is None:
-                latest["base_time"] = bt
-        elif comp and comp["holder"]["status"] == "cancelled":
-            banner_text += " | ⏹ Comparison cancelled by user"
-        elif comp and comp["holder"]["status"] == "error":
-            banner_text += f" | ❌ Comparison failed: {comp['holder'].get('error', '')}"
+        if comp:
+            status = comp["holder"]["status"]
+            if status == "running":
+                banner_text += " | 🔄 Background comparison running..."
+            elif status == "done":
+                bt = comp["holder"].get("base_time")
+                if bt and bt > 0:
+                    banner_text += f" | ⚡ Base Table SQL Time: **{bt}s**"
+                    if latest.get("base_time") is None:
+                        latest["base_time"] = bt
+                st.session_state.comparison = None  # Auto-cleanup
+            elif status == "cancelled":
+                banner_text += " | ⏹ Background comparison cancelled"
+                st.session_state.comparison = None
+            elif status == "error":
+                banner_text += " | ❌ Background comparison error"
 
         st.info(banner_text)
 
@@ -266,7 +312,7 @@ with right_col:
                     elif chart.get("html"):
                         _embed_html(chart["html"], height=500)
                     elif chart.get("png"):
-                        st.image(chart["png"], use_column_width=True)
+                        st.image(chart["png"], use_container_width=True)
                     st.caption(f"**{chart.get('title', f'Chart {i+1}')}**")
             else:
                 st.info("No charts generated for this query.")
@@ -277,23 +323,33 @@ with right_col:
         with tabs[2]:
             result = st.session_state.last_analysis
             if result:
+                # Show data results — deduplicate by SQL
+                seen_sqls = set()
                 if result.get("data_results"):
-                    for r in result["data_results"]:
-                        if r.get("data"):
+                    for i, r in enumerate(result["data_results"]):
+                        sql_key = r.get("sql", "")[:100] if r.get("sql") else str(i)
+                        if sql_key in seen_sqls:
+                            continue  # Skip duplicate data from retries
+                        seen_sqls.add(sql_key)
+                        if r.get("data") and not r.get("error"):
                             st.dataframe(pd.DataFrame(r["data"]), use_container_width=True)
-                            st.caption(f"Strategy: {r.get('strategy', 'N/A')}")
+                            st.caption(f"Strategy: {r.get('strategy', 'N/A')} | {r.get('summary', '')[:80]}")
                 elif result.get("data_summary"):
                     st.text(result["data_summary"])
 
-                # Show base table comparison data if available
-                if comp and comp["holder"]["status"] == "done":
+                # Bug 28: Show comparison cancellation message if cancelled
+                comp = st.session_state.comparison
+                if comp and comp["holder"]["status"] == "cancelled":
+                    st.info("⏹ Backend Comparison Query Thread Cancelled")
+                elif comp and comp["holder"]["status"] == "done":
                     base_data = comp["holder"].get("base_data", [])
                     if base_data:
                         st.markdown("---")
-                        st.markdown("**Base Table Comparison Result:**")
+                        st.markdown("**Base Table Comparison Results:**")
                         st.dataframe(pd.DataFrame(base_data), use_container_width=True)
-                        st.caption(f"Base table time: {comp['holder']['base_time']}s | "
-                                   f"View time: {comp.get('view_time', 0)}s")
+                        bt = comp["holder"].get("base_time", 0)
+                        vt = comp.get("view_time", 0)
+                        st.caption(f"Base Table Total Time: {bt}s | Pre-Aggregation Biew Total Time: {vt}s")
     else:
         # Default dashboard overview
         st.markdown("#### 📊 Dashboard Overview")

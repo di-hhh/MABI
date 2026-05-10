@@ -15,15 +15,16 @@ logger = logging.getLogger(__name__)
 OUTPUT_DIR = "dashboard/static"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-
-_counter = 0
+import time as _time
+_counter = int(_time.time()) % 100000
 
 def _save(fig, filename: str):
     """Save plotly fig to PNG and HTML, return relative paths."""
     global _counter
     _counter += 1
-    png_path = os.path.join(OUTPUT_DIR, f"{_counter:02d}_{filename}.png")
-    html_path = os.path.join(OUTPUT_DIR, f"{_counter:02d}_{filename}.html")
+    tag = f"{_counter % 1000:03d}"
+    png_path = os.path.join(OUTPUT_DIR, f"{tag}_{filename}.png")
+    html_path = os.path.join(OUTPUT_DIR, f"{tag}_{filename}.html")
     fig.write_image(png_path, width=1200, height=600, scale=2)
     fig.write_html(html_path)
     logger.info("Saved chart: %s", png_path)
@@ -72,30 +73,46 @@ def line_chart(data: list, x_col: str, y_cols: list, title: str,
 
 def forecast_chart(forecast_data: list, forecast_granularity: str = "weekly",
                    title: str = "Sales Forecast") -> dict:
-    """Separate forecast chart (Bug 17):
+    """Separate forecast chart (Bug 17 + Bug 24):
     - Solid deep yellow line
     - Confidence interval shaded band
-    - CI labels in +/- xxx.xxx format on hover/summary
+    - Dynamic x-axis tick based on granularity
     """
     fdf = pd.DataFrame(forecast_data)
     if fdf.empty:
         return {"png": "", "html": ""}
 
-    f_x = pd.to_datetime(fdf["ds"])
+    # Parse dates: handle different ds formats (YYYY-MM-DD, YYYY-MM, YYYY)
+    ds_sample = str(fdf["ds"].iloc[0])
+    if len(ds_sample) == 4:
+        # Annual: just use integer years
+        f_x = fdf["ds"].astype(int)
+        x_is_datetime = False
+    elif len(ds_sample) == 7:
+        f_x = pd.to_datetime(fdf["ds"] + "-01")
+        x_is_datetime = True
+    else:
+        f_x = pd.to_datetime(fdf["ds"])
+        x_is_datetime = True
+
     fig = go.Figure()
 
     # Forecast line — solid deep yellow
     fig.add_trace(go.Scatter(
         x=f_x, y=fdf["yhat"],
         mode="lines+markers", name="Forecast",
-        line=dict(color="#CC9900", width=2.5),  # deep yellow
+        line=dict(color="#CC9900", width=2.5),
         marker=dict(color="#CC9900", size=6),
     ))
 
     # Confidence interval band
     if "yhat_lower" in fdf.columns and "yhat_upper" in fdf.columns:
+        if x_is_datetime:
+            band_x = list(f_x) + list(f_x[::-1])
+        else:
+            band_x = list(f_x) + list(f_x[::-1])
         fig.add_trace(go.Scatter(
-            x=list(f_x) + list(f_x[::-1]),
+            x=band_x,
             y=list(fdf["yhat_upper"]) + list(fdf["yhat_lower"][::-1]),
             fill="toself", fillcolor="rgba(204,153,0,0.15)",
             line=dict(color="rgba(255,255,255,0)"),
@@ -104,14 +121,26 @@ def forecast_chart(forecast_data: list, forecast_granularity: str = "weekly",
         ))
 
     # X-axis interval: dynamic based on granularity
-    if forecast_granularity == "daily":
-        dtick = 86400000 * 1  # 1 day in ms
-    elif forecast_granularity == "weekly":
-        dtick = 86400000 * 7  # 7 days in ms
+    if x_is_datetime:
+        if forecast_granularity == "daily":
+            dtick = 86400000 * 1
+            tickfmt = "%m-%d"
+        elif forecast_granularity == "weekly":
+            dtick = 86400000 * 7
+            tickfmt = "%Y-%m-%d"
+        elif forecast_granularity == "monthly":
+            dtick = "M1"
+            tickfmt = "%Y-%m"
+        elif forecast_granularity == "annual":
+            dtick = "M12"
+            tickfmt = "%Y"
+        else:
+            dtick = 86400000 * 7
+            tickfmt = "%Y-%m-%d"
+        fig.update_xaxes(dtick=dtick, tickformat=tickfmt)
     else:
-        dtick = "M1"
-
-    fig.update_xaxes(dtick=dtick, tickformat="%Y-%m-%d")
+        # Annual with integer x
+        fig.update_xaxes(dtick=1)
 
     fig.update_layout(
         title=title,
@@ -286,7 +315,7 @@ def wordcloud_image(positive_words: list, negative_words: list, title: str = "Re
 
     global _counter
     _counter += 1
-    path = os.path.join(OUTPUT_DIR, f"{_counter:02d}_wordcloud.png")
+    path = os.path.join(OUTPUT_DIR, f"{_counter % 1000:03d}_wordcloud.png")
     fig.savefig(path, dpi=150, bbox_inches="tight")
     plt.close(fig)
     logger.info("Saved wordcloud: %s", path)
