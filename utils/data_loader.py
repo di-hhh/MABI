@@ -258,14 +258,54 @@ def _extract_payments(df: pd.DataFrame) -> pd.DataFrame:
     return pays
 
 
-def _generate_reviews(df: pd.DataFrame, engine) -> pd.DataFrame:
-    """Generate order_reviews from the dataset.
+def _load_real_reviews() -> pd.DataFrame | None:
+    """Try to load real review data from Kaggle CSV files.
 
-    Uses delivery status and other signals to synthesize realistic review scores
-    when real review data is unavailable.
+    Returns None if real data is unavailable.
+    """
+    import os as _os
+    import glob as _glob
+
+    # Search common Kaggle download paths
+    search_paths = [
+        "data/olist_order_reviews_dataset.csv",
+        "data/olist_order_reviews*.csv",
+        # kagglehub cache paths
+        _os.path.expanduser("~/.cache/kagglehub/datasets/olistbr/brazilian-ecommerce/versions/*/olist_order_reviews_dataset.csv"),
+    ]
+    for pattern in search_paths:
+        matches = _glob.glob(pattern)
+        if matches:
+            real_csv = matches[0]
+            logger.info("Found real reviews CSV: %s", real_csv)
+            df = pd.read_csv(real_csv)
+            df = df.drop_duplicates(subset=["review_id"], keep="first")
+            df["review_comment_title"] = df["review_comment_title"].fillna("")
+            df["review_comment_message"] = df["review_comment_message"].fillna("")
+            for col in ["review_creation_date", "review_answer_timestamp"]:
+                if col in df.columns:
+                    df[col] = pd.to_datetime(df[col], errors="coerce")
+            logger.info("Loaded %d real reviews from CSV", len(df))
+            return df
+    return None
+
+
+def _generate_reviews(df: pd.DataFrame, engine) -> pd.DataFrame:
+    """Load order_reviews from real CSV if available, otherwise synthesize.
+
+    Prefers real Kaggle data (olist_order_reviews_dataset.csv) when present.
+    Falls back to synthetic generation only when real data is unavailable.
     """
     import hashlib
 
+    # Try real data first
+    real = _load_real_reviews()
+    if real is not None:
+        logger.info("Using REAL review data from Kaggle (%d reviews)", len(real))
+        return real
+
+    # Fallback: synthetic generation
+    logger.warning("Real review data not found, generating synthetic reviews")
     orders = df[["order_id", "order_status", "order_delivered_customer_date"]].drop_duplicates(subset=["order_id"])
 
     # Filter to delivered orders
@@ -300,7 +340,27 @@ def _generate_reviews(df: pd.DataFrame, engine) -> pd.DataFrame:
 
 
 def _generate_geolocation(df: pd.DataFrame) -> pd.DataFrame:
-    """Build geolocation from unique zip codes in customer/seller data."""
+    """Load geolocation from real CSV if available, otherwise synthesize."""
+    import os as _os
+    import glob as _glob
+
+    # Try real data first
+    search_paths = [
+        "data/olist_geolocation_dataset.csv",
+        _os.path.expanduser("~/.cache/kagglehub/datasets/olistbr/brazilian-ecommerce/versions/*/olist_geolocation_dataset.csv"),
+    ]
+    for pattern in search_paths:
+        matches = _glob.glob(pattern)
+        if matches:
+            real_csv = matches[0]
+            logger.info("Found real geolocation CSV: %s", real_csv)
+            geo_df = pd.read_csv(real_csv)
+            geo_df = geo_df.drop_duplicates(subset=["geolocation_zip_code_prefix"], keep="first")
+            logger.info("Loaded %d real geolocation rows from CSV", len(geo_df))
+            return geo_df
+
+    # Fallback: synthetic generation
+    logger.warning("Real geolocation data not found, generating synthetic geolocation")
     cust_zips = df[["customer_zip_code_prefix", "customer_city", "customer_state"]].copy()
     cust_zips.columns = ["zip", "city", "state"]
     sell_zips = df[["seller_zip_code_prefix", "seller_city", "seller_state"]].copy()

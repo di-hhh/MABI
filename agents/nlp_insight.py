@@ -44,19 +44,32 @@ def _tokenize(text: str) -> list:
 
 def _llm_sentiment_analysis(reviews_sample: list) -> dict:
     """Use LLM (NLP_INSIGHT_SYSTEM) for Portuguese sentiment analysis."""
-    # Build a representative sample for LLM analysis
+    # Build a representative sample for LLM analysis (limit to avoid token overflow)
     sample_texts = []
-    for r in reviews_sample[:50]:
-        msg = str(r.get("review_comment_message", ""))[:200]
-        title = str(r.get("review_comment_title", ""))[:100]
+    for r in reviews_sample[:15]:  # Reduced from 50 to 15 for JSON reliability
+        msg = str(r.get("review_comment_message", ""))[:80]  # Truncate per-message
         score = r.get("review_score", 0)
         cat = r.get("category", "unknown")
-        sample_texts.append(f"[score={score}] [{cat}] {title}: {msg}")
+        sample_texts.append(f"[s={score}|{cat}] {msg}")
 
-    user_prompt = f"""Analyze the following sample of {len(sample_texts)} Brazilian Portuguese customer reviews from the Olist e-commerce platform.
+    # Include diverse review scores
+    negative_samples = [r for r in reviews_sample if r.get("review_score", 5) <= 2][:5]
+    positive_samples = [r for r in reviews_sample if r.get("review_score", 5) >= 4][:5]
+    mixed = negative_samples + positive_samples
+    if len(mixed) < 5:
+        mixed = reviews_sample[:15]
+
+    sample_lines = []
+    for r in mixed[:12]:
+        msg = str(r.get("review_comment_message", ""))[:80]
+        score = r.get("review_score", 0)
+        cat = r.get("category", "unknown")
+        sample_lines.append(f"[score={score}] [{cat}] {msg}")
+
+    user_prompt = f"""Analyze the following sample of {len(sample_lines)} Brazilian Portuguese customer reviews from the Olist e-commerce platform.
 
 Review samples:
-{chr(10).join(sample_texts[:30])}
+{chr(10).join(sample_lines)}
 
 Please provide:
 1. Overall sentiment summary (in Chinese and English)
@@ -76,7 +89,7 @@ Respond with JSON:
         response = chat(
             [{"role": "system", "content": NLP_INSIGHT_SYSTEM},
              {"role": "user", "content": user_prompt}],
-            temperature=0.2, max_tokens=1024, json_mode=True,
+            temperature=0.2, max_tokens=2048, json_mode=True,
         )
         parsed = safe_parse_pydantic(response, NLPSentimentOutput)
         if parsed is not None:
