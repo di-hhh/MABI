@@ -88,11 +88,113 @@ def _kill_comparison_thread():
 
 
 # ── Page config ──────────────────────────────────────────
+def _render_bonus_agents(result: dict):
+    """Render only the bonus-feature outputs triggered by the current question."""
+    if not result:
+        st.info("No bonus-agent result available yet.")
+        return
+
+    nlp = result.get("nlp_results") or {}
+    scenario = result.get("scenario_results") or {}
+    what_if = scenario.get("what_if") or {}
+    anomaly = scenario.get("anomaly") or {}
+
+    if not any([nlp, what_if, anomaly]):
+        st.info("本问题未触发加分项 Agent。普通销售、支付、地图等问题请查看 Charts / Analysis / Raw Data。")
+        return
+
+    if nlp:
+        st.markdown("#### Review Sentiment & Topic Modeling")
+        c1, c2, c3, c4 = st.columns(4)
+        c1.metric("Reviews", f"{nlp.get('total_reviews', 0):,}")
+        c2.metric("Avg Score", nlp.get("avg_score", "N/A"))
+        c3.metric("Positive", f"{nlp.get('positive_pct', 0)}%")
+        c4.metric("Negative", f"{nlp.get('negative_pct', 0)}%")
+
+        st.markdown("**Negative Themes**")
+        negative_themes = nlp.get("negative_themes", [])
+        if negative_themes:
+            st.dataframe(pd.DataFrame(negative_themes), use_container_width=True)
+        else:
+            st.caption("No dominant negative themes detected.")
+
+        st.markdown("**Decision Signals From Reviews**")
+        signals = nlp.get("decision_signals", [])
+        if signals:
+            for signal in signals:
+                st.write(f"- {signal}")
+        else:
+            st.caption(nlp.get("sentiment_summary", "No review signal available."))
+
+    if what_if:
+        st.markdown("#### What-if Seller Screening")
+        if what_if.get("error"):
+            st.error(what_if["error"])
+        else:
+            c1, c2, c3, c4 = st.columns(4)
+            c1.metric("Current Avg Score", what_if.get("current_avg_score", "N/A"))
+            c2.metric("Simulated Avg Score", what_if.get("new_avg_score", "N/A"))
+            c3.metric("Score Lift", what_if.get("improvement", "N/A"))
+            c4.metric("GMV at Risk", f"{what_if.get('impacted_gmv_share_pct', 0)}%")
+            st.caption(what_if.get("business_interpretation", ""))
+            sellers = what_if.get("worst_sellers", [])
+            if sellers:
+                st.dataframe(pd.DataFrame(sellers), use_container_width=True)
+
+    if anomaly:
+        st.markdown("#### Anomaly Detection Agent")
+        if anomaly.get("error"):
+            st.error(anomaly["error"])
+        else:
+            c1, c2 = st.columns(2)
+            c1.metric("Alerts", anomaly.get("alert_count", 0))
+            c2.metric("Alert Types", len(anomaly.get("alert_types", [])))
+            st.caption(anomaly.get("summary", ""))
+            alerts = anomaly.get("alerts", [])
+            if alerts:
+                st.dataframe(pd.DataFrame(alerts), use_container_width=True)
+            else:
+                st.success("No significant anomalies detected.")
+
+
 st.set_page_config(
     page_title="Agentic BI — Olist E-Commerce",
     page_icon="📊",
     layout="wide",
     initial_sidebar_state="expanded",
+)
+
+st.markdown(
+    """
+    <style>
+    .block-container {
+        padding-top: 2.25rem;
+        padding-bottom: 0.75rem;
+    }
+    [data-testid="stSidebar"] .block-container {
+        padding-top: 1rem;
+        padding-bottom: 0.75rem;
+    }
+    [data-testid="stHeading"] {
+        overflow: visible !important;
+    }
+    h1 {
+        margin-top: 0.15rem !important;
+        margin-bottom: 0.45rem !important;
+        font-size: 2.3rem !important;
+        line-height: 1.35 !important;
+        overflow: visible !important;
+    }
+    h3 {
+        margin-top: 0.25rem !important;
+        margin-bottom: 0.45rem !important;
+    }
+    [data-testid="stVerticalBlock"] {
+        gap: 0.45rem;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
 )
 
 # ── Initialize session state ──────────────────────────────
@@ -128,6 +230,8 @@ with st.sidebar:
         st.session_state.prompt = "Which states have the worst delivery on-time rates?"
     if st.button("🛡 Anomaly Scan"):
         st.session_state.prompt = "Scan for any anomalies in recent data"
+    if st.button("What-if Seller Screening"):
+        st.session_state.prompt = "What-if we remove the top 20 worst-rated sellers? Show score lift and GMV risk."
 
     st.markdown("---")
     st.markdown("### 🤖 Model Info")
@@ -146,7 +250,8 @@ with left_col:
     st.markdown("### 💬 Ask an Analysis Question")
 
     # Display chat history
-    chat_container = st.container(height=400)
+    chat_height = 350 if not st.session_state.chat_history else 500
+    chat_container = st.container(height=chat_height)
     with chat_container:
         for entry in st.session_state.chat_history:
             with st.chat_message("user"):
@@ -166,6 +271,10 @@ with left_col:
                     meta_parts.append(total_str)
                 if entry.get("base_time"):
                     meta_parts.append(f"Base table: {entry['base_time']}s")
+                if entry.get("nlp_results"):
+                    meta_parts.append("NLP")
+                if entry.get("scenario_summary"):
+                    meta_parts.append("Scenario")
                 if meta_parts:
                     st.caption(" | ".join(meta_parts))
 
@@ -215,6 +324,10 @@ with left_col:
                     "query_time": query_time,
                     "sql_time": sql_time,
                     "base_time": None,
+                    "nlp_results": result.get("nlp_results", {}),
+                    "scenario_results": result.get("scenario_results", {}),
+                    "scenario_summary": result.get("scenario_summary", ""),
+                    "memory_context": result.get("memory_context", ""),
                 }
 
                 # Bug 32: Only start comparison when view was ACTUALLY used
@@ -300,57 +413,64 @@ with right_col:
                 st.rerun()
 
         # Show charts
-        tabs = st.tabs(["📊 Charts", "📋 Analysis", "🔍 Raw Data"])
+        tabs = st.tabs(["Charts", "Bonus Agents", "Analysis", "Raw Data"])
 
         with tabs[0]:
-            charts = latest.get("charts", [])
-            if charts:
-                for i, chart in enumerate(charts):
-                    ctype = chart.get("type", "")
-                    if ctype == "text":
-                        # Display text content (e.g., CI summary)
-                        st.markdown(chart.get("text", ""))
-                    elif chart.get("html"):
-                        _embed_html(chart["html"], height=500)
-                    elif chart.get("png"):
-                        st.image(chart["png"], use_container_width=True)
-                    st.caption(f"**{chart.get('title', f'Chart {i+1}')}**")
-            else:
-                st.info("No charts generated for this query.")
+            with st.container(height=560):
+                charts = latest.get("charts", [])
+                if charts:
+                    for i, chart in enumerate(charts):
+                        ctype = chart.get("type", "")
+                        if ctype == "text":
+                            # Display text content (e.g., CI summary)
+                            st.markdown(chart.get("text", ""))
+                        elif chart.get("html"):
+                            _embed_html(chart["html"], height=500)
+                        elif chart.get("png"):
+                            st.image(chart["png"], use_container_width=True)
+                        st.caption(f"**{chart.get('title', f'Chart {i+1}')}**")
+                else:
+                    st.info("No charts generated for this query.")
 
         with tabs[1]:
-            st.markdown(latest.get("response", "No analysis text available."))
+            with st.container(height=560):
+                _render_bonus_agents(st.session_state.last_analysis)
 
         with tabs[2]:
-            result = st.session_state.last_analysis
-            if result:
-                # Show data results — deduplicate by SQL
-                seen_sqls = set()
-                if result.get("data_results"):
-                    for i, r in enumerate(result["data_results"]):
-                        sql_key = r.get("sql", "")[:100] if r.get("sql") else str(i)
-                        if sql_key in seen_sqls:
-                            continue  # Skip duplicate data from retries
-                        seen_sqls.add(sql_key)
-                        if r.get("data") and not r.get("error"):
-                            st.dataframe(pd.DataFrame(r["data"]), use_container_width=True)
-                            st.caption(f"Strategy: {r.get('strategy', 'N/A')} | {r.get('summary', '')[:80]}")
-                elif result.get("data_summary"):
-                    st.text(result["data_summary"])
+            with st.container(height=560):
+                st.markdown(latest.get("response", "No analysis text available."))
 
-                # Bug 28: Show comparison cancellation message if cancelled
-                comp = st.session_state.comparison
-                if comp and comp["holder"]["status"] == "cancelled":
-                    st.info("⏹ Backend Comparison Query Thread Cancelled")
-                elif comp and comp["holder"]["status"] == "done":
-                    base_data = comp["holder"].get("base_data", [])
-                    if base_data:
-                        st.markdown("---")
-                        st.markdown("**Base Table Comparison Results:**")
-                        st.dataframe(pd.DataFrame(base_data), use_container_width=True)
-                        bt = comp["holder"].get("base_time", 0)
-                        vt = comp.get("view_time", 0)
-                        st.caption(f"Base Table Total Time: {bt}s | Pre-Aggregation Biew Total Time: {vt}s")
+        with tabs[3]:
+            with st.container(height=560):
+                result = st.session_state.last_analysis
+                if result:
+                    # Show data results — deduplicate by SQL
+                    seen_sqls = set()
+                    if result.get("data_results"):
+                        for i, r in enumerate(result["data_results"]):
+                            sql_key = r.get("sql", "")[:100] if r.get("sql") else str(i)
+                            if sql_key in seen_sqls:
+                                continue  # Skip duplicate data from retries
+                            seen_sqls.add(sql_key)
+                            if r.get("data") and not r.get("error"):
+                                st.dataframe(pd.DataFrame(r["data"]), use_container_width=True)
+                                st.caption(f"Strategy: {r.get('strategy', 'N/A')} | {r.get('summary', '')[:80]}")
+                    elif result.get("data_summary"):
+                        st.text(result["data_summary"])
+
+                    # Bug 28: Show comparison cancellation message if cancelled
+                    comp = st.session_state.comparison
+                    if comp and comp["holder"]["status"] == "cancelled":
+                        st.info("⏹ Backend Comparison Query Thread Cancelled")
+                    elif comp and comp["holder"]["status"] == "done":
+                        base_data = comp["holder"].get("base_data", [])
+                        if base_data:
+                            st.markdown("---")
+                            st.markdown("**Base Table Comparison Results:**")
+                            st.dataframe(pd.DataFrame(base_data), use_container_width=True)
+                            bt = comp["holder"].get("base_time", 0)
+                            vt = comp.get("view_time", 0)
+                            st.caption(f"Base Table Total Time: {bt}s | Pre-Aggregation Biew Total Time: {vt}s")
     else:
         # Default dashboard overview
         st.markdown("#### 📊 Dashboard Overview")

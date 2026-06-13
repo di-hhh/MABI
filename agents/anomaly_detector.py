@@ -26,13 +26,16 @@ def detect_sales_anomalies(z_threshold: float = 2.0) -> list:
     for _, row in df.iterrows():
         z_score = (row["total_gmv"] - gmv_mean) / gmv_std if gmv_std > 0 else 0
         if abs(z_score) > z_threshold:
+            severity = "high" if abs(z_score) >= 3 else "medium"
             anomalies.append({
                 "type": "gmv_anomaly",
+                "severity": severity,
                 "ym": row["ym"],
                 "value": row["total_gmv"],
                 "z_score": round(z_score, 2),
                 "direction": "high" if z_score > 0 else "low",
                 "detail": f"Month {row['ym']} GMV is {abs(z_score):.1f} std deviations {'above' if z_score > 0 else 'below'} mean.",
+                "action_hint": "Check campaign, seasonality, data completeness, and category/state contributors for this month.",
             })
 
     return anomalies
@@ -61,14 +64,17 @@ def detect_state_sales_drop(threshold_pct: float = 30.0) -> list:
         if historical_avg > 0:
             drop_pct = (historical_avg - recent["total_gmv"]) / historical_avg * 100
             if drop_pct > threshold_pct:
+                severity = "high" if drop_pct >= 50 else "medium"
                 anomalies.append({
                     "type": "state_sales_drop",
+                    "severity": severity,
                     "state": state,
                     "ym": recent["ym"],
                     "recent_gmv": recent["total_gmv"],
                     "avg_gmv": round(historical_avg, 2),
                     "drop_pct": round(drop_pct, 1),
                     "detail": f"State {state} GMV dropped {drop_pct:.0f}% in {recent['ym']} compared to its historical average.",
+                    "action_hint": "Inspect recent orders, seller availability, delivery delays, and marketing exposure in this state.",
                 })
 
     return anomalies
@@ -105,14 +111,17 @@ def detect_review_score_drop(threshold: float = 0.5) -> list:
         historical_avg = float(group.iloc[:-1]["avg_score"].mean())
         drop = historical_avg - float(recent["avg_score"])
         if drop > threshold:
+            severity = "high" if drop >= 1.0 else "medium"
             anomalies.append({
                 "type": "review_score_drop",
+                "severity": severity,
                 "category": category,
                 "ym": recent["ym"],
                 "recent_score": round(float(recent["avg_score"]), 2),
                 "historical_avg": round(float(historical_avg), 2),
                 "drop": round(float(drop), 2),
                 "detail": f"Category '{category}' review score dropped by {drop:.1f} in {recent['ym']}.",
+                "action_hint": "Review recent complaints, sellers, delivery issues, and product quality for this category.",
             })
 
     return anomalies

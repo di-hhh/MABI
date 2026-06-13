@@ -1,0 +1,89 @@
+﻿{
+  "query": "2017年各州销售额排名",
+  "view_sql": "SELECT\n    customer_state,\n    ROUND(SUM(total_gmv), 2) AS total_gmv,\n    SUM(total_orders) AS total_orders\nFROM mv_state_sales\nWHERE ym LIKE '2017%'\nGROUP BY customer_state\nORDER BY total_gmv DESC;",
+  "base_sql": "SELECT\n    c.customer_state,\n    ROUND(SUM(oi.price), 2) AS total_gmv,\n    COUNT(DISTINCT o.order_id) AS total_orders\nFROM orders o\nJOIN order_items oi ON o.order_id = oi.order_id\nJOIN customers c ON o.customer_id = c.customer_id\nWHERE o.order_status = 'delivered'\n  AND o.order_purchase_timestamp >= '2017-01-01'\n  AND o.order_purchase_timestamp < '2018-01-01'\nGROUP BY c.customer_state\nORDER BY total_gmv DESC;",
+  "view_times_ms": [
+    30.5,
+    243.61,
+    40.44,
+    30.82,
+    15.69,
+    30.48,
+    19.89,
+    28.29
+  ],
+  "base_times_ms": [
+    363.72,
+    393.99,
+    365.04,
+    405.31,
+    364.23,
+    355.96,
+    362.11,
+    360.95
+  ],
+  "view_median_ms": 30.49,
+  "base_median_ms": 363.98,
+  "view_avg_ms": 54.96,
+  "base_avg_ms": 371.41,
+  "speedup_median": 11.94,
+  "view_rows": 27,
+  "base_rows": 27,
+  "top5_view": [
+    {
+      "customer_state": "SP",
+      "total_gmv": 2099107.17,
+      "total_orders": "16749"
+    },
+    {
+      "customer_state": "RJ",
+      "total_gmv": 859928.11,
+      "total_orders": "5841"
+    },
+    {
+      "customer_state": "MG",
+      "total_gmv": 697652.87,
+      "total_orders": "5143"
+    },
+    {
+      "customer_state": "RS",
+      "total_gmv": 345005.58,
+      "total_orders": "2557"
+    },
+    {
+      "customer_state": "PR",
+      "total_gmv": 283095.25,
+      "total_orders": "2158"
+    }
+  ],
+  "top5_base": [
+    {
+      "customer_state": "SP",
+      "total_gmv": 2099107.17,
+      "total_orders": 16749
+    },
+    {
+      "customer_state": "RJ",
+      "total_gmv": 859928.11,
+      "total_orders": 5841
+    },
+    {
+      "customer_state": "MG",
+      "total_gmv": 697652.87,
+      "total_orders": 5143
+    },
+    {
+      "customer_state": "RS",
+      "total_gmv": 345005.58,
+      "total_orders": 2557
+    },
+    {
+      "customer_state": "PR",
+      "total_gmv": 283095.25,
+      "total_orders": 2158
+    }
+  ],
+  "same_states": true,
+  "max_gmv_abs_diff": 0.0,
+  "max_order_abs_diff": 0
+}

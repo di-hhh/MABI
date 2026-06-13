@@ -148,6 +148,38 @@ def _direct_sql_for_question(question: str) -> dict | None:
     else:
         check_q = q
 
+    if any(w in check_q for w in ["anomaly", "anomalies", "abnormal", "alert", "scan", "异常", "告警", "扫描"]):
+        return {
+            "strategy": "view",
+            "sql": """
+                SELECT ym, total_gmv, total_orders, avg_basket, total_freight
+                FROM mv_monthly_sales
+                ORDER BY ym DESC
+                LIMIT 12
+            """,
+            "summary": "Recent monthly sales baseline for anomaly detection",
+        }
+
+    if any(w in check_q for w in ["what-if", "what if", "simulate", "simulation", "假设", "如果", "模拟", "下架", "移除", "差评卖家"]):
+        return {
+            "strategy": "view",
+            "sql": """
+                SELECT
+                    seller_id,
+                    MAX(seller_state) AS seller_state,
+                    ROUND(SUM(total_gmv), 2) AS total_gmv,
+                    SUM(total_orders) AS total_orders,
+                    ROUND(SUM(avg_review_score * total_orders) / NULLIF(SUM(total_orders), 0), 2) AS avg_review_score
+                FROM mv_seller_perf
+                WHERE avg_review_score IS NOT NULL
+                GROUP BY seller_id
+                HAVING SUM(total_orders) >= 5
+                ORDER BY avg_review_score ASC
+                LIMIT 20
+            """,
+            "summary": "Worst-rated sellers baseline for What-if seller screening",
+        }
+
     # Q7: "三大优先改进策略" → use all views
     if (any(w in check_q for w in ["优先改进策略", "三大优先", "改进策略"])
             and not any(w in check_q for w in ["东北", "退货"])):

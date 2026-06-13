@@ -12,6 +12,9 @@ logger = logging.getLogger(__name__)
 class AgentState(TypedDict):
     """Shared state across all agents."""
     question: str
+    resolved_question: str
+    memory_context: str
+    memory_snapshot: dict
     question_summary: str
     analysis_type: str
     task_plan: list
@@ -30,6 +33,10 @@ class AgentState(TypedDict):
     # Forecast outputs
     forecast_results: dict
     forecast_summary: str
+
+    # Scenario Agent outputs
+    scenario_results: dict
+    scenario_summary: str
 
     # Visualization paths
     charts: list
@@ -58,6 +65,15 @@ CHART_TYPES_INFO = {
     "delivery_bar": "bar chart: on-time delivery rate by state",
     "basket_bar": "bar chart: average basket size by state",
 }
+
+
+NLP_TRIGGER_TERMS = [
+    "review", "reviews", "comment", "comments", "complaint", "complaints",
+    "sentiment", "theme", "themes", "topic", "topics",
+    "feedback", "refund", "return",
+    "评论", "评价", "差评", "好评", "情感", "主题", "投诉", "抱怨",
+    "反馈", "满意", "不满意", "退货", "客服", "口碑",
+]
 
 
 def _select_charts_llm(question: str, analysis_type: str, data_results: list) -> set | None:
@@ -146,7 +162,7 @@ def coordinator_node(state: AgentState) -> dict:
     """Parse user question and create task plan."""
     from agents.coordinator import parse_question
 
-    question = state.get("question", "")
+    question = state.get("resolved_question") or state.get("question", "")
     # Strip prior context for coordinator parsing (Bug 22/23)
     clean_question = question.strip()
     plan = parse_question(clean_question)
@@ -163,7 +179,7 @@ def data_analyst_node(state: AgentState) -> dict:
     from agents.data_analyst import analyze
     import time
 
-    question = state.get("question", "")
+    question = state.get("resolved_question") or state.get("question", "")
     # Strip prior context for clean query (Bug 22/23)
     clean_question = question.strip()
     task_plan = state.get("task_plan", [])
@@ -240,17 +256,17 @@ def nlp_node(state: AgentState) -> dict:
     """Run NLP review analysis — uses LLM-based Portuguese sentiment (Bug 25.1).
     Uses clean question without MemorySaver context for keyword detection.
     """
-    raw_question = state.get("question", "")
+    raw_question = state.get("resolved_question") or state.get("question", "")
     question = raw_question.strip().lower()
-    atype = state.get("analysis_type", "")
     task_plan = state.get("task_plan", [])
 
-    nlp_needed = any(w in question for w in
-        ["review", "评论", "评价", "评分", "差评", "好评", "sentiment", "情感", "退货"])
-    nlp_needed = nlp_needed or atype in ("diagnostic", "prescriptive")
+    nlp_needed = any(w in question for w in NLP_TRIGGER_TERMS)
     if not nlp_needed:
         nlp_tasks = [t for t in task_plan if t.get("agent") == "nlp_insight"]
-        nlp_needed = len(nlp_tasks) > 0
+        nlp_needed = any(
+            any(term in str(t.get("task", "")).lower() for term in NLP_TRIGGER_TERMS)
+            for t in nlp_tasks
+        )
 
     if not nlp_needed:
         logger.info("NLP not needed for this query, skipping.")
@@ -277,7 +293,7 @@ def predictor_node(state: AgentState) -> dict:
     Uses clean question without MemorySaver context.
     """
     atype = state.get("analysis_type", "")
-    raw_question = state.get("question", "")
+    raw_question = state.get("resolved_question") or state.get("question", "")
     question = raw_question.strip().lower()
     task_plan = state.get("task_plan", [])
 
@@ -321,6 +337,27 @@ def predictor_node(state: AgentState) -> dict:
         return {}
 
 
+def scenario_node(state: AgentState) -> dict:
+    """Run What-if and anomaly checks when the question asks for scenario analysis."""
+    from agents.scenario import run_scenario_analysis
+
+    question = state.get("resolved_question") or state.get("question", "")
+    analysis_type = state.get("analysis_type", "")
+
+    try:
+        scenario = run_scenario_analysis(question, analysis_type)
+        return {
+            "scenario_results": scenario,
+            "scenario_summary": scenario.get("summary", ""),
+        }
+    except Exception as e:
+        logger.error("Scenario node error: %s", e, exc_info=True)
+        return {
+            "scenario_results": {"error": str(e)},
+            "scenario_summary": f"Scenario Agent failed: {e}",
+        }
+
+
 def visualizer_node(state: AgentState) -> dict:
     """Generate visualizations based on question content and data results."""
     from agents.visualizer import (
@@ -332,7 +369,7 @@ def visualizer_node(state: AgentState) -> dict:
         get_monthly_sales, get_state_sales, get_payment_distribution,
     )
 
-    question = state.get("question", "")
+    question = state.get("resolved_question") or state.get("question", "")
     analysis_type = state.get("analysis_type", "")
     data_results = state.get("data_results", [])
 
@@ -366,6 +403,16 @@ def visualizer_node(state: AgentState) -> dict:
             ci_text = confidence_interval_summary(fc)
             charts.append({"type": "text", "title": "Confidence Intervals",
                            "png": None, "html": None, "text": ci_text})
+
+        scenario_summary = state.get("scenario_summary", "")
+        if scenario_summary:
+            charts.append({
+                "type": "text",
+                "title": "Scenario Agent Summary",
+                "png": None,
+                "html": None,
+                "text": f"### Scenario Agent Summary\n{scenario_summary}",
+            })
 
         # 2. State sales bar chart
         if "state_bar" in selected:
@@ -535,7 +582,7 @@ def visualizer_node(state: AgentState) -> dict:
 def decision_node(state: AgentState) -> dict:
     """Generate business recommendations — injects actual data into prompt (Bug 25.3 + Bug 21)."""
     atype = state.get("analysis_type", "")
-    question = state.get("question", "").lower()
+    question = (state.get("resolved_question") or state.get("question", "")).lower()
 
     presc_needed = atype in ("prescriptive", "diagnostic")
     presc_needed = presc_needed or any(w in question for w in
@@ -568,6 +615,8 @@ def decision_node(state: AgentState) -> dict:
             nlp_results=state.get("nlp_results"),
             forecast_summary=state.get("forecast_summary"),
             data_tables=data_tables_text,
+            scenario_results=state.get("scenario_results"),
+            memory_context=state.get("memory_context", ""),
         )
         return {"recommendations": recs}
     except Exception as e:
@@ -593,6 +642,9 @@ def synthesis_node(state: AgentState) -> dict:
 
     if state.get("forecast_summary"):
         parts.append(f"\n### Forecast\n{state['forecast_summary']}")
+
+    if state.get("scenario_summary"):
+        parts.append(f"\n### Scenario Agent\n{state['scenario_summary']}")
 
     if state.get("recommendations"):
         parts.append(f"\n{state['recommendations']}")
@@ -620,17 +672,19 @@ def route_after_analyst(state: AgentState) -> str:
     task_plan = state.get("task_plan", [])
     atype = state.get("analysis_type", "")
     # Clean question of MemorySaver context before keyword matching
-    raw_question = state.get("question", "")
+    raw_question = state.get("resolved_question") or state.get("question", "")
     question = raw_question.strip().lower()
 
     plan_agents = {t.get("agent") for t in task_plan} if task_plan else set()
 
-    # Use plan_agents first, then analysis_type as fallback
-    nlp_needed = "nlp_insight" in plan_agents
+    # Trigger NLP only when the current question/task is actually about reviews.
+    nlp_needed = any(w in question for w in NLP_TRIGGER_TERMS)
     if not nlp_needed:
-        nlp_needed = any(w in question for w in
-            ["review", "评论", "评价", "评分", "差评", "好评", "sentiment", "退货", "反馈"])
-        nlp_needed = nlp_needed or atype in ("diagnostic", "prescriptive")
+        nlp_needed = any(
+            t.get("agent") == "nlp_insight"
+            and any(term in str(t.get("task", "")).lower() for term in NLP_TRIGGER_TERMS)
+            for t in task_plan
+        )
 
     pred_needed = "predictor" in plan_agents
     if not pred_needed:
@@ -658,7 +712,7 @@ def route_after_nlp(state: AgentState) -> str:
     pred_needed = "predictor" in plan_agents
     if not pred_needed:
         atype = state.get("analysis_type", "")
-        raw_question = state.get("question", "")
+        raw_question = state.get("resolved_question") or state.get("question", "")
         question = raw_question.strip().lower()
         pred_needed = atype == "predictive"
         pred_needed = pred_needed or any(w in question for w in
@@ -681,6 +735,7 @@ def build_graph() -> StateGraph:
     graph.add_node("data_analyst", data_analyst_node)
     graph.add_node("nlp", nlp_node)
     graph.add_node("predictor", predictor_node)
+    graph.add_node("scenario", scenario_node)
     graph.add_node("visualizer", visualizer_node)
     graph.add_node("decision", decision_node)
     graph.add_node("synthesis", synthesis_node)
@@ -691,15 +746,16 @@ def build_graph() -> StateGraph:
     graph.add_conditional_edges("data_analyst", route_after_analyst, {
         "nlp": "nlp",
         "predictor": "predictor",
-        "visualizer": "visualizer",
+        "visualizer": "scenario",
     })
 
     graph.add_conditional_edges("nlp", route_after_nlp, {
         "predictor": "predictor",
-        "visualizer": "visualizer",
+        "visualizer": "scenario",
     })
 
-    graph.add_edge("predictor", "visualizer")
+    graph.add_edge("predictor", "scenario")
+    graph.add_edge("scenario", "visualizer")
     graph.add_edge("visualizer", "decision")
     graph.add_edge("decision", "synthesis")
     graph.add_edge("synthesis", END)
@@ -728,14 +784,42 @@ def run_query(question: str, thread_id: str = "default") -> AgentState:
     This prevents MemorySaver context from contaminating keyword matching.
     """
     import time
+    from agents.memory import (
+        build_memory_snapshot,
+        get_thread_memory,
+        resolve_follow_up_question,
+        save_thread_memory,
+    )
+
     graph = get_graph()
     config = {"configurable": {"thread_id": thread_id}}
 
     # Retrieve prior conversation context from checkpointer — store as separate field
     prior_context = ""
+    memory_snapshot = {}
+    resolved_question = question
+    memory_context = ""
+    stored_values = get_thread_memory(thread_id)
+    if stored_values:
+        memory_snapshot = build_memory_snapshot(stored_values)
+        resolved_question, memory_context = resolve_follow_up_question(question, memory_snapshot)
+        prev_data = stored_values.get("data_summary", "")
+        prev_q = stored_values.get("question", "")
+        prev_recs = stored_values.get("recommendations", "")
+        if prev_q:
+            clean_prev_q = prev_q.strip()
+            prior_context = (
+                f"Previous question: {clean_prev_q}\n"
+                f"Previous findings: {prev_data[:200]}\n"
+                f"Previous recommendations: {prev_recs[:200]}"
+            )
+    else:
+        pass
     try:
-        prior_state = graph.get_state(config)
+        prior_state = None if stored_values else graph.get_state(config)
         if prior_state and prior_state.values:
+            memory_snapshot = build_memory_snapshot(prior_state.values)
+            resolved_question, memory_context = resolve_follow_up_question(question, memory_snapshot)
             prev_data = prior_state.values.get("data_summary", "")
             prev_q = prior_state.values.get("question", "")
             prev_recs = prior_state.values.get("recommendations", "")
@@ -749,8 +833,13 @@ def run_query(question: str, thread_id: str = "default") -> AgentState:
     except Exception:
         pass
 
+    graph_question = resolved_question if memory_context else question
+
     initial_state = {
-        "question": question,  # CLEAN question — no context appended
+        "question": graph_question,
+        "resolved_question": resolved_question,
+        "memory_context": memory_context,
+        "memory_snapshot": memory_snapshot,
         "question_summary": "",
         "analysis_type": "",
         "task_plan": [],
@@ -763,6 +852,8 @@ def run_query(question: str, thread_id: str = "default") -> AgentState:
         "nlp_summary": "",
         "forecast_results": {},
         "forecast_summary": "",
+        "scenario_results": {},
+        "scenario_summary": "",
         "charts": [],
         "recommendations": "",
         "final_response": "",
@@ -772,4 +863,9 @@ def run_query(question: str, thread_id: str = "default") -> AgentState:
     t0 = time.time()
     result = graph.invoke(initial_state, config)
     result["query_time_seconds"] = round(time.time() - t0, 1)
+    result["question"] = question
+    result["resolved_question"] = resolved_question
+    result["memory_context"] = memory_context
+    result["memory_snapshot"] = memory_snapshot
+    save_thread_memory(thread_id, result)
     return result

@@ -2,6 +2,7 @@
 import logging
 import re
 from collections import Counter
+import unicodedata
 from textblob import TextBlob
 from utils.db import execute_query
 from utils.llm import chat
@@ -17,6 +18,39 @@ foi sua seu ele ela mais ja muito muito foi assim entre esse essa estao
 porque produto entrega recebi chegou compra comprar prazo antes depois
 bom boa bem ruim otimo excelente pessimo recomendo super veio comprei
 """.strip().split())
+
+THEME_RULES = [
+    {
+        "theme": "Delivery delay / logistics reliability",
+        "keywords": ["demora", "atraso", "prazo", "entrega", "transportadora", "chegou", "recebi"],
+        "action_hint": "Review carrier SLAs, late-delivery lanes, and proactive delay messaging.",
+    },
+    {
+        "theme": "Product damage or quality defect",
+        "keywords": ["defeito", "quebrado", "danificado", "avariado", "qualidade", "estragado", "peca"],
+        "action_hint": "Tighten seller packaging checks and quality-control sampling.",
+    },
+    {
+        "theme": "Wrong, missing, or incomplete item",
+        "keywords": ["errado", "diferente", "faltou", "falta", "troca", "incompleto", "pedido"],
+        "action_hint": "Audit seller fulfillment accuracy and incomplete-order handling.",
+    },
+    {
+        "theme": "Customer service / refund friction",
+        "keywords": ["atendimento", "resposta", "reembolso", "devolucao", "cancelamento", "suporte"],
+        "action_hint": "Create fast-lane support workflows for refund and seller-response delays.",
+    },
+    {
+        "theme": "Positive product satisfaction",
+        "keywords": ["excelente", "otimo", "perfeito", "recomendo", "adorei", "amei", "satisfeito"],
+        "action_hint": "Use high-satisfaction sellers and categories as operating benchmarks.",
+    },
+    {
+        "theme": "Price / value perception",
+        "keywords": ["preco", "barato", "valor", "custo", "beneficio", "promocao"],
+        "action_hint": "Protect value perception in categories where customers mention price positively.",
+    },
+]
 
 
 def get_review_data(limit: int = 8000) -> list:
@@ -40,6 +74,64 @@ def _tokenize(text: str) -> list:
     """Simple tokenization for Portuguese text."""
     words = re.findall(r"\b[a-záàâãéêíóôõúç]{3,}\b", text.lower())
     return [w for w in words if w not in STOPWORDS_PT]
+
+
+def _normalize_text(text: str) -> str:
+    """Normalize Portuguese text for stable keyword and theme matching."""
+    text = unicodedata.normalize("NFKD", str(text).lower())
+    return "".join(ch for ch in text if not unicodedata.combining(ch))
+
+
+def _tokenize(text: str) -> list:
+    """Simple tokenization for Portuguese text."""
+    words = re.findall(r"\b[a-z]{3,}\b", _normalize_text(text))
+    return [w for w in words if w not in STOPWORDS_PT]
+
+
+def _extract_review_themes(reviews: list, positive: bool) -> list[dict]:
+    """Lightweight topic modeling through interpretable keyword themes."""
+    selected = []
+    for r in reviews:
+        score = r.get("review_score")
+        if score is None:
+            continue
+        if positive and score < 4:
+            continue
+        if not positive and score > 2:
+            continue
+        text = _normalize_text(r.get("review_comment_message", ""))
+        if text:
+            selected.append((r, text))
+
+    if not selected:
+        return []
+
+    themes = []
+    for rule in THEME_RULES:
+        hits = []
+        matched_keywords = Counter()
+        for review, text in selected:
+            kws = [kw for kw in rule["keywords"] if kw in text]
+            if kws:
+                hits.append(review)
+                matched_keywords.update(kws)
+        if not hits:
+            continue
+
+        avg_score = sum(float(h["review_score"]) for h in hits if h.get("review_score") is not None) / len(hits)
+        categories = Counter(str(h.get("category", "unknown")) for h in hits if h.get("category"))
+        themes.append({
+            "theme": rule["theme"],
+            "review_count": len(hits),
+            "share_pct": round(len(hits) / len(selected) * 100, 1),
+            "avg_score": round(avg_score, 2),
+            "top_keywords": [kw for kw, _ in matched_keywords.most_common(5)],
+            "top_categories": [cat for cat, _ in categories.most_common(5)],
+            "action_hint": rule["action_hint"],
+        })
+
+    themes.sort(key=lambda x: x["review_count"], reverse=True)
+    return themes[:6]
 
 
 def _llm_sentiment_analysis(reviews_sample: list) -> dict:
@@ -173,6 +265,18 @@ def analyze_reviews() -> dict:
     cat_sentiment.sort(key=lambda x: x["avg_score"])
     top_negative_cats = [c for c in cat_sentiment if c["avg_score"] < 3.5][:10]
 
+    negative_themes = _extract_review_themes(reviews, positive=False)
+    positive_themes = _extract_review_themes(reviews, positive=True)
+    if negative_themes:
+        top_theme = negative_themes[0]
+        theme_summary = (
+            f"Main negative theme: {top_theme['theme']} "
+            f"({top_theme['review_count']} matched negative reviews, "
+            f"{top_theme['share_pct']}% of negative text sample)."
+        )
+    else:
+        theme_summary = "No dominant negative text theme detected from keyword topic rules."
+
     sentiment_summary = llm_insights.get("sentiment_summary", "")
     if not sentiment_summary:
         sentiment_summary = (
@@ -180,6 +284,14 @@ def analyze_reviews() -> dict:
             f"{pos_pct:.0f}% positive (4-5★), {neg_pct:.0f}% negative (1-2★). "
             f"Top negative keywords: {', '.join(stat_neg_keywords[:5])}."
         )
+
+    if theme_summary and theme_summary not in sentiment_summary:
+        sentiment_summary = f"{sentiment_summary} {theme_summary}".strip()
+
+    decision_signals = [
+        f"{theme['theme']}: {theme['review_count']} negative mentions; action: {theme['action_hint']}"
+        for theme in negative_themes[:3]
+    ]
 
     return {
         "total_reviews": len(reviews),
@@ -195,6 +307,10 @@ def analyze_reviews() -> dict:
         },
         "top_positive_keywords": combined_pos,
         "top_negative_keywords": combined_neg,
+        "negative_themes": negative_themes,
+        "positive_themes": positive_themes,
+        "topic_modeling_summary": theme_summary,
+        "decision_signals": decision_signals,
         "top_negative_categories": top_negative_cats,
         "category_sentiment": cat_sentiment,
         "sentiment_summary": sentiment_summary,

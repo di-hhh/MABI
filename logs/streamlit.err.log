@@ -1,0 +1,139 @@
+2026-06-13 22:42:20.137 Uvicorn server started on 127.0.0.1:8501
+2026-06-13 22:42:43,651 [utils.db] INFO: Database engine created: 8.153.93.169:3306/MABI-team-DB?charset=utf8mb4
+2026-06-13 22:42:44,695 [choreographer.browsers.chromium] INFO: Chromium init'ed with kwargs {}
+2026-06-13 22:42:44,702 [choreographer.browsers.chromium] INFO: Found chromium path: C:\Program Files\Google\Chrome\Application\chrome.exe
+2026-06-13 22:42:44,707 [choreographer.utils._tmpfile] INFO: Temp directory created: C:\Users\xhb\AppData\Local\Temp\tmppwryj98r.
+2026-06-13 22:42:44,709 [choreographer.browser_async] INFO: Opening browser.
+2026-06-13 22:42:44,713 [choreographer.utils._tmpfile] INFO: Temp directory created: C:\Users\xhb\AppData\Local\Temp\tmpsrdmirb2.
+2026-06-13 22:42:44,713 [choreographer.browsers.chromium] INFO: Temporary directory at: C:\Users\xhb\AppData\Local\Temp\tmpsrdmirb2
+2026-06-13 22:42:45,030 [kaleido.kaleido] INFO: Conforming 1 to file:///C:/Users/xhb/AppData/Local/Temp/tmppwryj98r/index.html
+2026-06-13 22:42:45,035 [kaleido.kaleido] INFO: Waiting on all navigates
+2026-06-13 22:42:47,286 [kaleido.kaleido] INFO: All navigates done, putting them all in queue.
+2026-06-13 22:42:47,402 [kaleido.kaleido] INFO: Getting tab from queue (has 1)
+2026-06-13 22:42:47,407 [kaleido.kaleido] INFO: Got 53A8
+2026-06-13 22:42:47,408 [kaleido._kaleido_tab] INFO: Processing Monthly_Sales_Overview.png
+2026-06-13 22:42:47,408 [kaleido._kaleido_tab] INFO: Sending big command for Monthly_Sales_Overview.png.
+2026-06-13 22:42:47,491 [kaleido._kaleido_tab] INFO: Sent big command for Monthly_Sales_Overview.png.
+2026-06-13 22:42:47,499 [kaleido.kaleido] INFO: Reloading tab 53A8 before return.
+2026-06-13 22:42:47,553 [kaleido.kaleido] INFO: Putting tab 53A8 back (queue size: 0).
+2026-06-13 22:42:47,555 [kaleido.kaleido] INFO: Waiting for all cleanups to finish.
+2026-06-13 22:42:47,555 [kaleido.kaleido] INFO: Exiting Kaleido
+2026-06-13 22:42:47,555 [choreographer.browser_async] INFO: Closing browser.
+2026-06-13 22:42:47,573 [choreographer.browser_async] INFO: Closing browser.
+2026-06-13 22:42:47,576 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-06-13 22:42:47,576 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-06-13 22:42:47,577 [kaleido.kaleido] INFO: Cancelling tasks.
+2026-06-13 22:42:47,577 [kaleido.kaleido] INFO: Exiting Kaleido/Choreo
+2026-06-13 22:42:47,773 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-06-13 22:42:47,779 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-06-13 22:42:47,779 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-06-13 22:42:47,780 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-06-13 22:42:47,780 [kaleido.kaleido] INFO: Cancelling tasks.
+2026-06-13 22:42:47,780 [kaleido.kaleido] INFO: Exiting Kaleido/Choreo
+2026-06-13 22:42:48,521 [agents.visualizer] INFO: Saved chart: dashboard/static\761_line_chart.png
+2026-06-13 22:42:49.235 Please replace `st.components.v1.html` with `st.iframe`.
+
+`st.components.v1.html` will be removed after 2026-06-01.
+2026-06-13 22:42:49,432 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-06-13 22:42:49,438 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-06-13 22:43:08,276 [httpx] INFO: HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2026-06-13 22:43:10,185 [agents.coordinator] INFO: Coordinator plan: 分析客户评论的情感倾向，提取主要差评主题，给出运营改进建议 → 3 tasks [diagnostic]
+2026-06-13 22:43:10,246 [agents.graph] INFO: Data analyst processing 1 sub-task(s)
+2026-06-13 22:43:10,345 [httpx] INFO: HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2026-06-13 22:43:12,300 [agents.data_analyst] INFO: Strategy: base_table | SQL: SELECT review_id, order_id, review_score, review_comment_title, review_comment_message, review_creation_date, review_answer_timestamp FROM order_reviews LIMIT 1000
+2026-06-13 22:43:12,400 [agents.graph] INFO: Routing after analyst — NLP: True, Predictor: False (type: diagnostic, plan: {'nlp_insight', 'data_analyst', 'decision'})
+2026-06-13 22:43:12,401 [agents.nlp_insight] INFO: Fetching review data for NLP analysis...
+2026-06-13 22:43:13,169 [agents.nlp_insight] INFO: Fetched 9116 reviews
+2026-06-13 22:43:13,305 [httpx] INFO: HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2026-06-13 22:43:15,415 [httpx] INFO: HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2026-06-13 22:43:16,478 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-06-13 22:43:16,479 [agents.graph] INFO: Selected charts: {'wordcloud', 'delivery_bar', 'category_bar'}
+2026-06-13 22:43:16,608 [choreographer.browsers.chromium] INFO: Chromium init'ed with kwargs {}
+2026-06-13 22:43:16,613 [choreographer.browsers.chromium] INFO: Found chromium path: C:\Program Files\Google\Chrome\Application\chrome.exe
+2026-06-13 22:43:16,614 [choreographer.utils._tmpfile] INFO: Temp directory created: C:\Users\xhb\AppData\Local\Temp\tmpdnmai60n.
+2026-06-13 22:43:16,615 [choreographer.browser_async] INFO: Opening browser.
+2026-06-13 22:43:16,617 [choreographer.utils._tmpfile] INFO: Temp directory created: C:\Users\xhb\AppData\Local\Temp\tmp4hut73zp.
+2026-06-13 22:43:16,617 [choreographer.browsers.chromium] INFO: Temporary directory at: C:\Users\xhb\AppData\Local\Temp\tmp4hut73zp
+2026-06-13 22:43:16,859 [kaleido.kaleido] INFO: Conforming 1 to file:///C:/Users/xhb/AppData/Local/Temp/tmpdnmai60n/index.html
+2026-06-13 22:43:16,864 [kaleido.kaleido] INFO: Waiting on all navigates
+2026-06-13 22:43:18,377 [kaleido.kaleido] INFO: All navigates done, putting them all in queue.
+2026-06-13 22:43:18,493 [kaleido.kaleido] INFO: Getting tab from queue (has 1)
+2026-06-13 22:43:18,498 [kaleido.kaleido] INFO: Got B0EB
+2026-06-13 22:43:18,499 [kaleido._kaleido_tab] INFO: Processing Top_Categories_by_Sales.png
+2026-06-13 22:43:18,499 [kaleido._kaleido_tab] INFO: Sending big command for Top_Categories_by_Sales.png.
+2026-06-13 22:43:18,592 [kaleido._kaleido_tab] INFO: Sent big command for Top_Categories_by_Sales.png.
+2026-06-13 22:43:18,599 [kaleido.kaleido] INFO: Reloading tab B0EB before return.
+2026-06-13 22:43:18,655 [kaleido.kaleido] INFO: Putting tab B0EB back (queue size: 0).
+2026-06-13 22:43:18,657 [kaleido.kaleido] INFO: Waiting for all cleanups to finish.
+2026-06-13 22:43:18,657 [kaleido.kaleido] INFO: Exiting Kaleido
+2026-06-13 22:43:18,658 [choreographer.browser_async] INFO: Closing browser.
+2026-06-13 22:43:18,672 [choreographer.browser_async] INFO: Closing browser.
+2026-06-13 22:43:18,675 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-06-13 22:43:18,676 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-06-13 22:43:18,676 [kaleido.kaleido] INFO: Cancelling tasks.
+2026-06-13 22:43:18,677 [kaleido.kaleido] INFO: Exiting Kaleido/Choreo
+2026-06-13 22:43:18,865 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-06-13 22:43:18,871 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-06-13 22:43:18,872 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-06-13 22:43:18,872 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-06-13 22:43:18,873 [kaleido.kaleido] INFO: Cancelling tasks.
+2026-06-13 22:43:18,873 [kaleido.kaleido] INFO: Exiting Kaleido/Choreo
+2026-06-13 22:43:18,908 [agents.visualizer] INFO: Saved chart: dashboard/static\762_bar_chart.png
+2026-06-13 22:43:18,937 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-06-13 22:43:18,939 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-06-13 22:43:18,966 [choreographer.browsers.chromium] INFO: Chromium init'ed with kwargs {}
+2026-06-13 22:43:18,970 [choreographer.browsers.chromium] INFO: Found chromium path: C:\Program Files\Google\Chrome\Application\chrome.exe
+2026-06-13 22:43:18,971 [choreographer.utils._tmpfile] INFO: Temp directory created: C:\Users\xhb\AppData\Local\Temp\tmp77n6g7em.
+2026-06-13 22:43:18,972 [choreographer.browser_async] INFO: Opening browser.
+2026-06-13 22:43:18,974 [choreographer.utils._tmpfile] INFO: Temp directory created: C:\Users\xhb\AppData\Local\Temp\tmpc3qkh0s2.
+2026-06-13 22:43:18,975 [choreographer.browsers.chromium] INFO: Temporary directory at: C:\Users\xhb\AppData\Local\Temp\tmpc3qkh0s2
+2026-06-13 22:43:19,216 [kaleido.kaleido] INFO: Conforming 1 to file:///C:/Users/xhb/AppData/Local/Temp/tmp77n6g7em/index.html
+2026-06-13 22:43:19,217 [kaleido.kaleido] INFO: Waiting on all navigates
+2026-06-13 22:43:21,252 [kaleido.kaleido] INFO: All navigates done, putting them all in queue.
+2026-06-13 22:43:21,368 [kaleido.kaleido] INFO: Getting tab from queue (has 1)
+2026-06-13 22:43:21,373 [kaleido.kaleido] INFO: Got 7DAB
+2026-06-13 22:43:21,374 [kaleido._kaleido_tab] INFO: Processing On_Time_Delivery_Rate_by_State_All_States.png
+2026-06-13 22:43:21,375 [kaleido._kaleido_tab] INFO: Sending big command for On_Time_Delivery_Rate_by_State_All_States.png.
+2026-06-13 22:43:21,438 [kaleido._kaleido_tab] INFO: Sent big command for On_Time_Delivery_Rate_by_State_All_States.png.
+2026-06-13 22:43:21,441 [kaleido.kaleido] INFO: Reloading tab 7DAB before return.
+2026-06-13 22:43:21,494 [kaleido.kaleido] INFO: Putting tab 7DAB back (queue size: 0).
+2026-06-13 22:43:21,496 [kaleido.kaleido] INFO: Waiting for all cleanups to finish.
+2026-06-13 22:43:21,496 [kaleido.kaleido] INFO: Exiting Kaleido
+2026-06-13 22:43:21,497 [choreographer.browser_async] INFO: Closing browser.
+2026-06-13 22:43:21,513 [choreographer.browser_async] INFO: Closing browser.
+2026-06-13 22:43:21,516 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-06-13 22:43:21,517 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-06-13 22:43:21,517 [kaleido.kaleido] INFO: Cancelling tasks.
+2026-06-13 22:43:21,517 [kaleido.kaleido] INFO: Exiting Kaleido/Choreo
+2026-06-13 22:43:21,760 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-06-13 22:43:21,766 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-06-13 22:43:21,766 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-06-13 22:43:21,767 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-06-13 22:43:21,768 [kaleido.kaleido] INFO: Cancelling tasks.
+2026-06-13 22:43:21,768 [kaleido.kaleido] INFO: Exiting Kaleido/Choreo
+2026-06-13 22:43:21,807 [agents.visualizer] INFO: Saved chart: dashboard/static\763_bar_chart.png
+2026-06-13 22:43:21,864 [choreographer.utils._tmpfile] INFO: TemporaryDirectory.cleanup() worked.
+2026-06-13 22:43:21,866 [choreographer.utils._tmpfile] INFO: shutil.rmtree worked.
+2026-06-13 22:43:22,537 [agents.visualizer] INFO: Saved wordcloud: dashboard/static\764_wordcloud.png
+2026-06-13 22:43:22,661 [httpx] INFO: HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2026-06-13 22:43:37.423 Please replace `st.components.v1.html` with `st.iframe`.
+
+`st.components.v1.html` will be removed after 2026-06-01.
+2026-06-13 22:43:38.152 Please replace `st.components.v1.html` with `st.iframe`.
+
+`st.components.v1.html` will be removed after 2026-06-01.
+2026-06-13 22:43:38.158 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-06-13 22:43:38.252 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-06-13 22:43:38.286 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
