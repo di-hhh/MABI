@@ -1,0 +1,23 @@
+# 忽略掉一些 Claude Code 用的 SKILL/MCP/PLUGINS 和一些过程性 .md 文档
+/.claude/
+/.mcp.json
+/.playwright-mcp/
+/CLAUDE.md
+/Progress.md
+/Validation.md
+/Bugfix.md
+
+# 忽略原始数据
+/data/BrazilianECommercePublicDatasetByOlist.csv
+
+# 忽略环境变量
+/.env
+
+# 忽略 Python 缓存
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# 这些图片每次查询都会重新生成
+/dashboard/static/*.png
+/dashboard/static/*.html

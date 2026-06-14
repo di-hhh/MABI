@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agentic BI 项目答辩</title>
+  <style>
+    :root {
+      --canvas: #f2eee5;
+      --paper: #fffdf8;
+      --ink: #172429;
+      --muted: #647176;
+      --teal: #155e63;
+      --teal-soft: #e7f1ef;
+      --orange: #b7672b;
+      --orange-soft: #f7ebdf;
+      --line: #d8d2c7;
+      --good: #2d704e;
+      --shadow: 0 20px 60px rgba(32, 41, 43, 0.13);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      color: var(--ink);
+      font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+      background:
+        radial-gradient(circle at 8% 12%, rgba(21, 94, 99, 0.13), transparent 27%),
+        radial-gradient(circle at 92% 88%, rgba(183, 103, 43, 0.12), transparent 24%),
+        var(--canvas);
+    }
+
+    body {
+      display: grid;
+      place-items: center;
+    }
+
+    .deck {
+      position: relative;
+      width: min(100vw, calc(100vh * 16 / 9));
+      height: min(100vh, calc(100vw * 9 / 16));
+      overflow: hidden;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      padding: 3.2% 4.2% 4.1%;
+    }
+
+    .slide.active {
+      display: flex;
+      animation: reveal 220ms ease-out;
+    }
+
+    @keyframes reveal {
+      from {
+        opacity: 0;
+        transform: translateY(5px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .sheet {
+      position: relative;
+      display: flex;
+      flex: 1;
+      min-width: 0;
+      min-height: 0;
+      flex-direction: column;
+      gap: 2.3%;
+      padding: 2.8% 3.2% 2.4%;
+      overflow: hidden;
+      background: rgba(255, 253, 248, 0.97);
+      border: 1px solid rgba(216, 210, 199, 0.92);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .sheet::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 28%;
+      height: 5px;
+      background: linear-gradient(90deg, var(--teal), var(--orange));
+    }
+
+    .head {
+      display: flex;
+      flex: 0 0 auto;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+      padding-bottom: 1.25%;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .head h2 {
+      margin: 0;
+      font-family: Georgia, "Microsoft YaHei", serif;
+      font-size: clamp(23px, 2.3vw, 34px);
+      line-height: 1.1;
+      letter-spacing: 0.02em;
+    }
+
+    .eyebrow {
+      flex: 0 0 auto;
+      color: var(--teal);
+      font-size: clamp(10px, 0.9vw, 13px);
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    .content {
+      display: flex;
+      flex: 1 1 auto;
+      min-width: 0;
+      min-height: 0;
+      gap: 2%;
+    }
+
+    .cols-2 {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      width: 100%;
+      min-height: 0;
+      gap: 2%;
+    }
+
+    .cols-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      width: 100%;
+      min-height: 0;
+      gap: 1.7%;
+    }
+
+    .stack {
+      display: flex;
+      min-width: 0;
+      min-height: 0;
+      flex-direction: column;
+      gap: 2%;
+    }
+
+    .panel {
+      min-width: 0;
+      min-height: 0;
+      padding: 2.4%;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: linear-gradient(180deg, #fff, #faf7f0);
+    }
+
+    .panel.flex {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .grow {
+      flex: 1 1 0;
+    }
+
+    .centered {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .summary-number {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--orange);
+      font: 800 clamp(25px, 2.6vw, 38px)/1 Georgia, serif;
+    }
+
+    .panel h3 {
+      margin: 0 0 1.8%;
+      color: var(--teal);
+      font-size: clamp(15px, 1.35vw, 20px);
+      line-height: 1.25;
+    }
+
+    .panel h4 {
+      margin: 0 0 6px;
+      color: var(--orange);
+      font-size: clamp(12px, 1.05vw, 16px);
+    }
+
+    p,
+    li,
+    td,
+    th {
+      font-size: clamp(11px, 1.02vw, 15px);
+      line-height: 1.48;
+    }
+
+    p {
+      margin: 0;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 1.4em;
+    }
+
+    li+li {
+      margin-top: 0.42em;
+    }
+
+    strong {
+      color: var(--teal);
+    }
+
+    code,
+    .path {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.88em;
+    }
+
+    code {
+      padding: 0.12em 0.38em;
+      color: #294348;
+      background: #edf1ef;
+      border-radius: 5px;
+    }
+
+    .media {
+      display: flex;
+      flex: 1 1 0;
+      min-width: 0;
+      min-height: 0;
+      align-items: center;
+      justify-content: center;
+      padding: 1.2%;
+      overflow: hidden;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+    }
+
+    .media img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-width: 0;
+      min-height: 0;
+      object-fit: contain;
+      object-position: center;
+    }
+
+    .media.no-border {
+      padding: 0;
+      border: 0;
+      background: transparent;
+    }
+
+    .caption {
+      flex: 0 0 auto;
+      margin-top: 1.2%;
+      color: var(--muted);
+      font-size: clamp(9px, 0.82vw, 12px);
+      line-height: 1.35;
+      text-align: center;
+    }
+
+    .footer {
+      display: flex;
+      flex: 0 0 auto;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      color: var(--muted);
+      font-size: clamp(9px, 0.78vw, 11px);
+      line-height: 1;
+    }
+
+    .cover .sheet {
+      padding: 5.4% 4.5% 3.2%;
+    }
+
+    .cover-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.32fr) minmax(260px, 0.68fr);
+      flex: 1;
+      min-height: 0;
+      align-items: center;
+      gap: 5%;
+    }
+
+    .course {
+      color: var(--teal);
+      font-size: clamp(14px, 1.3vw, 19px);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+
+    .cover h1 {
+      margin: 3.5% 0 3%;
+      font-family: Georgia, "Microsoft YaHei", serif;
+      font-size: clamp(32px, 3.55vw, 52px);
+      line-height: 1.15;
+      letter-spacing: 0.01em;
+    }
+
+    .lead {
+      max-width: 94%;
+      color: var(--muted);
+      font-size: clamp(14px, 1.45vw, 21px);
+      line-height: 1.55;
+    }
+
+    .opening {
+      display: inline-block;
+      margin-bottom: 2%;
+      padding: 0.55em 0.9em;
+      color: #8a4c1e;
+      background: var(--orange-soft);
+      border-radius: 999px;
+      font-size: clamp(10px, 0.92vw, 13px);
+      font-weight: 700;
+    }
+
+    .members {
+      display: grid;
+      gap: 10px;
+    }
+
+    .member {
+      padding: 13px 16px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.86);
+    }
+
+    .member b {
+      display: block;
+      font-size: clamp(16px, 1.45vw, 21px);
+    }
+
+    .member span {
+      color: var(--muted);
+      font-size: clamp(10px, 0.9vw, 13px);
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      flex: 0 0 auto;
+      gap: 1.5%;
+    }
+
+    .metric {
+      min-width: 0;
+      padding: 1.5% 1.7%;
+      border: 1px solid rgba(21, 94, 99, 0.2);
+      border-radius: 14px;
+      background: var(--teal-soft);
+    }
+
+    .metric b {
+      display: block;
+      color: var(--teal);
+      font-family: Georgia, serif;
+      font-size: clamp(22px, 2.4vw, 35px);
+      line-height: 1;
+    }
+
+    .metric span {
+      display: block;
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: clamp(9px, 0.82vw, 12px);
+      line-height: 1.3;
+    }
+
+    .score-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .score-item {
+      display: grid;
+      grid-template-columns: 48px 1fr auto;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: #f8f5ee;
+    }
+
+    .score-item .points {
+      color: var(--orange);
+      font-weight: 800;
+    }
+
+    .score-item .done {
+      color: var(--good);
+      font-size: 0.85em;
+      font-weight: 700;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .chip,
+    .path {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.4em 0.68em;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .chip {
+      color: #8a4c1e;
+      background: var(--orange-soft);
+      border: 1px solid #ead2bd;
+      font-size: clamp(9px, 0.83vw, 12px);
+      font-weight: 700;
+    }
+
+    .path {
+      color: #294348;
+      background: var(--teal-soft);
+      border: 1px solid #c4dad6;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    th,
+    td {
+      padding: 0.52em 0.6em;
+      text-align: left;
+      vertical-align: middle;
+      border: 1px solid var(--line);
+    }
+
+    th {
+      color: var(--teal);
+      background: var(--teal-soft);
+      font-weight: 700;
+    }
+
+    .compact th,
+    .compact td {
+      font-size: clamp(9px, 0.78vw, 11.5px);
+      line-height: 1.26;
+    }
+
+    .flow-note {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      flex: 0 0 auto;
+      gap: 8px;
+    }
+
+    .flow-note div {
+      padding: 8px;
+      color: var(--muted);
+      background: #f8f5ee;
+      border-radius: 9px;
+      font-size: clamp(9px, 0.8vw, 12px);
+      text-align: center;
+    }
+
+    .agent-story {
+      display: flex;
+      flex: 1 1 0;
+      min-height: 0;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .agent-line {
+      display: flex;
+      min-height: 0;
+      align-items: stretch;
+      gap: 8px;
+    }
+
+    .agent-box {
+      display: flex;
+      flex: 1 1 0;
+      min-width: 0;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 9px 8px;
+      color: var(--teal);
+      background: var(--teal-soft);
+      border: 1px solid #c4dad6;
+      border-radius: 11px;
+      text-align: center;
+      font-size: clamp(10px, 0.88vw, 13px);
+      font-weight: 700;
+      line-height: 1.28;
+    }
+
+    .agent-box span {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 0.82em;
+      font-weight: 400;
+    }
+
+    .agent-box.branch {
+      color: #8a4c1e;
+      background: var(--orange-soft);
+      border-color: #ead2bd;
+    }
+
+    .agent-arrow {
+      display: grid;
+      flex: 0 0 22px;
+      place-items: center;
+      color: var(--orange);
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .stage-label {
+      color: var(--muted);
+      font-size: clamp(9px, 0.76vw, 11px);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+
+    .analysis-card {
+      position: relative;
+      padding-top: 4%;
+    }
+
+    .analysis-card::before {
+      content: attr(data-step);
+      position: absolute;
+      top: 9px;
+      right: 11px;
+      color: rgba(21, 94, 99, 0.16);
+      font: 800 clamp(32px, 3.5vw, 50px)/1 Georgia, serif;
+    }
+
+    .analysis-evidence {
+      display: grid;
+      grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+      min-height: 0;
+      gap: 10px;
+      padding: 2.2%;
+    }
+
+    .analysis-evidence .analysis-copy {
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .analysis-evidence .analysis-copy h3 {
+      padding-right: 32px;
+    }
+
+    .analysis-evidence li {
+      font-size: clamp(9px, 0.83vw, 12px);
+      line-height: 1.35;
+    }
+
+    .evidence-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      min-width: 0;
+      min-height: 0;
+      gap: 2%;
+    }
+
+    .evidence-grid.six {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      column-gap: 1.5%;
+      row-gap: 2.2%;
+    }
+
+    .evidence-item {
+      display: flex;
+      min-width: 0;
+      min-height: 0;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .evidence-item .media {
+      border-radius: 10px;
+    }
+
+    .evidence-item span {
+      color: var(--muted);
+      font-size: clamp(8px, 0.74vw, 11px);
+      text-align: center;
+    }
+
+    .result-callout {
+      display: grid;
+      place-items: center;
+      padding: 8%;
+      text-align: center;
+      border-radius: 16px;
+      background: linear-gradient(145deg, var(--teal), #244b50);
+      color: #fff;
+    }
+
+    .result-callout b {
+      display: block;
+      color: #fff;
+      font: 800 clamp(35px, 4vw, 58px)/1 Georgia, serif;
+    }
+
+    .result-callout span {
+      margin-top: 9px;
+      font-size: clamp(10px, 0.95vw, 14px);
+      line-height: 1.4;
+    }
+
+    .controls {
+      position: absolute;
+      right: 1.7%;
+      bottom: 1.5%;
+      z-index: 10;
+      display: flex;
+      gap: 7px;
+    }
+
+    .controls button {
+      display: grid;
+      width: 36px;
+      height: 36px;
+      place-items: center;
+      color: #fff;
+      background: rgba(23, 36, 41, 0.9);
+      border: 0;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .progress {
+      position: absolute;
+      left: 4.2%;
+      right: 4.2%;
+      bottom: 1.7%;
+      height: 4px;
+      overflow: hidden;
+      background: rgba(23, 36, 41, 0.08);
+      border-radius: 999px;
+    }
+
+    .progress div {
+      width: 0;
+      height: 100%;
+      background: linear-gradient(90deg, var(--teal), var(--orange));
+      transition: width 180ms ease;
+    }
+
+    @media (max-aspect-ratio: 4/3) {
+      .slide {
+        padding: 2% 2.5% 3%;
+      }
+
+      .sheet {
+        border-radius: 18px;
+      }
+    }
+
+    @media print {
+
+      html,
+      body {
+        overflow: visible;
+        background: #fff;
+      }
+
+      .deck {
+        width: 100%;
+        height: auto;
+        overflow: visible;
+      }
+
+      .slide {
+        position: relative;
+        display: flex;
+        width: 13.333in;
+        height: 7.5in;
+        page-break-after: always;
+      }
+
+      .controls,
+      .progress {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="deck" aria-label="Agentic BI 项目答辩演示文稿">
+    <section class="slide cover active">
+      <div class="sheet">
+        <div class="cover-grid">
+          <div>
+            <span class="opening">项目答辩汇报</span>
+            <div class="course">软件工程 · 商务智能案例分析期末项目</div>
+            <h1>Agentic BI 驱动的多表电商运营分析与决策智能系统</h1>
+            <p class="lead">基于 Olist 电商数据，完成自然语言问答、多表分析、预聚合加速、预测建模、评论洞察与决策建议的一体化系统。</p>
+          </div>
+          <div class="members" aria-label="小组成员">
+            <div class="member"><b>黄迪</b><span>学号：2354283</span></div>
+            <div class="member"><b>黄一和</b><span>学号：2351269</span></div>
+            <div class="member"><b>夏浩博</b><span>学号：2352048</span></div>
+          </div>
+        </div>
+        <div class="footer"><span>Olist Brazilian E-Commerce Dataset · Agentic Business Intelligence</span><span>1 /
+            12</span></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="sheet">
+        <header class="head">
+          <h2>项目完成情况总览</h2><span class="eyebrow">Project Overview</span>
+        </header>
+        <div class="metrics">
+          <div class="metric"><b>9</b><span>张原始业务表完成清洗、建模与关联</span></div>
+          <div class="metric"><b>6</b><span>张预聚合表可通过脚本一键刷新</span></div>
+          <div class="metric"><b>7+</b><span>个 Agent 角色由 LangGraph 有状态编排</span></div>
+          <div class="metric"><b>6+</b><span>类可视化接入统一 Web 仪表板</span></div>
+        </div>
+        <div class="content cols-2">
+          <div class="panel flex">
+            <h3>评分项覆盖</h3>
+            <div class="score-list grow">
+              <div class="score-item"><span class="points">20 分</span><span>数据预处理与多表查询</span><span
+                  class="done">已完成</span></div>
+              <div class="score-item"><span class="points">10 分</span><span>预聚合设计与性能优化</span><span
+                  class="done">已完成</span></div>
+              <div class="score-item"><span class="points">20 分</span><span>多智能体系统设计与协作</span><span
+                  class="done">已完成</span></div>
+              <div class="score-item"><span class="points">20 分</span><span>四层分析完整度与深度</span><span
+                  class="done">已完成</span></div>
+              <div class="score-item"><span class="points">15 分</span><span>可视化质量与仪表板交互</span><span
+                  class="done">已完成</span></div>
+            </div>
+          </div>
+          <div class="panel flex">
+            <h3>额外加分能力</h3>
+            <div class="chips">
+              <span class="chip">评论情感分析</span><span class="chip">主题建模</span>
+              <span class="chip">What-if 模拟</span><span class="chip">异常检测</span>
+              <span class="chip">多轮上下文记忆</span><span class="chip">自动商业建议</span>
+            </div>
+            <p style="margin-top: 4%;">我们的重点不是简单展示静态图表，而是让非技术用户通过自然语言完成“查询、解释、预测、决策”的完整分析闭环。</p>
+            <div class="result-callout grow" style="margin-top: 4%; padding: 4%;"><b>可运行</b><span>代码、数据库、界面、Agent
+                流程和验证脚本均形成闭环</span></div>
+          </div>
+        </div>
+        <div class="footer"><span>系统形成“查询—解释—预测—决策”的完整分析闭环</span><span>2 / 12</span></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="sheet">
+        <header class="head">
+          <h2>系统架构：从自然语言到决策建议</h2><span class="eyebrow">Architecture</span>
+        </header>
+        <div class="content cols-2" style="grid-template-columns: 1.35fr 0.65fr;">
+          <div class="media"><img src="assets/architecture_overview.svg" alt="系统总体架构图"></div>
+          <div class="stack">
+            <div class="panel grow centered">
+              <h3>四层结构</h3>
+              <ul>
+                <li><strong>交互层：</strong>Streamlit 双栏仪表板</li>
+                <li><strong>编排层：</strong>LangGraph 状态图与条件路由</li>
+                <li><strong>数据层：</strong>MySQL 原始表与预聚合表</li>
+                <li><strong>能力层：</strong>查询、NLP、预测、可视化与决策</li>
+              </ul>
+            </div>
+            <div class="panel centered">
+              <h3>技术选型</h3>
+              <div class="chips"><span class="chip">LLM API</span><span class="chip">LangGraph</span><span
+                  class="chip">MySQL</span><span class="chip">Prophet</span><span class="chip">Streamlit</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="footer"><span>自然语言问题经任务编排后，进入数据查询、模型分析与决策生成链路</span><span>3 / 12</span></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="sheet">
+        <header class="head">
+          <h2>多智能体协作：按问题类型动态路由</h2><span class="eyebrow">Agent Orchestration</span>
+        </header>
+        <div class="content cols-2" style="grid-template-columns: 1.35fr 0.65fr;">
+          <div class="panel flex">
+            <div class="agent-story">
+              <span class="stage-label">01 · 理解与规划</span>
+              <div class="agent-line">
+                <div class="agent-box">用户问题<span>自然语言输入</span></div>
+                <div class="agent-arrow">→</div>
+                <div class="agent-box">上下文解析<span>识别多轮指代</span></div>
+                <div class="agent-arrow">→</div>
+                <div class="agent-box">Coordinator<span>分类并生成 task plan</span></div>
+              </div>
+              <span class="stage-label">02 · 查询与按需分析</span>
+              <div class="agent-line">
+                <div class="agent-box">Data Analyst<span>视图优先 / JOIN 回退</span></div>
+                <div class="agent-arrow">→</div>
+                <div class="agent-box branch">NLP Insight<span>情感与评论主题</span></div>
+                <div class="agent-box branch">Predictor<span>未来 6 周预测</span></div>
+                <div class="agent-box branch">Scenario<span>What-if / 异常检测</span></div>
+              </div>
+              <span class="stage-label">03 · 展示与决策</span>
+              <div class="agent-line">
+                <div class="agent-box">Visualizer<span>自动选择图表</span></div>
+                <div class="agent-arrow">→</div>
+                <div class="agent-box">Decision<span>形成行动建议</span></div>
+                <div class="agent-arrow">→</div>
+                <div class="agent-box">Synthesis<span>统一汇总回答</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="panel flex">
+            <h3>完整 LangGraph 流程</h3>
+            <div class="media grow"><img src="assets/langgraph_agent_flow.svg" alt="完整 LangGraph Agent 调度流程图"></div>
+            <div class="caption">条件路由根据问题类型选择 NLP、预测或情景分析分支</div>
+          </div>
+        </div>
+        <div class="footer"><span>共享状态传递中间结果，MemorySaver 支持多轮追问</span><span>4 / 12</span></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="sheet">
+        <header class="head">
+          <h2>数据层：9 张明细表与 6 张预聚合表</h2><span class="eyebrow">Data Foundation</span>
+        </header>
+        <div class="content cols-2" style="grid-template-columns: 1.28fr 0.72fr;">
+          <div class="media"><img src="assets/preaggregation_layer.svg" alt="预聚合视图层数据血缘图"></div>
+          <div class="stack">
+            <div class="panel grow centered"><span class="summary-number">9</span>
+              <h3>原始业务表</h3>
+              <p>覆盖订单、商品、客户、卖家、支付、评论与地理信息，保留细粒度明细查询能力。</p>
+            </div>
+            <div class="panel grow centered"><span class="summary-number">6</span>
+              <h3>预聚合表</h3>
+              <p>覆盖月度、州、品类、配送、卖家和支付六个高频分析维度。</p>
+            </div>
+            <div class="panel grow centered"><span class="summary-number">1</span>
+              <h3>统一刷新入口</h3>
+              <p><code>rebuild_all_views()</code> 从原始表重新计算全部汇总结果。</p>
+            </div>
+          </div>
+        </div>
+        <div class="footer"><span>高频查询优先命中预聚合表，细粒度问题自动回退原始表 JOIN</span><span>5 / 12</span></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="sheet">
+        <header class="head">
+          <h2>预聚合表：位置明确、字段可查、可以刷新</h2><span class="eyebrow">Pre-Aggregation</span>
+        </header>
+        <div class="chips" style="flex: 0 0 auto;">
+          <span class="path">data/pre_aggregation_views.sql</span>
+          <span class="path">utils/views.py</span>
+          <span class="path">rebuild_all_views()</span>
+        </div>
+        <div class="content">
+          <table class="compact" aria-label="六张预聚合表概览">
+            <thead>
+              <tr>
+                <th style="width: 21%;">预聚合表</th>
+                <th style="width: 16%;">粒度</th>
+                <th style="width: 38%;">核心内容</th>
+                <th>Agent 使用场景</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>mv_monthly_sales</code></td>
+                <td>年-月</td>
+                <td>GMV、订单数、客单价、运费</td>
+                <td>趋势分析与预测输入</td>
+              </tr>
+              <tr>
+                <td><code>mv_state_sales</code></td>
+                <td>年-月-州</td>
+                <td>州级 GMV、订单数、客户数</td>
+                <td>州排名与区域地图</td>
+              </tr>
+              <tr>
+                <td><code>mv_category_sales</code></td>
+                <td>年-月-品类</td>
+                <td>品类 GMV、订单数、均价</td>
+                <td>品类表现与下滑诊断</td>
+              </tr>
+              <tr>
+                <td><code>mv_delivery_perf</code></td>
+                <td>年-月-州</td>
+                <td>配送天数、准时率、延迟订单</td>
+                <td>物流时效诊断</td>
+              </tr>
+              <tr>
+                <td><code>mv_seller_perf</code></td>
+                <td>年-月-卖家</td>
+                <td>卖家 GMV、订单数、平均评分</td>
+                <td>卖家治理与 What-if</td>
+              </tr>
+              <tr>
+                <td><code>mv_payment_dist</code></td>
+                <td>年-月-支付</td>
+                <td>交易数、平均分期、支付金额</td>
+                <td>支付偏好分析</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="footer"><span>六张预聚合表均具有明确粒度、字段定义与业务用途</span><span>6 / 12</span></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="sheet">
+        <header class="head">
+          <h2>性能优化：同一问题加速约 11.94 倍</h2><span class="eyebrow">Performance</span>
+        </header>
+        <div class="content cols-2" style="grid-template-columns: 1.35fr 0.65fr;">
+          <div class="media"><img src="assets/perf_view_vs_base_2017_state_sales.png" alt="预聚合表与基础表查询性能对比"></div>
+          <div class="stack">
+            <div class="result-callout"><b>11.94×</b><span>2017 年各州销售额排名查询加速</span></div>
+            <div class="panel grow">
+              <h3>对照条件</h3>
+              <ul>
+                <li>预聚合表：<code>mv_state_sales</code></li>
+                <li>基础表：<code>orders + order_items + customers</code></li>
+                <li>中位耗时：<strong>30.49 ms vs 363.98 ms</strong></li>
+                <li>27 个州结果全部对齐</li>
+                <li>GMV 最大差异为 0</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="footer"><span>预聚合将中位查询耗时从 363.98 ms 降至 30.49 ms，结果保持一致</span><span>7 / 12</span></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="sheet">
+        <header class="head">
+          <h2>四层分析：从“发生了什么”到“应该怎么做”</h2><span class="eyebrow">Analytics Depth</span>
+        </header>
+        <div class="content cols-2">
+          <div class="panel analysis-card analysis-evidence" data-step="01">
+            <div class="media"><img src="assets/monthly_sales_trend.png" alt="月度销售趋势"></div>
+            <div class="analysis-copy">
+              <h3>描述性分析</h3>
+              <ul>
+                <li>GMV、月度趋势与州级排名</li>
+                <li>支付偏好和配送表现</li>
+              </ul>
+            </div>
+          </div>
+          <div class="panel analysis-card analysis-evidence" data-step="02">
+            <div class="media"><img src="assets/delivery_geography_diagnostic.png" alt="客户州与卖家州配送链路诊断"></div>
+            <div class="analysis-copy">
+              <h3>诊断性分析</h3>
+              <ul>
+                <li>客户州—卖家州跨州履约链路下钻</li>
+                <li>识别 PR→AL 等高时长、低准时率路线</li>
+              </ul>
+            </div>
+          </div>
+          <div class="panel analysis-card analysis-evidence" data-step="03">
+            <div class="media"><img src="assets/forecast_chart.png" alt="未来六周销售额预测"></div>
+            <div class="analysis-copy">
+              <h3>预测性分析</h3>
+              <ul>
+                <li>基于 <code>mv_monthly_sales</code> 建模</li>
+                <li>输出未来 6 周预测与置信区间</li>
+              </ul>
+            </div>
+          </div>
+          <div class="panel analysis-card analysis-evidence" data-step="04">
+            <div class="media"><img src="assets/decision_recommendations.png" alt="运营决策建议"></div>
+            <div class="analysis-copy">
+              <h3>规范性分析</h3>
+              <ul>
+                <li>融合查询、预测与评论信号</li>
+                <li>输出物流 SLA 与卖家治理行动方案</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="footer"><span>描述、诊断、预测与规范性分析均已接入统一 Agent 流程</span><span>8 / 12</span></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="sheet">
+        <header class="head">
+          <h2>交互界面：自然语言驱动的分析工作台</h2><span class="eyebrow">Dashboard</span>
+        </header>
+        <div class="content cols-2">
+          <div class="panel flex">
+            <h3>统一 Web 仪表板</h3>
+            <div class="media"><img src="assets/homepage.png" alt="Streamlit 系统首页"></div>
+            <div class="caption">左侧对话与快捷操作，右侧展示图表、分析文本和数据结果</div>
+          </div>
+          <div class="panel flex">
+            <h3>自然语言分析链路</h3>
+            <div class="media"><img src="assets/natural_language_qa.png" alt="自然语言问答运行截图"></div>
+            <div class="caption">问题理解 → SQL 查询 → 图表生成 → 商业建议整合</div>
+          </div>
+        </div>
+        <div class="footer"><span>连续问答可引用上一轮的州、卖家或时间范围</span><span>9 / 12</span></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="sheet">
+        <header class="head">
+          <h2>可视化结果：六类图表覆盖核心分析场景</h2><span class="eyebrow">Visualization</span>
+        </header>
+        <div class="content evidence-grid six">
+          <div class="evidence-item">
+            <div class="media"><img src="assets/monthly_sales_trend.png" alt="月度销售趋势折线图"></div><span>时间序列折线图：月度 GMV
+              趋势</span>
+          </div>
+          <div class="evidence-item">
+            <div class="media"><img src="assets/brazil_state_sales_map.png" alt="巴西州销售地图"></div><span>地理图：州级销售分布</span>
+          </div>
+          <div class="evidence-item">
+            <div class="media"><img src="assets/state_sales_bar.png" alt="州级销售额柱状图"></div><span>柱状图：各州销售额排名</span>
+          </div>
+          <div class="evidence-item">
+            <div class="media"><img src="assets/payment_installment_heatmap.png" alt="支付方式与分期热力图"></div><span>热力图：支付方式 ×
+              分期数</span>
+          </div>
+          <div class="evidence-item">
+            <div class="media"><img src="assets/weight_freight_scatter.png" alt="商品重量与运费散点图"></div>
+            <span>散点图：商品重量与运费关系</span>
+          </div>
+          <div class="evidence-item">
+            <div class="media"><img src="assets/review_wordcloud.png" alt="正负评论关键词词云"></div><span>词云：正负评论关键词对比</span>
+          </div>
+        </div>
+        <div class="footer"><span>图表由 Visualizer Agent 根据数据结构与分析目标自动选择</span><span>10 / 12</span></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="sheet">
+        <header class="head">
+          <h2>扩展能力：文本洞察、情景模拟与主动预警</h2><span class="eyebrow">Extended Capabilities</span>
+        </header>
+        <div class="content evidence-grid">
+          <div class="evidence-item">
+            <div class="media"><img src="assets/review_sentiment.png" alt="评论情感分析结果"></div>
+            <span>评论情感分析：将文本信号融入诊断与建议</span>
+          </div>
+          <div class="evidence-item">
+            <div class="media"><img src="assets/what_if_analysis.png" alt="卖家下架 What-if 分析"></div><span>What-if：量化评分提升与
+              GMV 风险</span>
+          </div>
+          <div class="evidence-item">
+            <div class="media"><img src="assets/anomaly_agent.png" alt="异常检测 Agent 结果"></div>
+            <span>异常检测：扫描订单、差评率等异常波动</span>
+          </div>
+          <div class="evidence-item">
+            <div class="media"><img src="assets/memory_turn_2.png" alt="多轮记忆第二轮问答"></div><span>多轮记忆：后续问题可引用上一轮上下文</span>
+          </div>
+        </div>
+        <div class="footer"><span>对应情感/主题、What-if/异常检测、记忆模块等额外加分</span><span>11 / 12</span></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="sheet">
+        <header class="head">
+          <h2>验证结果与项目总结</h2><span class="eyebrow">Verification</span>
+        </header>
+        <div class="content cols-2">
+          <div class="stack">
+            <div class="result-callout grow"><b>15 passed</b><span><code
+                  style="color:#fff;background:rgba(255,255,255,.14);">pytest tests/test_e2e.py</code></span></div>
+            <div class="result-callout grow" style="background: linear-gradient(145deg, var(--orange), #8a4c1e);"><b>14
+                PASS</b><span>官方验证题脚本：0 FAIL</span></div>
+          </div>
+          <div class="panel flex">
+            <h3>最终结论</h3>
+            <ul>
+              <li>项目代码、数据库、Agent 编排和 Web 界面均可运行</li>
+              <li>6 张预聚合表有脚本、有刷新入口、有查询策略</li>
+              <li>性能提升约 11.94 倍，且结果一致</li>
+              <li>描述、诊断、预测、规范性分析形成闭环</li>
+              <li>加分能力均有实际界面或运行结果支撑</li>
+            </ul>
+            <p
+              style="margin-top: auto; padding: 4%; color: var(--teal); background: var(--teal-soft); border-radius: 12px; font-weight: 700;">
+              谢谢老师，欢迎提问与指导。</p>
+          </div>
+        </div>
+        <div class="footer"><span>Agentic BI 将多表数据查询扩展为可解释、可预测、可执行的决策支持</span><span>12 / 12</span></div>
+      </div>
+    </section>
+
+    <div class="progress" aria-hidden="true">
+      <div id="bar"></div>
+    </div>
+    <div class="controls">
+      <button id="prev" type="button" aria-label="上一页">‹</button>
+      <button id="next" type="button" aria-label="下一页">›</button>
+    </div>
+  </main>
+
+  <script>
+    const slides = [...document.querySelectorAll('.slide')];
+    const bar = document.getElementById('bar');
+    let index = 0;
+
+    function render() {
+      slides.forEach((slide, i) => slide.classList.toggle('active', i === index));
+      bar.style.width = `${((index + 1) / slides.length) * 100}%`;
+      document.title = `Agentic BI 项目答辩 · ${index + 1}/${slides.length}`;
+    }
+
+    function go(delta) {
+      index = Math.max(0, Math.min(slides.length - 1, index + delta));
+      render();
+    }
+
+    document.getElementById('prev').addEventListener('click', () => go(-1));
+    document.getElementById('next').addEventListener('click', () => go(1));
+
+    window.addEventListener('keydown', (event) => {
+      if (['ArrowRight', 'PageDown', ' '].includes(event.key)) go(1);
+      if (['ArrowLeft', 'PageUp'].includes(event.key)) go(-1);
+      if (event.key === 'Home') { index = 0; render(); }
+      if (event.key === 'End') { index = slides.length - 1; render(); }
+      if (event.key.toLowerCase() === 'f' && !document.fullscreenElement) document.documentElement.requestFullscreen?.();
+      if (event.key === 'Escape' && document.fullscreenElement) document.exitFullscreen?.();
+    });
+
+    render();
+  </script>
+</body>
+
+</html>

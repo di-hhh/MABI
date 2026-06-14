@@ -1,0 +1,16 @@
+﻿customer_state,seller_state,route_type,total_orders,avg_delivery_days,on_time_rate,delayed_orders
+AL,PR,Cross state,36,31.0,53.5,20
+RR,SP,Cross state,31,30.5,85.7,5
+AP,SP,Cross state,49,29.3,93.4,4
+CE,SC,Cross state,21,28.4,71.4,6
+PA,MG,Cross state,83,27.9,82.4,16
+AM,SP,Cross state,99,26.1,95.4,5
+CE,RJ,Cross state,53,26.1,74.6,14
+PA,PR,Cross state,52,25.9,87.5,7
+SE,MG,Cross state,35,25.3,87.5,5
+RN,PR,Cross state,20,24.8,85.0,3
+AL,SP,Cross state,253,24.5,74.8,68
+CE,PR,Cross state,64,24.0,87.5,9
+SE,PR,Cross state,21,23.5,81.0,4
+MA,SC,Cross state,21,23.2,81.8,4
+PA,SP,Cross state,670,23.2,87.0,98

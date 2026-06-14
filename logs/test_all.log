@@ -2711,3 +2711,22 @@ NameError: name 'time' is not defined. Did you forget to import 'time'
 2026-05-10 18:12:28,632 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
 2026-05-10 18:13:39,284 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
 2026-05-10 18:13:42,996 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-06-14 16:06:05,815 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-06-14 16:07:34,191 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-06-14 16:07:38,286 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-06-14 16:08:27,320 [prophet] INFO: n_changepoints greater than number of observations. Using 16.
+2026-06-14 16:08:30,719 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-06-14 16:09:36,464 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-06-14 16:09:40,047 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-06-14 16:10:37,804 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-06-14 16:11:29,416 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-06-14 16:13:43,774 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-06-14 16:14:27,809 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-06-14 16:15:29,867 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-06-14 16:16:09,547 [prophet] INFO: n_changepoints greater than number of observations. Using 16.
+2026-06-14 16:16:14,415 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-06-14 16:16:57,014 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-06-14 16:18:06,037 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-06-14 16:19:23,047 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for NLPSentimentOutput
+2026-06-14 16:19:25,608 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
+2026-06-14 16:20:39,749 [models.llm_outputs] WARNING: All Pydantic parse strategies failed for ChartSelectionOutput
